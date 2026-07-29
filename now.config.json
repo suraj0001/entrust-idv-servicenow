@@ -1,0 +1,6 @@
+{
+  "scope": "x_entru_entrustidv",
+  "scopeId": "307c9ef21bd20fd05fdb2f05604bcbf7",
+  "name": "Entrust Identity Verification",
+  "tsconfigPath": "./src/server/tsconfig.json"
+}
