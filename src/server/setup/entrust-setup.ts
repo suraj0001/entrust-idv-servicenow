@@ -1,7 +1,4 @@
 import { gs } from '@servicenow/glide'
-// RESTMessageV2 lives in the sn_ws namespace. Import it from the namespaced
-// subpath (not the bare root) so the SDK bundler emits `sn_ws.RESTMessageV2`
-// at runtime — a bare-root import type-checks but is undefined in a scoped app.
 import { RESTMessageV2 } from '@servicenow/glide/sn_ws'
 
 /**
@@ -97,4 +94,3 @@ export function testConnection(
         }
     }
 }
-
