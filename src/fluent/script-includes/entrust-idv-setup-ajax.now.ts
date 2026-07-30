@@ -1,14 +1,14 @@
 import '@servicenow/sdk/global'
 import { ScriptInclude } from '@servicenow/sdk/core'
 
-export const EntrustSetupAjaxSI = ScriptInclude({
+export const EntrustIDVSetupAjaxSI = ScriptInclude({
     $id: Now.ID['entrust-setup-ajax-si'],
-    name: 'EntrustSetupAjax',
+    name: 'EntrustIDVSetupAjax',
     active: true,
     // Client-callable so the Getting Started page can invoke it via GlideAjax.
     clientCallable: true,
     accessibleFrom: 'package_private',
     description: 'Setup helper for the Entrust IDV Getting Started page. Provides testConnection().',
-    script: Now.include('../../server/script-includes/EntrustSetupAjax.js'),
+    script: Now.include('../../server/ui-pages/EntrustIDVSetupAjax.js'),
 })
 

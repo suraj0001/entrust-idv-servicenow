@@ -7,6 +7,6 @@ export const EntrustSetupPage = UiPage({
     description: 'Getting Started setup page for Entrust Identity Verification.',
     direct: true,
     category: 'general',
-    html: Now.include('../../server/html/entrust-idv-setup.html'),
-    clientScript: Now.include('../../server/js/entrust-idv-setup-client.js'),
+    html: Now.include('../../server/ui-pages/entrust-idv-setup.html'),
+    clientScript: Now.include('../../server/ui-pages/entrust-idv-setup-client.js'),
 })

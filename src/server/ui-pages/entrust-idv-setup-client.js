@@ -40,7 +40,7 @@ document.getElementById('btn_test').addEventListener('click', function () {
     btn.textContent = 'Testing…';
     _idvShowStatus('', 'Connecting to Entrust IDV…');
 
-    var ga = new GlideAjax('EntrustSetupAjax');
+    var ga = new GlideAjax('EntrustIDVSetupAjax');
     ga.addParam('sysparm_name', 'testConnection');
     ga.addParam('sysparm_client_id', clientId);
     ga.addParam('sysparm_client_secret', clientSecret);
