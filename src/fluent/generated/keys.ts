@@ -42,6 +42,10 @@ declare global {
                         id: 'd1d1eb1324dd4a2fab833623c2463c88'
                         deleted: true
                     }
+                    'src_server_ui-pages_entrust-idv-setup_client_js': {
+                        table: 'sys_module'
+                        id: 'ad7fe74801e44680bd5c262104243c0d'
+                    }
                     'src_server_ui-pages_entrust-idv-setup_ts': {
                         table: 'sys_module'
                         id: 'f6005a67a26443699cfc7dc1ae65677a'
@@ -49,6 +53,7 @@ declare global {
                     'src_server_ui-pages_entrust-idv-setup-client_js': {
                         table: 'sys_module'
                         id: '5abda2adcd8740a2bbc2aa75aa1c99f9'
+                        deleted: true
                     }
                     'src_server_ui-pages_entrust-setup-client_js': {
                         table: 'sys_module'

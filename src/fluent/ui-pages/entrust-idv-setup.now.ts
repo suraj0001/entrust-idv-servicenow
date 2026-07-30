@@ -8,5 +8,5 @@ export const EntrustSetupPage = UiPage({
     direct: true,
     category: 'general',
     html: Now.include('../../server/ui-pages/entrust-idv-setup.html'),
-    clientScript: Now.include('../../server/ui-pages/entrust-idv-setup-client.js'),
+    clientScript: Now.include('../../server/ui-pages/entrust-idv-setup.client.js'),
 })
