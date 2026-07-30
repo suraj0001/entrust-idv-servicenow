@@ -25,7 +25,7 @@ declare global {
                     src_server_js_EntrustSetupAjax_js: {
                         table: 'sys_module'
                         id: '812ac2a8661d4e089949f6cadab00270'
-                        deleted: false
+                        deleted: true
                     }
                     'src_server_script-includes_EntrustSetupAjax_js': {
                         table: 'sys_module'
