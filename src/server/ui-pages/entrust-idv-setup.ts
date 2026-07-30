@@ -56,6 +56,15 @@ export function testConnection(
         request.setHttpTimeout(30000)
 
         const response = request.execute()
+
+        if (response.haveError()) {
+            gs.error('[EntrustIDV] Test connection transport error: ' + response.getErrorMessage())
+            return {
+                success: false,
+                message: 'Could not reach Entrust IDV: ' + response.getErrorMessage(),
+            }
+        }
+
         const status = response.getStatusCode()
         const body = response.getBody()
 

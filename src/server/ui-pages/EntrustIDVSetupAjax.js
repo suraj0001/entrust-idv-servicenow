@@ -16,7 +16,7 @@ EntrustIDVSetupAjax.prototype = Object.extendsObject(global.AbstractAjaxProcesso
      */
     testConnection: function () {
         try {
-            var setup = require('./dist/modules/ui-pages/entrust-idv-setup.js');
+            var setup = require('./src/server/ui-pages/entrust-idv-setup.ts');
             return JSON.stringify(setup.testConnection(
                 this.getParameter('sysparm_client_id'),
                 this.getParameter('sysparm_client_secret'),
