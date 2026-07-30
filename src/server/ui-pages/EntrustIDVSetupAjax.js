@@ -15,12 +15,17 @@ EntrustIDVSetupAjax.prototype = Object.extendsObject(global.AbstractAjaxProcesso
      * Returns a JSON string: { success: boolean, message: string }.
      */
     testConnection: function () {
-        var setup = require('./dist/modules/ui-pages/entrust-idv-setup.js');
-        return JSON.stringify(setup.testConnection(
-            this.getParameter('sysparm_client_id'),
-            this.getParameter('sysparm_client_secret'),
-            this.getParameter('sysparm_region')
-        ));
+        try {
+            var setup = require('./dist/modules/ui-pages/entrust-idv-setup.js');
+            return JSON.stringify(setup.testConnection(
+                this.getParameter('sysparm_client_id'),
+                this.getParameter('sysparm_client_secret'),
+                this.getParameter('sysparm_region')
+            ));
+        } catch (e) {
+            gs.error('[EntrustIDV] EntrustIDVSetupAjax.testConnection failed: ' + e);
+            return JSON.stringify({ success: false, message: 'Server error: ' + e });
+        }
     },
 
     type: 'EntrustIDVSetupAjax'

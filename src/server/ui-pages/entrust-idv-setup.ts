@@ -41,20 +41,20 @@ export function testConnection(
     }
 
     const request = new RESTMessageV2()
-    request.setEndpoint(baseUrl + '/oauth/token')
-    request.setHttpMethod('post')
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-    request.setRequestHeader('Accept', 'application/json')
-    // Client Credentials grant — no grant_type per the Entrust IDV spec.
-    request.setRequestBody(
-        'client_id=' +
-            encodeURIComponent(clientId) +
-            '&client_secret=' +
-            encodeURIComponent(clientSecret),
-    )
-    request.setHttpTimeout(30000)
-
     try {
+        request.setEndpoint(baseUrl + '/oauth/token')
+        request.setHttpMethod('post')
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.setRequestHeader('Accept', 'application/json')
+        // Client Credentials grant — no grant_type per the Entrust IDV spec.
+        request.setRequestBody(
+            'client_id=' +
+                encodeURIComponent(clientId) +
+                '&client_secret=' +
+                encodeURIComponent(clientSecret),
+        )
+        request.setHttpTimeout(30000)
+
         const response = request.execute()
         const status = response.getStatusCode()
         const body = response.getBody()
