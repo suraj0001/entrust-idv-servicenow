@@ -34,15 +34,7 @@ declare global {
                         id: '47507078e05b4cab905b0ae4a5fdc7a0'
                     }
                 }
-                composite: [
-                    {
-                        table: 'sys_ui_page'
-                        id: 'a6208f4747de831016bda144846d43c1'
-                        key: {
-                            endpoint: 'x_entru_entrustidv_entrust_idv_setup.do'
-                        }
-                    },
-                ]
+                composite: []
             }
         }
     }
