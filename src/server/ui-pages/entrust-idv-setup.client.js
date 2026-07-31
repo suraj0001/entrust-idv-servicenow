@@ -4,23 +4,18 @@
  * Handles region auto-fill and Test Connection via GlideAjax.
  */
 
+// Must mirror REGION_BASE_URLS in src/server/ajax/entrust-idv-setup.ts (browser JS can't import server modules).
 var BASE_URLS = {
     us: 'https://api.us.onfido.com/v3.6',
     eu: 'https://api.eu.onfido.com/v3.6',
     ca: 'https://api.ca.onfido.com/v3.6'
 };
 
-var TOKEN_URLS = {
-    us: 'https://api.us.onfido.com/v3.6/oauth/token',
-    eu: 'https://api.eu.onfido.com/v3.6/oauth/token',
-    ca: 'https://api.ca.onfido.com/v3.6/oauth/token'
-};
-
 // Auto-fill Base URL and Token URL when region changes
 document.getElementById('idv_region').addEventListener('change', function () {
-    var region = this.value;
-    document.getElementById('idv_base_url').value  = BASE_URLS[region]  || '';
-    document.getElementById('idv_token_url').value = TOKEN_URLS[region] || '';
+    var base = BASE_URLS[this.value] || '';
+    document.getElementById('idv_base_url').value  = base;
+    document.getElementById('idv_token_url').value = base ? base + '/oauth/token' : '';
     _idvShowStatus('', '');
 });
 

@@ -9,6 +9,6 @@ export const EntrustIDVSetupAjaxSI = ScriptInclude({
     clientCallable: true,
     accessibleFrom: 'package_private',
     description: 'Setup helper for the Entrust IDV Getting Started page. Provides testConnection().',
-    script: Now.include('../../server/ui-pages/EntrustIDVSetupAjax.js'),
+    script: Now.include('../../server/ajax/EntrustIDVSetupAjax.js'),
 })
 

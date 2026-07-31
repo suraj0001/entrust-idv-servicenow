@@ -17,6 +17,14 @@ declare global {
                         table: 'sys_module'
                         id: '2eecee46c14c4d65bc53a45afe7b119b'
                     }
+                    'src_server_ajax_entrust-idv-setup_ts': {
+                        table: 'sys_module'
+                        id: '4678f6d70fe14e5fae6f747d7dde524a'
+                    }
+                    src_server_ajax_EntrustIDVSetupAjax_js: {
+                        table: 'sys_module'
+                        id: '840e1d74b8964dfe91beddd606e112f3'
+                    }
                     'src_server_js_entrust-idv-setup-client_js': {
                         table: 'sys_module'
                         id: '3fbbf828991747a78b3de31b979fa079'
@@ -25,6 +33,16 @@ declare global {
                     src_server_js_EntrustSetupAjax_js: {
                         table: 'sys_module'
                         id: '812ac2a8661d4e089949f6cadab00270'
+                        deleted: true
+                    }
+                    'src_server_script-includes_entrust-idv-setup_ts': {
+                        table: 'sys_module'
+                        id: 'a3451ff78ea24087bfebd1ea1dec89be'
+                        deleted: true
+                    }
+                    'src_server_script-includes_EntrustIDVSetupAjax_js': {
+                        table: 'sys_module'
+                        id: '77f2126b355341b6b316c76ff426f162'
                         deleted: true
                     }
                     'src_server_script-includes_EntrustSetupAjax_js': {
@@ -49,6 +67,7 @@ declare global {
                     'src_server_ui-pages_entrust-idv-setup_ts': {
                         table: 'sys_module'
                         id: 'f6005a67a26443699cfc7dc1ae65677a'
+                        deleted: true
                     }
                     'src_server_ui-pages_entrust-idv-setup-client_js': {
                         table: 'sys_module'
@@ -63,6 +82,7 @@ declare global {
                     'src_server_ui-pages_EntrustIDVSetupAjax_js': {
                         table: 'sys_module'
                         id: 'f47e1dea7d7a4efd8d9a5ae5ba0ac2e2'
+                        deleted: true
                     }
                 }
                 composite: [

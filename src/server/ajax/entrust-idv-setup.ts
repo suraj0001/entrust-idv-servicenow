@@ -9,7 +9,7 @@ export interface TestConnectionResult {
     message: string
 }
 
-/** Region code -> Entrust IDV (Onfido) v3.6 base URL. */
+// Must mirror BASE_URLS in src/server/ui-pages/entrust-idv-setup.client.js (browser JS can't import server modules).
 const REGION_BASE_URLS: Record<string, string> = {
     us: 'https://api.us.onfido.com/v3.6',
     eu: 'https://api.eu.onfido.com/v3.6',
@@ -42,6 +42,8 @@ export function testConnection(
 
     const request = new RESTMessageV2()
     try {
+        // Endpoint is derived only from the trusted region allow-list above — never from
+        // client input — to avoid SSRF via a tampered/forged URL from the browser.
         request.setEndpoint(baseUrl + '/oauth/token')
         request.setHttpMethod('post')
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
@@ -61,7 +63,7 @@ export function testConnection(
             gs.error('[EntrustIDV] Test connection transport error: ' + response.getErrorMessage())
             return {
                 success: false,
-                message: 'Could not reach Entrust IDV: ' + response.getErrorMessage(),
+                message: 'Connection failed. Please try again later or contact your administrator.',
             }
         }
 
@@ -93,6 +95,7 @@ export function testConnection(
             }
         }
 
+        gs.error('[EntrustIDV] Test connection failed with HTTP ' + status + ': ' + body)
         return { success: false, message: 'Connection failed (HTTP ' + status + ').' }
     } catch (err) {
         gs.error('[EntrustIDV] Test connection error: ' + String(err))
