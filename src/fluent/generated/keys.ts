@@ -25,6 +25,10 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: '188b9017479ec31016bda144846d4366'
                     }
+                    '23e20da7475e871016bda144846d4373': {
+                        table: 'sys_scope_privilege'
+                        id: '23e20da7475e871016bda144846d4373'
+                    }
                     '2bf07ceb1b52c3145fdb2f05604bcbd7': {
                         table: 'oauth_entity'
                         id: '2bf07ceb1b52c3145fdb2f05604bcbd7'
@@ -72,6 +76,10 @@ declare global {
                     '6b9f04eb4716871016bda144846d4361': {
                         table: 'sys_scope_privilege'
                         id: '6b9f04eb4716871016bda144846d4361'
+                    }
+                    '6be20da7475e871016bda144846d436a': {
+                        table: 'sys_scope_privilege'
+                        id: '6be20da7475e871016bda144846d436a'
                     }
                     '6e5258a34756871016bda144846d4319': {
                         table: 'oauth_entity_profile'
@@ -177,6 +185,10 @@ declare global {
                         table: 'sys_script_include'
                         id: '3fcd30784fcc48f991b8bab7e1daf362'
                     }
+                    'entrust-verify-ajax-si': {
+                        table: 'sys_script_include'
+                        id: '52592101517248d9951d75ea8d777d5f'
+                    }
                     f1feec671b52c3145fdb2f05604bcb6f: {
                         table: 'sys_scope_privilege'
                         id: 'f1feec671b52c3145fdb2f05604bcb6f'
@@ -189,9 +201,17 @@ declare global {
                         table: 'sys_module'
                         id: '4678f6d70fe14e5fae6f747d7dde524a'
                     }
+                    'src_server_ajax_entrust-idv-verify_ts': {
+                        table: 'sys_module'
+                        id: '987dd9ca930e466cab460f807e1f90d4'
+                    }
                     src_server_ajax_EntrustIDVSetupAjax_js: {
                         table: 'sys_module'
                         id: '840e1d74b8964dfe91beddd606e112f3'
+                    }
+                    src_server_ajax_EntrustIDVVerifyAjax_js: {
+                        table: 'sys_module'
+                        id: '2de013eb9c4b481bb98280b6cd1c22af'
                     }
                     'src_server_js_entrust-idv-setup-client_js': {
                         table: 'sys_module'
@@ -228,6 +248,10 @@ declare global {
                         id: 'd1d1eb1324dd4a2fab833623c2463c88'
                         deleted: true
                     }
+                    'src_server_ui-actions_verify-identity_client_js': {
+                        table: 'sys_module'
+                        id: 'a230e18d90624b57bc09893e6c1ff832'
+                    }
                     'src_server_ui-pages_entrust-idv-setup_client_js': {
                         table: 'sys_module'
                         id: 'ad7fe74801e44680bd5c262104243c0d'
@@ -251,6 +275,10 @@ declare global {
                         table: 'sys_module'
                         id: 'f47e1dea7d7a4efd8d9a5ae5ba0ac2e2'
                         deleted: true
+                    }
+                    'verify-identity-ui-action': {
+                        table: 'sys_ui_action'
+                        id: '668460c581d3435e9659a4403aa2688c'
                     }
                 }
                 composite: [
@@ -362,6 +390,19 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_action_role'
+                        id: '4474eaa8ca114884a17d181b69d72f9b'
+                        key: {
+                            sys_ui_action: '668460c581d3435e9659a4403aa2688c'
+                            sys_user_role: {
+                                id: '51aaf7d2b71f42ca9799218a85f1beed'
+                                key: {
+                                    name: 'admin'
+                                }
+                            }
+                        }
+                    },
+                    {
                         table: 'sys_ui_element'
                         id: '5f913f9b47de471016bda144846d43af'
                         key: {
@@ -376,6 +417,19 @@ declare global {
                             }
                             element: 'region'
                             position: '0'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_action_role'
+                        id: '6873bfda0de344d9b59409888aa4d7f5'
+                        key: {
+                            sys_ui_action: '668460c581d3435e9659a4403aa2688c'
+                            sys_user_role: {
+                                id: '417401eb475e871016bda144846d4300'
+                                key: {
+                                    name: 'x_entru_entrustidv.agent'
+                                }
+                            }
                         }
                     },
                     {
