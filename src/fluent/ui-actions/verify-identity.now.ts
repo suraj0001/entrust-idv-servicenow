@@ -18,6 +18,7 @@ export const VerifyIdentityUiAction = UiAction({
     },
     showInsert: false,
     showUpdate: true,
+    condition: "gs.hasRole('x_entru_entrustidv.agent') || gs.hasRole('admin')",
     script: Now.include('../../server/ui-actions/verify-identity.client.js'),
     roles: ['x_entru_entrustidv.agent', 'admin'],
     comments: 'Starts an Entrust identity verification for the incident.',
