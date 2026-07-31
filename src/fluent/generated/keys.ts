@@ -355,6 +355,13 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_user_role'
+                        id: '417401eb475e871016bda144846d4300'
+                        key: {
+                            name: 'x_entru_entrustidv.agent'
+                        }
+                    },
+                    {
                         table: 'sys_ui_element'
                         id: '5f913f9b47de471016bda144846d43af'
                         key: {
