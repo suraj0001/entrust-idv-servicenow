@@ -33,6 +33,10 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: '31feec671b52c3145fdb2f05604bcb6b'
                     }
+                    '331574e71b92c3145fdb2f05604bcb55': {
+                        table: 'oauth_entity'
+                        id: '331574e71b92c3145fdb2f05604bcb55'
+                    }
                     '3a41382f1b52c3145fdb2f05604bcb2c': {
                         table: 'oauth_entity_profile'
                         id: '3a41382f1b52c3145fdb2f05604bcb2c'
@@ -80,6 +84,10 @@ declare global {
                     '7641382f1b52c3145fdb2f05604bcb2b': {
                         table: 'oauth_entity'
                         id: '7641382f1b52c3145fdb2f05604bcb2b'
+                    }
+                    '7715f4e71b92c3145fdb2f05604bcbac': {
+                        table: 'oauth_entity_profile'
+                        id: '7715f4e71b92c3145fdb2f05604bcbac'
                     }
                     '793c28af1b12c3145fdb2f05604bcba0': {
                         table: 'oauth_entity'
