@@ -10,10 +10,11 @@
     "types": "now-sdk dependencies"
   },
   "devDependencies": {
-    "@servicenow/sdk": "4.9.2",
-    "@servicenow/glide": "26.0.1",
-    "eslint": "8.50.0",
     "@servicenow/eslint-plugin-sdk-app-plugin": "4.9.2",
+    "@servicenow/glide": "26.0.1",
+    "@servicenow/sdk": "4.9.2",
+    "eslint": "8.50.0",
+    "lodash": "^4.17.21",
     "typescript": "5.5.4"
   }
 }

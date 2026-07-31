@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:g2="null">
+  <style>.entrust-container {
+         font-family: "Source Sans Pro", sans-serif;
+         max-width: 580px;
+         margin: 24px auto;
+         padding: 24px;
+      }
+      .entrust-container h2 {
+         color: #333;
+         margin-bottom: 4px;
+      }
+      .entrust-container .subtitle {
+         color: #666;
+         font-size: 14px;
+         margin-bottom: 24px;
+      }
+      .form-group {
+         margin-bottom: 16px;
+      }
+      .form-group label {
+         display: block;
+         font-weight: 600;
+         font-size: 13px;
+         margin-bottom: 4px;
+         color: #444;
+      }
+      .form-group input,
+      .form-group select {
+         width: 100%;
+         padding: 8px 10px;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         font-size: 14px;
+         box-sizing: border-box;
+      }
+      .form-group input[readonly] {
+         background: #f5f5f5;
+         color: #888;
+      }
+      .hint {
+         font-size: 11px;
+         color: #999;
+         margin-top: 3px;
+      }
+      .btn-row {
+         display: flex;
+         gap: 10px;
+         margin-top: 22px;
+      }
+      .btn {
+         padding: 9px 22px;
+         border: none;
+         border-radius: 4px;
+         font-size: 14px;
+         font-weight: 600;
+         cursor: pointer;
+      }
+      .btn-test {
+         background: #0077c8;
+         color: #fff;
+      }
+      .btn-save {
+         background: #28a745;
+         color: #fff;
+      }
+      .btn-save:disabled {
+         background: #aaa;
+         cursor: not-allowed;
+      }
+      .status {
+         display: none;
+         margin-top: 16px;
+         padding: 10px 14px;
+         border-radius: 4px;
+         font-size: 14px;
+      }
+      .status.success {
+         background: #d4edda;
+         color: #155724;
+         border: 1px solid #c3e6cb;
+      }
+      .status.error {
+         background: #f8d7da;
+         color: #721c24;
+         border: 1px solid #f5c6cb;
+      }</style>
+  <div class="entrust-container">
+    <h2>Entrust IDV — API Credentials</h2>
+    <p class="subtitle">Select your region and enter Entrust credentials. Test the connection
+         before saving.</p>
+    <div class="form-group">
+      <label>Region</label>
+      <select id="idv_region">
+        <option value="">-- Select Region --</option>
+        <option value="us">United States (US)</option>
+        <option value="eu">Europe (EU)</option>
+        <option value="ca">Canada (CA)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Base URL</label>
+      <input type="text" id="idv_base_url" readonly="true" placeholder="Auto-filled from region"></input>
+      <div class="hint">Auto-filled based on region</div>
+    </div>
+    <div class="form-group">
+      <label>Token URL</label>
+      <input type="text" id="idv_token_url" readonly="true" placeholder="Auto-filled from region"></input>
+      <div class="hint">Auto-filled based on region</div>
+    </div>
+    <div class="form-group">
+      <label>Client ID</label>
+      <input type="text" id="idv_client_id" placeholder="Enter your Entrust Client ID"></input>
+    </div>
+    <div class="form-group">
+      <label>Client Secret</label>
+      <input type="password" id="idv_client_secret" placeholder="Enter your Entrust Client Secret"></input>
+    </div>
+    <div class="form-group">
+      <label>Workflow ID</label>
+      <input type="text" id="idv_workflow_id" placeholder="Enter your Entrust Workflow ID (UUID)"></input>
+      <div class="hint">Found in Entrust Dashboard — e.g.
+            3f6b2c1a-4d5e-7890-abcd-ef1234567890</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-test" id="btn_test">Test Connection</button>
+      <button class="btn btn-save" id="btn_save" disabled="true">Save</button>
+    </div>
+    <div class="status" id="status_box"></div>
+  </div>
+</j:jelly>
