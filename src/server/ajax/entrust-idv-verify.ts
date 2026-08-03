@@ -1,5 +1,6 @@
 import { gs, GlideRecord } from '@servicenow/glide'
 import { RESTMessageV2 } from '@servicenow/glide/sn_ws'
+import { ConnectionInfoProvider } from '@servicenow/glide/sn_cc'
 
 /**
  * Result of starting an Entrust IDV verification from the incident UI Action.
@@ -20,13 +21,6 @@ interface CreateApplicantResult {
 
 const ENTRUST_ALIAS_NAME = 'entrust_idv_api'
 
-// Must mirror REGION_BASE_URLS in entrust-idv-setup.ts.
-const REGION_BASE_URLS: Record<string, string> = {
-    us: 'https://api.us.onfido.com/v3.6',
-    eu: 'https://api.eu.onfido.com/v3.6',
-    ca: 'https://api.ca.onfido.com/v3.6',
-}
-
 /**
  * Normalise whitespace in a name field per the Entrust API requirement:
  * collapse any run of whitespace to a single space and trim edges.
@@ -43,10 +37,8 @@ function createApplicant(
     firstName: string,
     lastName: string,
     email: string,
-    baseUrl: string,
     phoneNumber?: string,
 ): CreateApplicantResult {
-    // Resolve the current OAuth profile from the alias → connection → credential chain.
     const aliasGr = new GlideRecord('sys_alias')
     aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
     aliasGr.query()
@@ -54,9 +46,22 @@ function createApplicant(
         gs.error('[EntrustIDV] createApplicant: alias "' + ENTRUST_ALIAS_NAME + '" not found.')
         return { success: false, message: 'Entrust IDV connection alias not found.' }
     }
+    const aliasSysId = aliasGr.getUniqueValue()
 
+    // Official IntegrationHub API for reading connection attributes from an alias in scoped apps.
+    const connectionInfo = new ConnectionInfoProvider().getConnectionInfo(aliasSysId)
+    if (!connectionInfo) {
+        return { success: false, message: 'Entrust IDV connection not configured. Complete the setup page first.' }
+    }
+    const baseUrl = connectionInfo.getAttribute('connection_url')
+    if (!baseUrl) {
+        gs.error('[EntrustIDV] createApplicant: connection_url is blank for alias "' + ENTRUST_ALIAS_NAME + '".')
+        return { success: false, message: 'Connection URL is blank. Set it on the http_connection record and re-run setup.' }
+    }
+
+    // Traverse connection → credential to get the oauth_entity_profile sys_id for setAuthenticationProfile.
     const connGr = new GlideRecord('http_connection')
-    connGr.addQuery('connection_alias', aliasGr.getUniqueValue())
+    connGr.addQuery('connection_alias', aliasSysId)
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
@@ -208,15 +213,6 @@ export function startVerification(incidentId: string): VerifyResult {
         }
     }
 
-    const region = config.getValue('region') || ''
-    const baseUrl = REGION_BASE_URLS[region] || ''
-    if (!baseUrl) {
-        return {
-            success: false,
-            message: 'Unknown region "' + region + '" in configuration. Re-run setup.',
-        }
-    }
-
     const incident = new GlideRecord('incident')
     incident.get(incidentId)
     if (!incident.isValidRecord()) {
@@ -272,7 +268,6 @@ export function startVerification(incidentId: string): VerifyResult {
         firstName,
         lastName,
         email,
-        baseUrl,
         phoneNumber || undefined,
     )
     if (!applicantResult.success) {
