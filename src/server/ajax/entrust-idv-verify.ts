@@ -1,6 +1,7 @@
 import { gs, GlideRecord } from '@servicenow/glide'
 import { RESTMessageV2 } from '@servicenow/glide/sn_ws'
 import { ConnectionInfoProvider } from '@servicenow/glide/sn_cc'
+import { GlideOAuthClient } from '@servicenow/glide/sn_auth'
 
 /**
  * Result of starting an Entrust IDV verification from the incident UI Action.
@@ -86,6 +87,14 @@ function createApplicant(
 
     gs.info('[EntrustIDV] createApplicant: using profile=' + profileSysId)
 
+    // GlideOAuthClient handles token fetch, caching, and refresh for client_credentials grant.
+    const oauthToken = new GlideOAuthClient().getToken(ENTRUST_ALIAS_NAME, profileSysId)
+    const accessToken = oauthToken ? (oauthToken as any).getAccessToken() as string : ''
+    if (!accessToken) {
+        gs.error('[EntrustIDV] createApplicant: failed to obtain OAuth token for profile=' + profileSysId)
+        return { success: false, message: 'Could not obtain OAuth access token. Check the Connection & Credential configuration.' }
+    }
+
     const body: Record<string, string> = {
         first_name: normaliseWhitespace(firstName),
         last_name: normaliseWhitespace(lastName),
@@ -102,8 +111,7 @@ function createApplicant(
         const request = new RESTMessageV2()
         request.setHttpMethod('POST')
         request.setEndpoint(endpoint)
-        // Platform fetches/caches the Bearer token; no manual token management needed.
-        request.setAuthenticationProfile('oauth2', profileSysId)
+        request.setRequestHeader('Authorization', 'Bearer ' + accessToken)
         request.setRequestHeader('Content-Type', 'application/json')
         request.setRequestHeader('Accept', 'application/json')
         request.setRequestBody(JSON.stringify(body))
