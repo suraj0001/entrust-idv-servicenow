@@ -25,6 +25,14 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: '0762fca7479a871016bda144846d4363'
                     }
+                    '10be1d201be28f145fdb2f05604bcb2b': {
+                        table: 'oauth_entity'
+                        id: '10be1d201be28f145fdb2f05604bcb2b'
+                    }
+                    '10be1d201be28f145fdb2f05604bcb2c': {
+                        table: 'oauth_entity_profile'
+                        id: '10be1d201be28f145fdb2f05604bcb2c'
+                    }
                     '1342b8a7479a871016bda144846d4352': {
                         table: 'sys_scope_privilege'
                         id: '1342b8a7479a871016bda144846d4352'
