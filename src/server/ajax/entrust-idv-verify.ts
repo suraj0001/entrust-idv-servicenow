@@ -73,6 +73,18 @@ function createApplicant(
         }
     }
     const baseUrl = connGr.getValue('connection_url') || ''
+    if (!baseUrl) {
+        gs.error(
+            '[EntrustIDV] createApplicant: http_connection.connection_url is empty for alias "' +
+                ENTRUST_ALIAS_NAME +
+                '". Set the Base URL on the http_connection record.',
+        )
+        return {
+            success: false,
+            message:
+                'Entrust IDV Base URL is not set on the connection record. Ask an admin to set it, or re-run setup.',
+        }
+    }
 
     const credGr = new GlideRecord('oauth_2_0_credentials')
     credGr.get(connGr.getValue('credential'))
@@ -106,9 +118,12 @@ function createApplicant(
         body.phone_number = phoneNumber
     }
 
+    const endpoint = baseUrl + '/applicants/'
+    gs.info('[EntrustIDV] createApplicant: POST ' + endpoint + ' (oauth_entity_profile=' + profileSysId + ')')
+
     const request = new RESTMessageV2()
     try {
-        request.setEndpoint(baseUrl + '/applicants/')
+        request.setEndpoint(endpoint)
         request.setAuthenticationProfile('oauth2', profileSysId)
         request.setHttpMethod('post')
         request.setRequestHeader('Content-Type', 'application/json')
@@ -119,13 +134,11 @@ function createApplicant(
         const response = request.execute()
 
         if (response.haveError()) {
-            gs.error(
-                '[EntrustIDV] createApplicant transport error: ' +
-                    response.getErrorMessage(),
-            )
+            const transportErr = response.getErrorMessage()
+            gs.error('[EntrustIDV] createApplicant transport error: ' + transportErr)
             return {
                 success: false,
-                message: 'Could not reach Entrust IDV. Try again later.',
+                message: 'Could not reach Entrust IDV: ' + transportErr,
             }
         }
 
