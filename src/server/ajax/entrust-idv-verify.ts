@@ -20,6 +20,13 @@ interface CreateApplicantResult {
 
 const ENTRUST_ALIAS_NAME = 'entrust_idv_api'
 
+// Must mirror REGION_BASE_URLS in entrust-idv-setup.ts.
+const REGION_BASE_URLS: Record<string, string> = {
+    us: 'https://api.us.onfido.com/v3.6',
+    eu: 'https://api.eu.onfido.com/v3.6',
+    ca: 'https://api.ca.onfido.com/v3.6',
+}
+
 /**
  * Normalise whitespace in a name field per the Entrust API requirement:
  * collapse any run of whitespace to a single space and trim edges.
@@ -30,84 +37,49 @@ function normaliseWhitespace(value: string): string {
 
 /**
  * Create an applicant record in Entrust IDV via POST /v3.6/applicants/.
- * Uses the entrust_idv_api Connection & Credential Alias to resolve the
- * OAuth2 profile and base URL — credentials are never handled directly here.
+ * Resolves the OAuth profile from the Connection & Credential Alias at runtime.
  */
 function createApplicant(
     firstName: string,
     lastName: string,
     email: string,
+    baseUrl: string,
     phoneNumber?: string,
 ): CreateApplicantResult {
-    // Traverse: sys_alias → http_connection → oauth_2_0_credentials → oauth_entity_profile
+    // Resolve the current OAuth profile from the alias → connection → credential chain.
     const aliasGr = new GlideRecord('sys_alias')
     aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
     aliasGr.query()
     if (!aliasGr.next()) {
-        gs.error(
-            '[EntrustIDV] createApplicant: connection alias "' +
-                ENTRUST_ALIAS_NAME +
-                '" not found.',
-        )
-        return {
-            success: false,
-            message: 'Entrust IDV connection alias not found.',
-        }
+        gs.error('[EntrustIDV] createApplicant: alias "' + ENTRUST_ALIAS_NAME + '" not found.')
+        return { success: false, message: 'Entrust IDV connection alias not found.' }
     }
-    const aliasSysId = aliasGr.getUniqueValue()
 
     const connGr = new GlideRecord('http_connection')
-    connGr.addQuery('connection_alias', aliasSysId)
+    connGr.addQuery('connection_alias', aliasGr.getUniqueValue())
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
-        gs.error(
-            '[EntrustIDV] createApplicant: no http_connection linked to alias "' +
-                ENTRUST_ALIAS_NAME +
-                '".',
-        )
         return {
             success: false,
-            message:
-                'Entrust IDV connection not configured. Complete the setup page first.',
-        }
-    }
-    const baseUrl = connGr.getValue('connection_url') || ''
-    if (!baseUrl) {
-        gs.error(
-            '[EntrustIDV] createApplicant: http_connection.connection_url is empty for alias "' +
-                ENTRUST_ALIAS_NAME +
-                '". Set the Base URL on the http_connection record.',
-        )
-        return {
-            success: false,
-            message:
-                'Entrust IDV Base URL is not set on the connection record. Ask an admin to set it, or re-run setup.',
+            message: 'Entrust IDV connection not configured. Complete the setup page first.',
         }
     }
 
     const credGr = new GlideRecord('oauth_2_0_credentials')
     credGr.get(connGr.getValue('credential'))
     if (!credGr.isValidRecord()) {
-        gs.error(
-            '[EntrustIDV] createApplicant: oauth_2_0_credentials not found for connection.',
-        )
-        return {
-            success: false,
-            message: 'Entrust IDV OAuth credentials not found. Re-run setup.',
-        }
+        gs.error('[EntrustIDV] createApplicant: oauth_2_0_credentials not found for connection.')
+        return { success: false, message: 'Entrust IDV OAuth credentials not found. Re-run setup.' }
     }
 
     const profileSysId = credGr.getValue('oauth_entity_profile')
     if (!profileSysId) {
-        gs.error(
-            '[EntrustIDV] createApplicant: no oauth_entity_profile on credentials.',
-        )
-        return {
-            success: false,
-            message: 'Entrust IDV OAuth profile not found. Re-run setup.',
-        }
+        gs.error('[EntrustIDV] createApplicant: no oauth_entity_profile on credentials.')
+        return { success: false, message: 'Entrust IDV OAuth profile not found. Re-run setup.' }
     }
+
+    gs.info('[EntrustIDV] createApplicant: using profile=' + profileSysId)
 
     const body: Record<string, string> = {
         first_name: normaliseWhitespace(firstName),
@@ -119,13 +91,14 @@ function createApplicant(
     }
 
     const endpoint = baseUrl + '/applicants/'
-    gs.info('[EntrustIDV] createApplicant: POST ' + endpoint + ' (oauth_entity_profile=' + profileSysId + ')')
+    gs.info('[EntrustIDV] createApplicant: POST ' + endpoint)
 
-    const request = new RESTMessageV2()
     try {
+        const request = new RESTMessageV2()
+        request.setHttpMethod('POST')
         request.setEndpoint(endpoint)
+        // Platform fetches/caches the Bearer token; no manual token management needed.
         request.setAuthenticationProfile('oauth2', profileSysId)
-        request.setHttpMethod('post')
         request.setRequestHeader('Content-Type', 'application/json')
         request.setRequestHeader('Accept', 'application/json')
         request.setRequestBody(JSON.stringify(body))
@@ -159,37 +132,23 @@ function createApplicant(
                 )
                 return {
                     success: false,
-                    message:
-                        'Applicant created but ID was not returned by Entrust IDV.',
+                    message: 'Applicant created but ID was not returned by Entrust IDV.',
                 }
             }
             gs.info('[EntrustIDV] Applicant created with id=' + parsed.id)
-            return {
-                success: true,
-                applicantId: parsed.id,
-                message: 'Applicant created.',
-            }
+            return { success: true, applicantId: parsed.id, message: 'Applicant created.' }
         }
 
         if (status === 422) {
-            gs.warn(
-                '[EntrustIDV] createApplicant validation error (422): ' +
-                    responseBody,
-            )
+            gs.warn('[EntrustIDV] createApplicant validation error (422): ' + responseBody)
             return {
                 success: false,
-                message:
-                    'Entrust IDV rejected the applicant data. Check the caller fields on the incident.',
+                message: 'Entrust IDV rejected the applicant data. Check the caller fields on the incident.',
             }
         }
 
         if (status === 401 || status === 403) {
-            gs.error(
-                '[EntrustIDV] createApplicant auth error (HTTP ' +
-                    status +
-                    '): ' +
-                    responseBody,
-            )
+            gs.error('[EntrustIDV] createApplicant auth error (HTTP ' + status + '): ' + responseBody)
             return {
                 success: false,
                 message:
@@ -199,18 +158,10 @@ function createApplicant(
             }
         }
 
-        gs.error(
-            '[EntrustIDV] createApplicant unexpected HTTP ' +
-                status +
-                ': ' +
-                responseBody,
-        )
+        gs.error('[EntrustIDV] createApplicant unexpected HTTP ' + status + ': ' + responseBody)
         return {
             success: false,
-            message:
-                'Entrust IDV returned an unexpected status (HTTP ' +
-                status +
-                ').',
+            message: 'Entrust IDV returned an unexpected status (HTTP ' + status + ').',
         }
     } catch (err) {
         gs.error('[EntrustIDV] createApplicant error: ' + String(err))
@@ -254,6 +205,15 @@ export function startVerification(incidentId: string): VerifyResult {
         return {
             success: false,
             message: 'No default workflow is configured for Entrust IDV.',
+        }
+    }
+
+    const region = config.getValue('region') || ''
+    const baseUrl = REGION_BASE_URLS[region] || ''
+    if (!baseUrl) {
+        return {
+            success: false,
+            message: 'Unknown region "' + region + '" in configuration. Re-run setup.',
         }
     }
 
@@ -312,6 +272,7 @@ export function startVerification(incidentId: string): VerifyResult {
         firstName,
         lastName,
         email,
+        baseUrl,
         phoneNumber || undefined,
     )
     if (!applicantResult.success) {

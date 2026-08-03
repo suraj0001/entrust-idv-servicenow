@@ -162,10 +162,9 @@ export function getAliasInfo(): AliasInfoResult {
 }
 
 /**
- * Update the oauth_entity / oauth_entity_profile / oauth_2_0_credentials / http_connection
- * chain backing the entrust_idv_api Connection & Credential alias. Does not create records —
- * the initial Connection & Credential must already exist (created once via
- * ConnectionAndCredentialHelper.createConnectionAndCredential); Save only updates it.
+ * Update the oauth_entity / oauth_entity_profile backing the Connection & Credential Alias.
+ * Traverses alias → newest http_connection → credential → profile → entity so Setup always
+ * updates the same profile that createApplicant will use at runtime.
  */
 function updateEntrustConnection(
     clientId: string,
@@ -184,72 +183,67 @@ function updateEntrustConnection(
 
     const connGr = new GlideRecord('http_connection')
     connGr.addQuery('connection_alias', aliasSysId)
-    // If earlier testing left duplicate connections behind, always update the newest one.
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
-        gs.error('[EntrustIDV] No http_connection linked to alias "' + ENTRUST_ALIAS_NAME + '" (alias sys_id ' + aliasSysId + ').')
+        gs.error('[EntrustIDV] No http_connection linked to alias "' + ENTRUST_ALIAS_NAME + '".')
         return {
             success: false,
-            message:
-                'No http_connection found linked to alias "' + ENTRUST_ALIAS_NAME + '" (alias sys_id ' +
-                aliasSysId + '). Check the connection_alias field on http_connection.',
+            message: 'No connection found for alias. Complete the initial Connection & Credential setup first.',
         }
     }
 
-    const credentialRef = connGr.getValue('credential')
     const credGr = new GlideRecord('oauth_2_0_credentials')
-    credGr.get(credentialRef)
+    credGr.get(connGr.getValue('credential'))
     if (!credGr.isValidRecord()) {
-        gs.error('[EntrustIDV] oauth_2_0_credentials lookup failed for http_connection.credential="' + credentialRef + '".')
-        return {
-            success: false,
-            message:
-                'Could not resolve oauth_2_0_credentials from http_connection.credential="' + credentialRef +
-                '". The "credential" field name on http_connection may be wrong — check the actual reference field.',
-        }
+        gs.error('[EntrustIDV] updateEntrustConnection: oauth_2_0_credentials not found for connection.')
+        return { success: false, message: 'OAuth credentials not found. Re-create the Connection & Credential.' }
     }
 
-    const profileRef = credGr.getValue('oauth_entity_profile')
     const profileGr = new GlideRecord('oauth_entity_profile')
-    profileGr.get(profileRef)
+    profileGr.get(credGr.getValue('oauth_entity_profile'))
     if (!profileGr.isValidRecord()) {
-        gs.error('[EntrustIDV] oauth_entity_profile lookup failed for oauth_2_0_credentials.oauth_entity_profile="' + profileRef + '".')
-        return {
-            success: false,
-            message:
-                'Could not resolve oauth_entity_profile from oauth_2_0_credentials.oauth_entity_profile="' + profileRef + '".',
-        }
+        gs.error('[EntrustIDV] updateEntrustConnection: oauth_entity_profile not found.')
+        return { success: false, message: 'OAuth profile not found. Re-create the Connection & Credential.' }
     }
 
-    const entityRef = profileGr.getValue('oauth_entity')
     const entityGr = new GlideRecord('oauth_entity')
-    entityGr.get(entityRef)
+    entityGr.get(profileGr.getValue('oauth_entity'))
     if (!entityGr.isValidRecord()) {
-        gs.error('[EntrustIDV] oauth_entity lookup failed for oauth_entity_profile.oauth_entity="' + entityRef + '".')
-        return {
-            success: false,
-            message:
-                'Could not resolve oauth_entity from oauth_entity_profile.oauth_entity="' + entityRef + '".',
-        }
+        gs.error('[EntrustIDV] updateEntrustConnection: oauth_entity not found.')
+        return { success: false, message: 'OAuth entity not found. Re-create the Connection & Credential.' }
     }
+
     entityGr.setValue('client_id', clientId)
     entityGr.setValue('client_secret', clientSecret)
     entityGr.setValue('token_url', tokenUrl)
+    entityGr.setValue('refresh_token_url', tokenUrl)
+    entityGr.setValue('default_grant_type', 'client_credentials')
+    // Onfido requires credentials in the POST body, not as a Basic auth header.
+    entityGr.setValue('send_client_credentials_as', 'request_body_parameter')
     entityGr.update()
 
-    // http_connection.connection_url is deliberately blocked from scoped-app writes by the
-    // platform (prevents a compromised scoped app from redirecting a credentialed connection),
-    // so we don't attempt it here — only report a mismatch for an admin to fix manually.
+    profileGr.setValue('grant_type', 'client_credentials')
+    profileGr.update()
+
+    // http_connection.connection_url is blocked from scoped-app writes; warn on mismatch only.
     const existingUrl = connGr.getValue('connection_url')
     if (existingUrl && existingUrl !== baseUrl) {
-        gs.error('[EntrustIDV] http_connection.connection_url ("' + existingUrl + '") differs from the selected region\'s Base URL ("' + baseUrl + '") but cannot be updated from this scope.')
+        gs.warn(
+            '[EntrustIDV] http_connection.connection_url ("' +
+                existingUrl +
+                '") differs from selected region Base URL ("' +
+                baseUrl +
+                '") but cannot be updated from this scope.',
+        )
         return {
             success: true,
             message:
-                'Credentials saved. Note: the connection\'s Base URL ("' + existingUrl + '") differs from "' +
-                baseUrl + '" — ask an admin to update it directly on the http_connection record, as scoped ' +
-                'apps cannot modify it.',
+                'Credentials saved. Note: the connection\'s Base URL ("' +
+                existingUrl +
+                '") differs from "' +
+                baseUrl +
+                '" — ask an admin to update it on the http_connection record.',
         }
     }
 
