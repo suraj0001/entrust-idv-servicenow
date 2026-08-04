@@ -25,6 +25,10 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: '0762fca7479a871016bda144846d4363'
                     }
+                    '0cd4a9a01b268f145fdb2f05604bcbc7': {
+                        table: 'sys_scope_privilege'
+                        id: '0cd4a9a01b268f145fdb2f05604bcbc7'
+                    }
                     '10be1d201be28f145fdb2f05604bcb2b': {
                         table: 'oauth_entity'
                         id: '10be1d201be28f145fdb2f05604bcb2b'
@@ -213,6 +217,10 @@ declare global {
                     '79ef22fe1b960fd05fdb2f05604bcb6f': {
                         table: 'sys_alias'
                         id: '79ef22fe1b960fd05fdb2f05604bcb6f'
+                    }
+                    '7bc469a01b268f145fdb2f05604bcb53': {
+                        table: 'sys_scope_privilege'
+                        id: '7bc469a01b268f145fdb2f05604bcb53'
                     }
                     '81c5cb434712c31016bda144846d431b': {
                         table: 'sys_pd_trigger_instance'
