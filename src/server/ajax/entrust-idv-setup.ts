@@ -251,6 +251,45 @@ function updateEntrustConnection(
 }
 
 /**
+ * Load the previously saved configuration for pre-populating the setup form.
+ * The client secret is never returned — the admin must re-enter it to re-save.
+ */
+export interface GetConfigResult {
+    success: boolean
+    message: string
+    region?: string
+    baseUrl?: string
+    tokenUrl?: string
+    workflowId?: string
+    connectionTested?: boolean
+}
+
+export function getConfig(): GetConfigResult {
+    try {
+        const gr = new GlideRecord('x_entru_entrustidv_config')
+        gr.query()
+        if (!gr.next()) {
+            return { success: true, message: '' }
+        }
+        const region = (gr.getValue('region') || '') as string
+        const baseUrl = REGION_BASE_URLS[region.toLowerCase()] || ''
+        const tested = gr.getValue('connection_tested')
+        return {
+            success: true,
+            message: '',
+            region: region,
+            baseUrl: baseUrl,
+            tokenUrl: baseUrl ? baseUrl + '/oauth/token' : '',
+            workflowId: (gr.getValue('default_workflow_id') || '') as string,
+            connectionTested: tested === 'true' || tested === '1',
+        }
+    } catch (err) {
+        gs.error('[EntrustIDV] getConfig error: ' + String(err))
+        return { success: false, message: 'Could not load configuration.' }
+    }
+}
+
+/**
  * Persist the Entrust IDV setup: Client ID/Secret/Base URL/Token URL go to the
  * entrust_idv_api Connection & Credential alias; everything else goes to the
  * singleton x_entru_entrustidv_config record.

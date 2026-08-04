@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**
  * Client-side JavaScript for the Entrust IDV Setup UI Page.
- * Handles region auto-fill and Test Connection via GlideAjax.
+ * Handles region auto-fill, Test Connection, Save, and Guided Setup edit/read-only modes.
  */
 
 // Must mirror REGION_BASE_URLS in src/server/ajax/entrust-idv-setup.ts (browser JS can't import server modules).
@@ -11,7 +11,82 @@ var BASE_URLS = {
     ca: 'https://api.ca.onfido.com/v3.6',
 }
 
-// Auto-fill Base URL and Token URL when region changes
+// IDs of every user-editable control (Base URL and Token URL stay readonly — auto-filled).
+var EDITABLE_FIELD_IDS = ['idv_region', 'idv_client_id', 'idv_client_secret', 'idv_workflow_id', 'btn_test']
+
+/**
+ * Enable or disable all editable form controls.
+ * Called by the Guided Setup message handler and the URL-param check on load.
+ */
+function _idvSetReadOnly(readOnly) {
+    EDITABLE_FIELD_IDS.forEach(function (id) {
+        var el = document.getElementById(id)
+        if (el) el.disabled = !!readOnly
+    })
+    if (readOnly) {
+        document.getElementById('btn_save').disabled = true
+    }
+    // When entering edit mode, keep Save disabled until Test Connection passes.
+    // _idvDisableSave() is NOT called here so a previously tested config stays saveable.
+}
+
+// Pre-populate form fields from the server and handle initial read-only state.
+document.addEventListener('DOMContentLoaded', function () {
+    var ga = new GlideAjax('EntrustIDVSetupAjax')
+    ga.addParam('sysparm_name', 'getConfig')
+    ga.getXMLAnswer(function (answer) {
+        var config
+        try { config = JSON.parse(answer) } catch (e) { config = null }
+        if (!config || !config.success) return
+
+        if (config.region) {
+            document.getElementById('idv_region').value = config.region
+        }
+        if (config.baseUrl) {
+            document.getElementById('idv_base_url').value = config.baseUrl
+        }
+        if (config.tokenUrl) {
+            document.getElementById('idv_token_url').value = config.tokenUrl
+        }
+        if (config.workflowId) {
+            document.getElementById('idv_workflow_id').value = config.workflowId
+        }
+        // If the connection was already tested and saved, Save can be used immediately.
+        if (config.connectionTested) {
+            document.getElementById('btn_save').disabled = false
+        }
+
+        // Apply read-only mode if the Guided Setup loaded the page as a completed step.
+        var params = new URLSearchParams(window.location.search)
+        var readOnly = params.get('sysparm_read_only') === 'true' ||
+                       params.get('sysparm_gs_read_only') === 'true'
+        if (readOnly) {
+            _idvSetReadOnly(true)
+        }
+    })
+})
+
+// ServiceNow Guided Setup (Process Definition) communicates activity state via postMessage.
+// Listen so "Edit" re-enables form controls without a full page reload.
+window.addEventListener('message', function (event) {
+    if (!event.data) return
+    var data
+    try {
+        data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+    } catch (e) { return }
+
+    // Normalise across the different message shapes ServiceNow versions use.
+    var action = (data.action || data.type || '').toLowerCase()
+    if (action === 'activate' || action === 'edit' || action === 'gs_activity_edit' ||
+        data.readOnly === false || data.read_only === false) {
+        _idvSetReadOnly(false)
+    } else if (action === 'deactivate' || action === 'complete' || action === 'gs_activity_read_only' ||
+               data.readOnly === true || data.read_only === true) {
+        _idvSetReadOnly(true)
+    }
+})
+
+
 document.getElementById('idv_region').addEventListener('change', function () {
     var base = BASE_URLS[this.value] || ''
     document.getElementById('idv_base_url').value = base

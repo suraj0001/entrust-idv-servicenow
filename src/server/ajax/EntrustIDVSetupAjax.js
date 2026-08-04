@@ -47,6 +47,16 @@ EntrustIDVSetupAjax.prototype = Object.extendsObject(global.AbstractAjaxProcesso
         }
     },
 
+    getConfig: function () {
+        try {
+            var setup = require('./src/server/ajax/entrust-idv-setup.ts');
+            return JSON.stringify(setup.getConfig());
+        } catch (e) {
+            gs.error('[EntrustIDV] EntrustIDVSetupAjax.getConfig failed: ' + e);
+            return JSON.stringify({ success: false, message: 'Server error: ' + e });
+        }
+    },
+
     saveConfig: function () {
         try {
             var setup = require('./src/server/ajax/entrust-idv-setup.ts');
