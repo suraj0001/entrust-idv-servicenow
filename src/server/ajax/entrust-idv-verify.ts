@@ -40,148 +40,111 @@ function createApplicant(
     email: string,
     phoneNumber?: string,
 ): CreateApplicantResult {
+    // Traverse alias → http_connection → oauth_2_0_credentials → oauth_entity_profile.
     const aliasGr = new GlideRecord('sys_alias')
     aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
     aliasGr.query()
     if (!aliasGr.next()) {
         gs.error('[EntrustIDV] createApplicant: alias "' + ENTRUST_ALIAS_NAME + '" not found.')
-        return { success: false, message: 'Entrust IDV connection alias not found.' }
-    }
-    const aliasSysId = aliasGr.getUniqueValue()
-
-    // Official IntegrationHub API for reading connection attributes from an alias in scoped apps.
-    const connectionInfo = new ConnectionInfoProvider().getConnectionInfo(aliasSysId)
-    if (!connectionInfo) {
-        return { success: false, message: 'Entrust IDV connection not configured. Complete the setup page first.' }
-    }
-    const baseUrl = connectionInfo.getAttribute('connection_url')
-    if (!baseUrl) {
-        gs.error('[EntrustIDV] createApplicant: connection_url is blank for alias "' + ENTRUST_ALIAS_NAME + '".')
-        return { success: false, message: 'Connection URL is blank. Set it on the http_connection record and re-run setup.' }
+        return { success: false, message: 'Entrust IDV is not configured. Connection alias not found.' }
     }
 
-    // Traverse connection → credential to get the oauth_entity_profile sys_id for setAuthenticationProfile.
     const connGr = new GlideRecord('http_connection')
-    connGr.addQuery('connection_alias', aliasSysId)
+    connGr.addQuery('connection_alias', aliasGr.getUniqueValue())
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
-        return {
-            success: false,
-            message: 'Entrust IDV connection not configured. Complete the setup page first.',
-        }
+        gs.error('[EntrustIDV] createApplicant: no http_connection linked to alias.')
+        return { success: false, message: 'Entrust IDV is not configured. Run setup first.' }
+    }
+
+    const baseUrl = connGr.getValue('connection_url') as string
+    if (!baseUrl) {
+        gs.error('[EntrustIDV] createApplicant: http_connection.connection_url is empty.')
+        return { success: false, message: 'Entrust IDV base URL is not set. Re-run setup.' }
     }
 
     const credGr = new GlideRecord('oauth_2_0_credentials')
     credGr.get(connGr.getValue('credential'))
     if (!credGr.isValidRecord()) {
-        gs.error('[EntrustIDV] createApplicant: oauth_2_0_credentials not found for connection.')
-        return { success: false, message: 'Entrust IDV OAuth credentials not found. Re-run setup.' }
+        gs.error('[EntrustIDV] createApplicant: oauth_2_0_credentials not found.')
+        return { success: false, message: 'OAuth credentials not configured. Re-run setup.' }
     }
 
-    const profileSysId = credGr.getValue('oauth_entity_profile')
-    if (!profileSysId) {
-        gs.error('[EntrustIDV] createApplicant: no oauth_entity_profile on credentials.')
-        return { success: false, message: 'Entrust IDV OAuth profile not found. Re-run setup.' }
-    }
+    // sys_id of the oauth_entity_profile record — required by setAuthenticationProfile.
+    const oauthEntityProfileId = credGr.getValue('oauth_entity_profile') as string
+    // sys_id of the oauth_2_0_credentials record — used by setRequestorProfile so ServiceNow
+    // reuses the cached token generated via the C&C alias rather than requesting a new one.
+    const credentialSysId = credGr.getUniqueValue()
 
-    gs.info('[EntrustIDV] createApplicant: using profile=' + profileSysId)
-
-    // GlideOAuthClient handles token fetch, caching, and refresh for client_credentials grant.
-    const oauthToken = new GlideOAuthClient().getToken(ENTRUST_ALIAS_NAME, profileSysId)
-    const accessToken = oauthToken ? (oauthToken as any).getAccessToken() as string : ''
-    if (!accessToken) {
-        gs.error('[EntrustIDV] createApplicant: failed to obtain OAuth token for profile=' + profileSysId)
-        return { success: false, message: 'Could not obtain OAuth access token. Check the Connection & Credential configuration.' }
-    }
-
-    const body: Record<string, string> = {
+    const payload: Record<string, unknown> = {
         first_name: normaliseWhitespace(firstName),
         last_name: normaliseWhitespace(lastName),
         email: email,
     }
     if (phoneNumber) {
-        body.phone_number = phoneNumber
+        payload.phone_number = phoneNumber
     }
 
-    const endpoint = baseUrl + '/applicants/'
-    gs.info('[EntrustIDV] createApplicant: POST ' + endpoint)
-
+    const request = new RESTMessageV2()
     try {
-        const request = new RESTMessageV2()
-        request.setHttpMethod('POST')
-        request.setEndpoint(endpoint)
-        request.setRequestHeader('Authorization', 'Bearer ' + accessToken)
-        request.setRequestHeader('Content-Type', 'application/json')
+        request.setEndpoint(baseUrl + '/applicants/')
+        request.setHttpMethod('post')
+        // Pass the oauth_entity_profile sys_id — not the provider, credential, or alias sys_id.
+        request.setAuthenticationProfile('oauth2', oauthEntityProfileId)
+        // Point ServiceNow to the requestor under which the C&C alias token was stored so it
+        // returns the cached token instead of hitting the token endpoint on every call.
+        // Cast needed because the TS typings omit this runtime-only method.
+        ;(request as any).setRequestorProfile('oauth_2_0_credentials', credentialSysId)
         request.setRequestHeader('Accept', 'application/json')
-        request.setRequestBody(JSON.stringify(body))
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.setRequestBody(JSON.stringify(payload))
         request.setHttpTimeout(30000)
 
         const response = request.execute()
 
         if (response.haveError()) {
-            const transportErr = response.getErrorMessage()
-            gs.error('[EntrustIDV] createApplicant transport error: ' + transportErr)
-            return {
-                success: false,
-                message: 'Could not reach Entrust IDV: ' + transportErr,
-            }
+            gs.error('[EntrustIDV] createApplicant transport error: ' + response.getErrorMessage())
+            return { success: false, message: 'Network error reaching Entrust IDV.' }
         }
 
         const status = response.getStatusCode()
-        const responseBody = response.getBody()
+        const body = response.getBody()
 
         if (status === 201) {
             let parsed: { id?: string } = {}
             try {
-                parsed = responseBody ? JSON.parse(responseBody) : {}
+                parsed = body ? JSON.parse(body) : {}
             } catch (_) {
                 parsed = {}
             }
-            if (!parsed.id) {
-                gs.error(
-                    '[EntrustIDV] createApplicant: 201 response missing applicant id. Body: ' +
-                        responseBody,
-                )
-                return {
-                    success: false,
-                    message: 'Applicant created but ID was not returned by Entrust IDV.',
-                }
+            if (!parsed || !parsed.id) {
+                gs.error('[EntrustIDV] createApplicant: 201 but no id in response: ' + body)
+                return { success: false, message: 'Applicant created but no ID returned.' }
             }
-            gs.info('[EntrustIDV] Applicant created with id=' + parsed.id)
             return { success: true, applicantId: parsed.id, message: 'Applicant created.' }
         }
 
-        if (status === 422) {
-            gs.warn('[EntrustIDV] createApplicant validation error (422): ' + responseBody)
-            return {
-                success: false,
-                message: 'Entrust IDV rejected the applicant data. Check the caller fields on the incident.',
-            }
-        }
-
+        gs.error('[EntrustIDV] createApplicant failed HTTP ' + status + ': ' + body)
         if (status === 401 || status === 403) {
-            gs.error('[EntrustIDV] createApplicant auth error (HTTP ' + status + '): ' + responseBody)
             return {
                 success: false,
-                message:
-                    'Entrust IDV authentication failed (HTTP ' +
-                    status +
-                    '). Check the connection credentials.',
+                message: 'Authentication error creating applicant (HTTP ' + status + '). Re-run setup.',
             }
         }
-
-        gs.error('[EntrustIDV] createApplicant unexpected HTTP ' + status + ': ' + responseBody)
+        if (status === 422) {
+            return {
+                success: false,
+                message: 'Invalid applicant data (HTTP 422). Check caller name and email.',
+            }
+        }
         return {
             success: false,
-            message: 'Entrust IDV returned an unexpected status (HTTP ' + status + ').',
+            message: 'Entrust IDV returned HTTP ' + status + ' for applicant creation.',
         }
     } catch (err) {
         gs.error('[EntrustIDV] createApplicant error: ' + String(err))
-        return {
-            success: false,
-            message: 'Server error while creating applicant: ' + String(err),
-        }
+        return { success: false, message: 'Error creating applicant: ' + String(err) }
     }
 }
 
