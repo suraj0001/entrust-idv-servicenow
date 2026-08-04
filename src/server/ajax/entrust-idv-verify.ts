@@ -199,7 +199,7 @@ function createWorkflowRun(
         applicant_id: applicantId,
         workflow_id: workflowId,
         // Applicant self-submits their documents via the Smart Capture Link.
-        applicant_provides_data: true,
+        //applicant_provides_data: true,
     }
 
     const request = new RESTMessageV2()
