@@ -85,6 +85,10 @@ declare global {
                         table: 'sys_security_acl'
                         id: '2d61f2f21bd60fd05fdb2f05604bcbd7'
                     }
+                    '2e6d69a81b668f145fdb2f05604bcb21': {
+                        table: 'sys_scope_privilege'
+                        id: '2e6d69a81b668f145fdb2f05604bcb21'
+                    }
                     '30863a721b1a0fd05fdb2f05604bcbc1': {
                         table: 'sys_security_acl'
                         id: '30863a721b1a0fd05fdb2f05604bcbc1'
@@ -125,6 +129,10 @@ declare global {
                         table: 'sys_app_module'
                         id: '4561f2f21bd60fd05fdb2f05604bcb34'
                     }
+                    '4590f5201ba68f145fdb2f05604bcbd3': {
+                        table: 'sys_scope_privilege'
+                        id: '4590f5201ba68f145fdb2f05604bcbd3'
+                    }
                     '4c8b5cd3479ec31016bda144846d4310': {
                         table: 'sys_scope_privilege'
                         id: '4c8b5cd3479ec31016bda144846d4310'
@@ -141,6 +149,10 @@ declare global {
                         table: 'sys_pd_snapshot_input'
                         id: '5603f3dc1b224f145fdb2f05604bcba0'
                     }
+                    '566d69a81b668f145fdb2f05604bcb1c': {
+                        table: 'sys_scope_privilege'
+                        id: '566d69a81b668f145fdb2f05604bcb1c'
+                    }
                     '573858a34796871016bda144846d43e4': {
                         table: 'sys_scope_privilege'
                         id: '573858a34796871016bda144846d43e4'
@@ -148,6 +160,10 @@ declare global {
                     '575030ab1b52c3145fdb2f05604bcbb6': {
                         table: 'sys_scope_privilege'
                         id: '575030ab1b52c3145fdb2f05604bcbb6'
+                    }
+                    '5e6d29a81b668f145fdb2f05604bcbbf': {
+                        table: 'sys_scope_privilege'
+                        id: '5e6d29a81b668f145fdb2f05604bcbbf'
                     }
                     '5f38d06f4756871016bda144846d4326': {
                         table: 'sys_scope_privilege'
@@ -262,6 +278,10 @@ declare global {
                         table: 'sys_ui_application'
                         id: '9561f2f21bd60fd05fdb2f05604bcb3d'
                     }
+                    '966d29a81b668f145fdb2f05604bcbba': {
+                        table: 'sys_scope_privilege'
+                        id: '966d29a81b668f145fdb2f05604bcbba'
+                    }
                     '9961f2f21bd60fd05fdb2f05604bcb99': {
                         table: 'sys_security_acl'
                         id: '9961f2f21bd60fd05fdb2f05604bcb99'
@@ -270,9 +290,17 @@ declare global {
                         table: 'sys_pd_snapshot_chunk'
                         id: '9a03f3dc1b224f145fdb2f05604bcb8c'
                     }
+                    '9a6de1681b668f145fdb2f05604bcbaa': {
+                        table: 'sys_scope_privilege'
+                        id: '9a6de1681b668f145fdb2f05604bcbaa'
+                    }
                     '9b5030ab1b52c3145fdb2f05604bcbcf': {
                         table: 'sys_scope_privilege'
                         id: '9b5030ab1b52c3145fdb2f05604bcbcf'
+                    }
+                    '9c3ae5601b668f145fdb2f05604bcbe2': {
+                        table: 'sys_scope_privilege'
+                        id: '9c3ae5601b668f145fdb2f05604bcbe2'
                     }
                     '9e03f3dc1b224f145fdb2f05604bcb91': {
                         table: 'sys_flow_compiled_flow_chunk'
@@ -323,6 +351,10 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: 'c48b9017479ec31016bda144846d4341'
                     }
+                    c590b5e01ba68f145fdb2f05604bcb89: {
+                        table: 'sys_scope_privilege'
+                        id: 'c590b5e01ba68f145fdb2f05604bcb89'
+                    }
                     cc8b9017479ec31016bda144846d4351: {
                         table: 'sys_scope_privilege'
                         id: 'cc8b9017479ec31016bda144846d4351'
@@ -334,6 +366,10 @@ declare global {
                     d203f3dc1b224f145fdb2f05604bcb88: {
                         table: 'sys_trigger_runner_mapping'
                         id: 'd203f3dc1b224f145fdb2f05604bcb88'
+                    }
+                    d43a69601b668f145fdb2f05604bcbf4: {
+                        table: 'sys_scope_privilege'
+                        id: 'd43a69601b668f145fdb2f05604bcbf4'
                     }
                     d48b9017479ec31016bda144846d4362: {
                         table: 'sys_scope_privilege'
