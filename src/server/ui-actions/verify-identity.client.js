@@ -21,7 +21,11 @@ function x_entru_idvVerifyIdentity() {
         }
 
         if (result && result.success) {
-            g_form.addInfoMessage(result.message || 'Identity verification started.');
+            var msg = result.message || 'Identity verification started.';
+            if (result.linkUrl) {
+                msg += ' <a href="' + result.linkUrl + '" target="_blank" rel="noopener noreferrer">Open Smart Capture Link</a>';
+            }
+            g_form.addInfoMessage(msg);
         } else {
             g_form.addErrorMessage((result && result.message) || 'Could not start identity verification.');
         }

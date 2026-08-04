@@ -1,7 +1,5 @@
 import { gs, GlideRecord } from '@servicenow/glide'
 import { RESTMessageV2 } from '@servicenow/glide/sn_ws'
-import { ConnectionInfoProvider } from '@servicenow/glide/sn_cc'
-import { GlideOAuthClient } from '@servicenow/glide/sn_auth'
 
 /**
  * Result of starting an Entrust IDV verification from the incident UI Action.
@@ -9,6 +7,7 @@ import { GlideOAuthClient } from '@servicenow/glide/sn_auth'
 export interface VerifyResult {
     success: boolean
     message: string
+    linkUrl?: string
 }
 
 /**
@@ -148,6 +147,125 @@ function createApplicant(
     }
 }
 
+interface CreateWorkflowRunResult {
+    success: boolean
+    workflowRunId?: string
+    linkUrl?: string
+    message: string
+}
+
+/**
+ * Create a Workflow Run in Entrust IDV and return the Smart Capture Link URL.
+ * Uses the same alias traversal as createApplicant.
+ */
+function createWorkflowRun(
+    applicantId: string,
+    workflowId: string,
+): CreateWorkflowRunResult {
+    const aliasGr = new GlideRecord('sys_alias')
+    aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
+    aliasGr.query()
+    if (!aliasGr.next()) {
+        gs.error('[EntrustIDV] createWorkflowRun: alias "' + ENTRUST_ALIAS_NAME + '" not found.')
+        return { success: false, message: 'Entrust IDV is not configured. Connection alias not found.' }
+    }
+
+    const connGr = new GlideRecord('http_connection')
+    connGr.addQuery('connection_alias', aliasGr.getUniqueValue())
+    connGr.orderByDesc('sys_created_on')
+    connGr.query()
+    if (!connGr.next()) {
+        gs.error('[EntrustIDV] createWorkflowRun: no http_connection linked to alias.')
+        return { success: false, message: 'Entrust IDV is not configured. Run setup first.' }
+    }
+
+    const baseUrl = connGr.getValue('connection_url') as string
+    if (!baseUrl) {
+        gs.error('[EntrustIDV] createWorkflowRun: http_connection.connection_url is empty.')
+        return { success: false, message: 'Entrust IDV base URL is not set. Re-run setup.' }
+    }
+
+    const credGr = new GlideRecord('oauth_2_0_credentials')
+    credGr.get(connGr.getValue('credential'))
+    if (!credGr.isValidRecord()) {
+        gs.error('[EntrustIDV] createWorkflowRun: oauth_2_0_credentials not found.')
+        return { success: false, message: 'OAuth credentials not configured. Re-run setup.' }
+    }
+
+    const oauthEntityProfileId = credGr.getValue('oauth_entity_profile') as string
+    const credentialSysId = credGr.getUniqueValue()
+
+    const payload = {
+        applicant_id: applicantId,
+        workflow_id: workflowId,
+        // Applicant self-submits their documents via the Smart Capture Link.
+        applicant_provides_data: true,
+    }
+
+    const request = new RESTMessageV2()
+    try {
+        request.setEndpoint(baseUrl + '/workflow_runs/')
+        request.setHttpMethod('post')
+        request.setAuthenticationProfile('oauth2', oauthEntityProfileId)
+        ;(request as any).setRequestorProfile('oauth_2_0_credentials', credentialSysId)
+        request.setRequestHeader('Accept', 'application/json')
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.setRequestBody(JSON.stringify(payload))
+        request.setHttpTimeout(30000)
+
+        const response = request.execute()
+
+        if (response.haveError()) {
+            gs.error('[EntrustIDV] createWorkflowRun transport error: ' + response.getErrorMessage())
+            return { success: false, message: 'Network error reaching Entrust IDV.' }
+        }
+
+        const status = response.getStatusCode()
+        const body = response.getBody()
+
+        if (status === 201) {
+            let parsed: { id?: string; link?: { url?: string } } = {}
+            try {
+                parsed = body ? JSON.parse(body) : {}
+            } catch (_) {
+                parsed = {}
+            }
+            const linkUrl = parsed && parsed.link && parsed.link.url ? parsed.link.url : undefined
+            if (!parsed || !parsed.id) {
+                gs.error('[EntrustIDV] createWorkflowRun: 201 but no id in response: ' + body)
+                return { success: false, message: 'Workflow run created but no ID returned.' }
+            }
+            return {
+                success: true,
+                workflowRunId: parsed.id,
+                linkUrl: linkUrl,
+                message: 'Workflow run created.',
+            }
+        }
+
+        gs.error('[EntrustIDV] createWorkflowRun failed HTTP ' + status + ': ' + body)
+        if (status === 401 || status === 403) {
+            return {
+                success: false,
+                message: 'Authentication error creating workflow run (HTTP ' + status + '). Re-run setup.',
+            }
+        }
+        if (status === 422) {
+            return {
+                success: false,
+                message: 'Invalid workflow run data (HTTP 422). Check workflow ID and applicant ID.',
+            }
+        }
+        return {
+            success: false,
+            message: 'Entrust IDV returned HTTP ' + status + ' for workflow run creation.',
+        }
+    } catch (err) {
+        gs.error('[EntrustIDV] createWorkflowRun error: ' + String(err))
+        return { success: false, message: 'Error creating workflow run: ' + String(err) }
+    }
+}
+
 /**
  * Kick off an Entrust IDV verification for the person on the given incident.
  * Requires the app to have been configured via the setup page first.
@@ -245,22 +363,33 @@ export function startVerification(incidentId: string): VerifyResult {
         return { success: false, message: applicantResult.message }
     }
 
-    // TODO: Next step — create a Workflow Run with applicantResult.applicantId + workflowId
-    // and return the Smart Capture Link URL to send to the caller.
+    const workflowResult = createWorkflowRun(applicantResult.applicantId!, workflowId)
+    if (!workflowResult.success) {
+        return { success: false, message: workflowResult.message }
+    }
+
     gs.info(
-        '[EntrustIDV] Applicant created (id=' +
-            applicantResult.applicantId +
+        '[EntrustIDV] Workflow run created (id=' +
+            workflowResult.workflowRunId +
             ') for incident ' +
             incident.getValue('number') +
-            ' — next: create Workflow Run with workflow ' +
-            workflowId,
+            (workflowResult.linkUrl ? ' linkUrl=' + workflowResult.linkUrl : ' (no link URL returned)'),
     )
+
+    const incidentNumber = incident.getValue('number') as string
+    const callerName = normaliseWhitespace(firstName + ' ' + lastName)
 
     return {
         success: true,
+        linkUrl: workflowResult.linkUrl,
         message:
-            'Applicant created for ' +
-            incident.getValue('number') +
-            '. Ready to start workflow run.',
+            'Identity verification started for ' +
+            callerName +
+            ' on ' +
+            incidentNumber +
+            '.' +
+            (workflowResult.linkUrl
+                ? ' Share this Smart Capture Link with the caller: ' + workflowResult.linkUrl
+                : ' No Smart Capture Link was returned — check the workflow configuration.'),
     }
 }
