@@ -339,6 +339,10 @@ declare global {
                         table: 'sys_security_acl'
                         id: 'bc863a721b1a0fd05fdb2f05604bcb82'
                     }
+                    bce720341b2603545fdb2f05604bcbf1: {
+                        table: 'sys_scope_privilege'
+                        id: 'bce720341b2603545fdb2f05604bcbf1'
+                    }
                     bd3c28af1b12c3145fdb2f05604bcba2: {
                         table: 'oauth_entity_profile'
                         id: 'bd3c28af1b12c3145fdb2f05604bcba2'
