@@ -44,8 +44,16 @@ function createApplicant(
     aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
     aliasGr.query()
     if (!aliasGr.next()) {
-        gs.error('[EntrustIDV] createApplicant: alias "' + ENTRUST_ALIAS_NAME + '" not found.')
-        return { success: false, message: 'Entrust IDV is not configured. Connection alias not found.' }
+        gs.error(
+            '[EntrustIDV] createApplicant: alias "' +
+                ENTRUST_ALIAS_NAME +
+                '" not found.',
+        )
+        return {
+            success: false,
+            message:
+                'Entrust IDV is not configured. Connection alias not found.',
+        }
     }
 
     const connGr = new GlideRecord('http_connection')
@@ -53,25 +61,42 @@ function createApplicant(
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
-        gs.error('[EntrustIDV] createApplicant: no http_connection linked to alias.')
-        return { success: false, message: 'Entrust IDV is not configured. Run setup first.' }
+        gs.error(
+            '[EntrustIDV] createApplicant: no http_connection linked to alias.',
+        )
+        return {
+            success: false,
+            message: 'Entrust IDV is not configured. Run setup first.',
+        }
     }
 
     const baseUrl = connGr.getValue('connection_url') as string
     if (!baseUrl) {
-        gs.error('[EntrustIDV] createApplicant: http_connection.connection_url is empty.')
-        return { success: false, message: 'Entrust IDV base URL is not set. Re-run setup.' }
+        gs.error(
+            '[EntrustIDV] createApplicant: http_connection.connection_url is empty.',
+        )
+        return {
+            success: false,
+            message: 'Entrust IDV base URL is not set. Re-run setup.',
+        }
     }
 
     const credGr = new GlideRecord('oauth_2_0_credentials')
     credGr.get(connGr.getValue('credential'))
     if (!credGr.isValidRecord()) {
-        gs.error('[EntrustIDV] createApplicant: oauth_2_0_credentials not found.')
-        return { success: false, message: 'OAuth credentials not configured. Re-run setup.' }
+        gs.error(
+            '[EntrustIDV] createApplicant: oauth_2_0_credentials not found.',
+        )
+        return {
+            success: false,
+            message: 'OAuth credentials not configured. Re-run setup.',
+        }
     }
 
     // sys_id of the oauth_entity_profile record — required by setAuthenticationProfile.
-    const oauthEntityProfileId = credGr.getValue('oauth_entity_profile') as string
+    const oauthEntityProfileId = credGr.getValue(
+        'oauth_entity_profile',
+    ) as string
     // sys_id of the oauth_2_0_credentials record — used by setRequestorProfile so ServiceNow
     // reuses the cached token generated via the C&C alias rather than requesting a new one.
     const credentialSysId = credGr.getUniqueValue()
@@ -94,7 +119,10 @@ function createApplicant(
         // Point ServiceNow to the requestor under which the C&C alias token was stored so it
         // returns the cached token instead of hitting the token endpoint on every call.
         // Cast needed because the TS typings omit this runtime-only method.
-        ;(request as any).setRequestorProfile('oauth_2_0_credentials', credentialSysId)
+        ;(request as any).setRequestorProfile(
+            'oauth_2_0_credentials',
+            credentialSysId,
+        )
         request.setRequestHeader('Accept', 'application/json')
         request.setRequestHeader('Content-Type', 'application/json')
         request.setRequestBody(JSON.stringify(payload))
@@ -103,8 +131,14 @@ function createApplicant(
         const response = request.execute()
 
         if (response.haveError()) {
-            gs.error('[EntrustIDV] createApplicant transport error: ' + response.getErrorMessage())
-            return { success: false, message: 'Network error reaching Entrust IDV.' }
+            gs.error(
+                '[EntrustIDV] createApplicant transport error: ' +
+                    response.getErrorMessage(),
+            )
+            return {
+                success: false,
+                message: 'Network error reaching Entrust IDV.',
+            }
         }
 
         const status = response.getStatusCode()
@@ -118,32 +152,54 @@ function createApplicant(
                 parsed = {}
             }
             if (!parsed || !parsed.id) {
-                gs.error('[EntrustIDV] createApplicant: 201 but no id in response: ' + body)
-                return { success: false, message: 'Applicant created but no ID returned.' }
+                gs.error(
+                    '[EntrustIDV] createApplicant: 201 but no id in response: ' +
+                        body,
+                )
+                return {
+                    success: false,
+                    message: 'Applicant created but no ID returned.',
+                }
             }
-            return { success: true, applicantId: parsed.id, message: 'Applicant created.' }
+            return {
+                success: true,
+                applicantId: parsed.id,
+                message: 'Applicant created.',
+            }
         }
 
-        gs.error('[EntrustIDV] createApplicant failed HTTP ' + status + ': ' + body)
+        gs.error(
+            '[EntrustIDV] createApplicant failed HTTP ' + status + ': ' + body,
+        )
         if (status === 401 || status === 403) {
             return {
                 success: false,
-                message: 'Authentication error creating applicant (HTTP ' + status + '). Re-run setup.',
+                message:
+                    'Authentication error creating applicant (HTTP ' +
+                    status +
+                    '). Re-run setup.',
             }
         }
         if (status === 422) {
             return {
                 success: false,
-                message: 'Invalid applicant data (HTTP 422). Check caller name and email.',
+                message:
+                    'Invalid applicant data (HTTP 422). Check caller name and email.',
             }
         }
         return {
             success: false,
-            message: 'Entrust IDV returned HTTP ' + status + ' for applicant creation.',
+            message:
+                'Entrust IDV returned HTTP ' +
+                status +
+                ' for applicant creation.',
         }
     } catch (err) {
         gs.error('[EntrustIDV] createApplicant error: ' + String(err))
-        return { success: false, message: 'Error creating applicant: ' + String(err) }
+        return {
+            success: false,
+            message: 'Error creating applicant: ' + String(err),
+        }
     }
 }
 
@@ -155,7 +211,7 @@ interface CreateWorkflowRunResult {
 }
 
 /**
- * Create a Workflow Run in Entrust IDV and return the Smart Capture Link URL.
+ * Create a Workflow Run and an English Smart Capture link in Entrust IDV.
  * Uses the same alias traversal as createApplicant.
  */
 function createWorkflowRun(
@@ -166,8 +222,16 @@ function createWorkflowRun(
     aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
     aliasGr.query()
     if (!aliasGr.next()) {
-        gs.error('[EntrustIDV] createWorkflowRun: alias "' + ENTRUST_ALIAS_NAME + '" not found.')
-        return { success: false, message: 'Entrust IDV is not configured. Connection alias not found.' }
+        gs.error(
+            '[EntrustIDV] createWorkflowRun: alias "' +
+                ENTRUST_ALIAS_NAME +
+                '" not found.',
+        )
+        return {
+            success: false,
+            message:
+                'Entrust IDV is not configured. Connection alias not found.',
+        }
     }
 
     const connGr = new GlideRecord('http_connection')
@@ -175,31 +239,49 @@ function createWorkflowRun(
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
-        gs.error('[EntrustIDV] createWorkflowRun: no http_connection linked to alias.')
-        return { success: false, message: 'Entrust IDV is not configured. Run setup first.' }
+        gs.error(
+            '[EntrustIDV] createWorkflowRun: no http_connection linked to alias.',
+        )
+        return {
+            success: false,
+            message: 'Entrust IDV is not configured. Run setup first.',
+        }
     }
 
     const baseUrl = connGr.getValue('connection_url') as string
     if (!baseUrl) {
-        gs.error('[EntrustIDV] createWorkflowRun: http_connection.connection_url is empty.')
-        return { success: false, message: 'Entrust IDV base URL is not set. Re-run setup.' }
+        gs.error(
+            '[EntrustIDV] createWorkflowRun: http_connection.connection_url is empty.',
+        )
+        return {
+            success: false,
+            message: 'Entrust IDV base URL is not set. Re-run setup.',
+        }
     }
 
     const credGr = new GlideRecord('oauth_2_0_credentials')
     credGr.get(connGr.getValue('credential'))
     if (!credGr.isValidRecord()) {
-        gs.error('[EntrustIDV] createWorkflowRun: oauth_2_0_credentials not found.')
-        return { success: false, message: 'OAuth credentials not configured. Re-run setup.' }
+        gs.error(
+            '[EntrustIDV] createWorkflowRun: oauth_2_0_credentials not found.',
+        )
+        return {
+            success: false,
+            message: 'OAuth credentials not configured. Re-run setup.',
+        }
     }
 
-    const oauthEntityProfileId = credGr.getValue('oauth_entity_profile') as string
+    const oauthEntityProfileId = credGr.getValue(
+        'oauth_entity_profile',
+    ) as string
     const credentialSysId = credGr.getUniqueValue()
 
     const payload = {
-        applicant_id: applicantId,
         workflow_id: workflowId,
-        // Applicant self-submits their documents via the Smart Capture Link.
-        //applicant_provides_data: true,
+        applicant_id: applicantId,
+        link: {
+            language: 'en_US',
+        },
     }
 
     const request = new RESTMessageV2()
@@ -207,21 +289,33 @@ function createWorkflowRun(
         request.setEndpoint(baseUrl + '/workflow_runs/')
         request.setHttpMethod('post')
         request.setAuthenticationProfile('oauth2', oauthEntityProfileId)
-        ;(request as any).setRequestorProfile('oauth_2_0_credentials', credentialSysId)
+        ;(request as any).setRequestorProfile(
+            'oauth_2_0_credentials',
+            credentialSysId,
+        )
         request.setRequestHeader('Accept', 'application/json')
         request.setRequestHeader('Content-Type', 'application/json')
         request.setRequestBody(JSON.stringify(payload))
         request.setHttpTimeout(30000)
 
         const response = request.execute()
-
-        if (response.haveError()) {
-            gs.error('[EntrustIDV] createWorkflowRun transport error: ' + response.getErrorMessage())
-            return { success: false, message: 'Network error reaching Entrust IDV.' }
-        }
-
         const status = response.getStatusCode()
         const body = response.getBody()
+
+        if (response.haveError()) {
+            const errorMessage = response.getErrorMessage()
+            if (!status || status < 0) {
+                gs.error(
+                    '[EntrustIDV] createWorkflowRun transport error: ' +
+                        errorMessage,
+                )
+                return {
+                    success: false,
+                    message:
+                        'Network error reaching Entrust IDV: ' + errorMessage,
+                }
+            }
+        }
 
         if (status === 201) {
             let parsed: { id?: string; link?: { url?: string } } = {}
@@ -230,39 +324,59 @@ function createWorkflowRun(
             } catch (_) {
                 parsed = {}
             }
-            const linkUrl = parsed && parsed.link && parsed.link.url ? parsed.link.url : undefined
             if (!parsed || !parsed.id) {
-                gs.error('[EntrustIDV] createWorkflowRun: 201 but no id in response: ' + body)
-                return { success: false, message: 'Workflow run created but no ID returned.' }
+                gs.error(
+                    '[EntrustIDV] createWorkflowRun: 201 but no id in response: ' +
+                        body,
+                )
+                return {
+                    success: false,
+                    message: 'Workflow run created but no ID returned.',
+                }
             }
             return {
                 success: true,
                 workflowRunId: parsed.id,
-                linkUrl: linkUrl,
+                linkUrl: parsed.link && parsed.link.url,
                 message: 'Workflow run created.',
             }
         }
 
-        gs.error('[EntrustIDV] createWorkflowRun failed HTTP ' + status + ': ' + body)
+        gs.error(
+            '[EntrustIDV] createWorkflowRun failed HTTP ' +
+                status +
+                ': ' +
+                body,
+        )
         if (status === 401 || status === 403) {
             return {
                 success: false,
-                message: 'Authentication error creating workflow run (HTTP ' + status + '). Re-run setup.',
+                message:
+                    'Authentication error creating workflow run (HTTP ' +
+                    status +
+                    '). Confirm the Entrust OAuth application has workflows:write scope and refresh the cached ServiceNow OAuth token.',
             }
         }
         if (status === 422) {
             return {
                 success: false,
-                message: 'Invalid workflow run data (HTTP 422). Check workflow ID and applicant ID.',
+                message:
+                    'Invalid workflow run data (HTTP 422). Confirm the workflow is active and that all Studio input data is present.',
             }
         }
         return {
             success: false,
-            message: 'Entrust IDV returned HTTP ' + status + ' for workflow run creation.',
+            message:
+                'Entrust IDV returned HTTP ' +
+                status +
+                ' for workflow run creation.',
         }
     } catch (err) {
         gs.error('[EntrustIDV] createWorkflowRun error: ' + String(err))
-        return { success: false, message: 'Error creating workflow run: ' + String(err) }
+        return {
+            success: false,
+            message: 'Error creating workflow run: ' + String(err),
+        }
     }
 }
 
@@ -337,21 +451,12 @@ export function startVerification(incidentId: string): VerifyResult {
         }
     }
     if (!email) {
-        // email is required because Smart Capture Link uses applicant_provides_data=true.
         return {
             success: false,
             message:
                 'Caller has no email address — cannot create an applicant.',
         }
     }
-
-    gs.info(
-        '[EntrustIDV] startVerification: creating applicant for incident ' +
-            incident.getValue('number') +
-            ' (caller sys_id=' +
-            callerSysId +
-            ')',
-    )
 
     const applicantResult = createApplicant(
         firstName,
@@ -363,18 +468,13 @@ export function startVerification(incidentId: string): VerifyResult {
         return { success: false, message: applicantResult.message }
     }
 
-    const workflowResult = createWorkflowRun(applicantResult.applicantId!, workflowId)
+    const workflowResult = createWorkflowRun(
+        applicantResult.applicantId!,
+        workflowId,
+    )
     if (!workflowResult.success) {
         return { success: false, message: workflowResult.message }
     }
-
-    gs.info(
-        '[EntrustIDV] Workflow run created (id=' +
-            workflowResult.workflowRunId +
-            ') for incident ' +
-            incident.getValue('number') +
-            (workflowResult.linkUrl ? ' linkUrl=' + workflowResult.linkUrl : ' (no link URL returned)'),
-    )
 
     const incidentNumber = incident.getValue('number') as string
     const callerName = normaliseWhitespace(firstName + ' ' + lastName)
@@ -387,9 +487,12 @@ export function startVerification(incidentId: string): VerifyResult {
             callerName +
             ' on ' +
             incidentNumber +
+            '. Workflow run ID: ' +
+            workflowResult.workflowRunId +
             '.' +
             (workflowResult.linkUrl
-                ? ' Share this Smart Capture Link with the caller: ' + workflowResult.linkUrl
+                ? ' Share this Smart Capture Link with the caller: ' +
+                  workflowResult.linkUrl
                 : ' No Smart Capture Link was returned — check the workflow configuration.'),
     }
 }
