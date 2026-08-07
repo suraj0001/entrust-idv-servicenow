@@ -20,6 +20,7 @@ interface CreateApplicantResult {
 }
 
 const ENTRUST_ALIAS_NAME = 'entrust_idv_api'
+const SMART_CAPTURE_EVENT = 'x_entru_entrustidv.smart_capture.created'
 
 /**
  * Normalise whitespace in a name field per the Entrust API requirement:
@@ -476,6 +477,24 @@ export function startVerification(incidentId: string): VerifyResult {
         return { success: false, message: workflowResult.message }
     }
 
+    if (!workflowResult.linkUrl) {
+        return {
+            success: false,
+            message:
+                'Workflow run created, but Entrust did not return a Smart Capture Link.',
+        }
+    }
+
+    const emailQueued = config.getValue('delivery_channel') === 'email'
+    if (emailQueued) {
+        gs.eventQueue(
+            SMART_CAPTURE_EVENT,
+            incident,
+            workflowResult.linkUrl,
+            '',
+        )
+    }
+
     const incidentNumber = incident.getValue('number') as string
     const callerName = normaliseWhitespace(firstName + ' ' + lastName)
 
@@ -487,12 +506,10 @@ export function startVerification(incidentId: string): VerifyResult {
             callerName +
             ' on ' +
             incidentNumber +
-            '. Workflow run ID: ' +
-            workflowResult.workflowRunId +
-            '.' +
-            (workflowResult.linkUrl
-                ? ' Share this Smart Capture Link with the caller: ' +
-                  workflowResult.linkUrl
-                : ' No Smart Capture Link was returned — check the workflow configuration.'),
+                        (emailQueued
+                                ? '. The Smart Capture Link email has been queued for ' +
+                                    email +
+                                    '.'
+                                : '. The configured delivery channel is not email, so no email was queued.'),
     }
 }
