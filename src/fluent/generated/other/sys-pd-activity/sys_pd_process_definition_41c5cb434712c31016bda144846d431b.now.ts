@@ -8,10 +8,10 @@ Record({
         activity_definition: 'fcbbb246eb7331107626211f1a522853',
         ai_agent_execution_mode: 'off',
         ai_agent_run_as: 'playbook_user',
-        description: `Select your region, enter your Client ID, Client Secret, and Workflow ID from the 
-Entrust Dashboard. Test the connection and save to complete this step.`,
+        description:
+            'Configure the API connection that ServiceNow uses to communicate with Entrust Identity Verification.',
         enable_ai_agent: 'false',
-        label: 'Configure Entrust API Credentials & Workflow',
+        label: 'Configure Entrust API Credentials',
         lane: '218374889c745419824b5c329776bcce',
         name: 'iframe',
         order: '1',

@@ -5,9 +5,9 @@ Record({
     table: 'sys_pd_lane',
     data: {
         active: 'true',
-        description: `Connect to your Entrust IDV tenant by entering your API credentials and Workflow ID. 
-Test the connection to confirm everything is working before proceeding.`,
-        label: 'Entrust IDV API Configurations',
+        description:
+            'Configure the core settings required to connect ServiceNow with Identity Verification and enable verification workflows.',
+        label: 'Entrust IDV Setup',
         name: 'new_stage',
         order: '1',
         permission: '{}',
