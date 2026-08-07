@@ -35,5 +35,6 @@ export const SmartCaptureEmailNotification = EmailNotification({
             <p><a href="\${event.parm1}">Start identity verification</a></p>
             <p>Do not forward or share this link.</p>`,
         omitWatermark: true,
+        forceDelivery: true,
     },
 })

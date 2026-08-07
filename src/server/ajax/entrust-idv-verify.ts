@@ -21,6 +21,7 @@ interface CreateApplicantResult {
 
 const ENTRUST_ALIAS_NAME = 'entrust_idv_api'
 const SMART_CAPTURE_EVENT = 'x_entru_entrustidv.smart_capture.created'
+const DEFAULT_WORKFLOW_ID = '4aa50569-b226-4785-b5e1-ee9e30eee7e6'
 
 /**
  * Normalise whitespace in a name field per the Entrust API requirement:
@@ -409,13 +410,7 @@ export function startVerification(incidentId: string): VerifyResult {
         }
     }
 
-    const workflowId = config.getValue('default_workflow_id')
-    if (!workflowId) {
-        return {
-            success: false,
-            message: 'No default workflow is configured for Entrust IDV.',
-        }
-    }
+    const workflowId = DEFAULT_WORKFLOW_ID
 
     const incident = new GlideRecord('incident')
     incident.get(incidentId)
@@ -487,12 +482,7 @@ export function startVerification(incidentId: string): VerifyResult {
 
     const emailQueued = config.getValue('delivery_channel') === 'email'
     if (emailQueued) {
-        gs.eventQueue(
-            SMART_CAPTURE_EVENT,
-            incident,
-            workflowResult.linkUrl,
-            '',
-        )
+        gs.eventQueue(SMART_CAPTURE_EVENT, incident, workflowResult.linkUrl, '')
     }
 
     const incidentNumber = incident.getValue('number') as string
@@ -506,10 +496,10 @@ export function startVerification(incidentId: string): VerifyResult {
             callerName +
             ' on ' +
             incidentNumber +
-                        (emailQueued
-                                ? '. The Smart Capture Link email has been queued for ' +
-                                    email +
-                                    '.'
-                                : '. The configured delivery channel is not email, so no email was queued.'),
+            (emailQueued
+                                ? '. The Smart Capture Link email event has been queued for ' +
+                  email +
+                  '.'
+                : '. The configured delivery channel is not email, so no email was queued.'),
     }
 }
