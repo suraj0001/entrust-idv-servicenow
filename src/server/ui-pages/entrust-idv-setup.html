@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:g2="null">
-  <style>.entrust-container {
+  <style>/* ServiceNow iframes inherit overflow:hidden — force scrollability */
+      html, body {
+         overflow-y: auto !important;
+         height: auto !important;
+      }
+      .entrust-container {
          font-family: "Source Sans Pro", sans-serif;
          max-width: 580px;
-         margin: 24px auto;
-         padding: 24px;
+         margin: 16px auto;
+         padding: 16px 24px 24px;
       }
       .form-group {
          margin-bottom: 16px;
