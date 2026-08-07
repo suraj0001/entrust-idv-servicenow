@@ -260,7 +260,6 @@ export interface GetConfigResult {
     region?: string
     baseUrl?: string
     tokenUrl?: string
-    workflowId?: string
     connectionTested?: boolean
 }
 
@@ -280,7 +279,6 @@ export function getConfig(): GetConfigResult {
             region: region,
             baseUrl: baseUrl,
             tokenUrl: baseUrl ? baseUrl + '/oauth/token' : '',
-            workflowId: (gr.getValue('default_workflow_id') || '') as string,
             connectionTested: tested === 'true' || tested === '1',
         }
     } catch (err) {
@@ -302,16 +300,21 @@ export function saveConfig(
     baseUrl: string,
     tokenUrl: string,
     region: string,
-    defaultWorkflowId: string,
 ): SaveConfigResult {
-    if (!clientId || !clientSecret || !baseUrl || !tokenUrl || !region || !defaultWorkflowId) {
-        return { success: false, message: 'All fields are required.' }
+    if (!baseUrl || !tokenUrl || !region) {
+        return { success: false, message: 'Region is required.' }
     }
+    if ((clientId && !clientSecret) || (!clientId && clientSecret)) {
+        return { success: false, message: 'Provide both Client ID and Client Secret, or neither.' }
+    }
+    const updateCredentials = !!(clientId && clientSecret)
 
     try {
-        const credentialResult = updateEntrustConnection(clientId, clientSecret, baseUrl, tokenUrl)
-        if (!credentialResult.success) {
-            return credentialResult
+        if (updateCredentials) {
+            const credentialResult = updateEntrustConnection(clientId, clientSecret, baseUrl, tokenUrl)
+            if (!credentialResult.success) {
+                return credentialResult
+            }
         }
 
         const gr = new GlideRecord('x_entru_entrustidv_config')
@@ -322,7 +325,6 @@ export function saveConfig(
         }
 
         gr.setValue('region', region)
-        gr.setValue('default_workflow_id', defaultWorkflowId)
         if (!gr.getValue('delivery_channel')) {
             gr.setValue('delivery_channel', DEFAULT_DELIVERY_CHANNEL)
         }
