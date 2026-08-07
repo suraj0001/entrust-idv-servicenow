@@ -65,8 +65,7 @@ EntrustIDVSetupAjax.prototype = Object.extendsObject(global.AbstractAjaxProcesso
                 this.getParameter('sysparm_client_secret'),
                 this.getParameter('sysparm_base_url'),
                 this.getParameter('sysparm_token_url'),
-                this.getParameter('sysparm_region'),
-                this.getParameter('sysparm_workflow_id')
+                this.getParameter('sysparm_region')
             ));
         } catch (e) {
             gs.error('[EntrustIDV] EntrustIDVSetupAjax.saveConfig failed: ' + e);

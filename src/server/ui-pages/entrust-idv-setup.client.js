@@ -11,6 +11,10 @@ var BASE_URLS = {
     ca: 'https://api.ca.onfido.com/v3.6',
 }
 
+var _idvHasStoredCredentials = false
+var CLIENT_FIELD_MIN = 5
+var CLIENT_FIELD_MAX = 255
+
 // Pre-populate form fields from the server.
 document.addEventListener('DOMContentLoaded', function () {
     var ga = new GlideAjax('EntrustIDVSetupAjax')
@@ -29,12 +33,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (config.tokenUrl) {
             document.getElementById('idv_token_url').value = config.tokenUrl
         }
-        if (config.workflowId) {
-            document.getElementById('idv_workflow_id').value = config.workflowId
-        }
-        // If the connection was already tested and saved, Save can be used immediately.
         if (config.connectionTested) {
-            document.getElementById('btn_save').disabled = false
+            _idvHasStoredCredentials = true
+            document.getElementById('idv_client_id').placeholder = 'Stored — enter to update'
+            document.getElementById('idv_client_secret').placeholder = 'Stored — enter to update'
+            document.getElementById('idv_credentials_hint').style.display = 'block'
         }
     })
 })
@@ -43,12 +46,18 @@ document.getElementById('idv_region').addEventListener('change', function () {
     var base = BASE_URLS[this.value] || ''
     document.getElementById('idv_base_url').value = base
     document.getElementById('idv_token_url').value = base ? base + '/oauth/token' : ''
+    if (_idvHasStoredCredentials) {
+        _idvHasStoredCredentials = false
+        document.getElementById('idv_client_id').placeholder = 'Enter your Entrust Client ID'
+        document.getElementById('idv_client_secret').placeholder = 'Enter your Entrust Client Secret'
+        document.getElementById('idv_credentials_hint').style.display = 'none'
+    }
     _idvShowStatus('', '')
     _idvDisableSave()
 })
 
 // Any credential/config edit invalidates the last successful test — force a re-test before saving.
-;['idv_client_id', 'idv_client_secret', 'idv_workflow_id'].forEach(function (id) {
+;['idv_client_id', 'idv_client_secret'].forEach(function (id) {
     document.getElementById(id).addEventListener('input', _idvDisableSave)
 })
 
@@ -59,8 +68,20 @@ document.getElementById('btn_test').addEventListener('click', function () {
     var clientSecret = document.getElementById('idv_client_secret').value
     var btn = document.getElementById('btn_test')
 
-    if (!region || !clientId || !clientSecret) {
-        _idvShowStatus('error', 'Region, Client ID, and Client Secret are all required.')
+    if (!region) {
+        _idvShowStatus('error', 'Please select a region.')
+        return
+    }
+    if (!clientId || !clientSecret) {
+        _idvShowStatus('error', 'Client ID and Client Secret are required to test the connection.')
+        return
+    }
+    if (clientId.length < CLIENT_FIELD_MIN || clientId.length > CLIENT_FIELD_MAX) {
+        _idvShowStatus('error', 'Client ID must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+        return
+    }
+    if (clientSecret.length < CLIENT_FIELD_MIN || clientSecret.length > CLIENT_FIELD_MAX) {
+        _idvShowStatus('error', 'Client Secret must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
         return
     }
 
@@ -90,7 +111,7 @@ document.getElementById('btn_test').addEventListener('click', function () {
 
         if (result && result.success) {
             _idvShowStatus('success', '✅ ' + result.message)
-            document.getElementById('btn_save').disabled = false
+            _idvEnableSave()
         } else {
             _idvShowStatus('error', '❌ ' + (result ? result.message : 'Unknown error.'))
             _idvDisableSave()
@@ -105,12 +126,26 @@ document.getElementById('btn_save').addEventListener('click', function () {
     var tokenUrl = document.getElementById('idv_token_url').value.trim()
     var clientId = document.getElementById('idv_client_id').value.trim()
     var clientSecret = document.getElementById('idv_client_secret').value
-    var workflowId = document.getElementById('idv_workflow_id').value.trim()
     var btn = this
 
-    if (!region || !baseUrl || !tokenUrl || !clientId || !clientSecret || !workflowId) {
-        _idvShowStatus('error', 'All fields are required.')
+    if (!region || !baseUrl || !tokenUrl) {
+        _idvShowStatus('error', 'Please select a region.')
         return
+    }
+    var hasNewCredentials = clientId.length > 0 || clientSecret.length > 0
+    if (!_idvHasStoredCredentials && !hasNewCredentials) {
+        _idvShowStatus('error', 'Client ID and Client Secret are required.')
+        return
+    }
+    if (hasNewCredentials) {
+        if (clientId.length < CLIENT_FIELD_MIN || clientId.length > CLIENT_FIELD_MAX) {
+            _idvShowStatus('error', 'Client ID must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+            return
+        }
+        if (clientSecret.length < CLIENT_FIELD_MIN || clientSecret.length > CLIENT_FIELD_MAX) {
+            _idvShowStatus('error', 'Client Secret must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+            return
+        }
     }
 
     btn.disabled = true
@@ -134,14 +169,14 @@ document.getElementById('btn_save').addEventListener('click', function () {
 
         if (!info || !info.success) {
             console.error('[EntrustIDV] getAliasInfo failed:', info)
-            btn.disabled = false
+            _idvEnableSave()
             btn.textContent = 'Save'
             _idvShowStatus('error', '❌ ' + (info ? info.message : 'Unknown error.'))
             return
         }
 
         if (info.hasConnection) {
-            _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, workflowId, btn)
+            _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn)
             return
         }
 
@@ -167,26 +202,25 @@ document.getElementById('btn_save').addEventListener('click', function () {
             // which will surface a specific failure if the connection/credential still isn't there.
             if (ccAnswer && /error|exception/i.test(ccAnswer)) {
                 console.error('[EntrustIDV] createConnectionAndCredential returned an error:', ccAnswer)
-                btn.disabled = false
+                _idvEnableSave()
                 btn.textContent = 'Save'
                 _idvShowStatus('error', '❌ Failed to create connection: ' + ccAnswer)
                 return
             }
 
-            _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, workflowId, btn)
+            _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn)
         })
     })
 })
 
-function _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, workflowId, btn) {
+function _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn) {
     var ga = new GlideAjax('EntrustIDVSetupAjax')
     ga.addParam('sysparm_name', 'saveConfig')
     ga.addParam('sysparm_region', region)
     ga.addParam('sysparm_base_url', baseUrl)
     ga.addParam('sysparm_token_url', tokenUrl)
-    ga.addParam('sysparm_client_id', clientId)
-    ga.addParam('sysparm_client_secret', clientSecret)
-    ga.addParam('sysparm_workflow_id', workflowId)
+    if (clientId) ga.addParam('sysparm_client_id', clientId)
+    if (clientSecret) ga.addParam('sysparm_client_secret', clientSecret)
 
     ga.getXMLAnswer(function (answer) {
         console.log('[EntrustIDV] saveConfig raw answer:', answer)
@@ -197,23 +231,39 @@ function _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, workf
             result = JSON.parse(answer)
         } catch (e) {
             console.error('[EntrustIDV] saveConfig: could not parse answer as JSON.', e)
-            btn.disabled = false
+            _idvEnableSave()
             _idvShowStatus('error', '❌ Unexpected response from server.')
             return
         }
 
         if (result && result.success) {
-            btn.disabled = false
+            _idvEnableSave()
             _idvShowStatus('success', '✅ ' + result.message)
         } else {
-            btn.disabled = false
+            _idvEnableSave()
             _idvShowStatus('error', '❌ ' + (result ? result.message : 'Unknown error.'))
         }
     })
 }
 
+function _idvEnableSave() {
+    var btn = document.getElementById('btn_save')
+    var wrap = document.getElementById('btn_save_wrap')
+    btn.disabled = false
+    if (wrap) {
+        wrap.title = ''
+        wrap.style.cursor = 'auto'
+    }
+}
+
 function _idvDisableSave() {
-    document.getElementById('btn_save').disabled = true
+    var btn = document.getElementById('btn_save')
+    var wrap = document.getElementById('btn_save_wrap')
+    btn.disabled = true
+    if (wrap) {
+        wrap.title = 'Run a successful Test Connection to enable Save'
+        wrap.style.cursor = 'not-allowed'
+    }
 }
 
 function _idvShowStatus(type, message) {
