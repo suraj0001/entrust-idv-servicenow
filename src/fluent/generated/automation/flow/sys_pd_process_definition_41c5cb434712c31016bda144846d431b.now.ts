@@ -120,3 +120,33 @@ Record({
         table: 'help_user_interaction',
     },
 })
+Record({
+    $id: Now.ID['2f8c9db547aa8f5016bda144846d434d'],
+    table: 'sys_trigger_runner_mapping',
+    data: {
+        active: 'true',
+        data: '{"trigger_on_unique_change":"false","parent_record":{"elementMapping":"{{triggerRecord}}","variableValue":"{{triggerRecord}}","elementMappingOrVariableValue":"{{triggerRecord}}"},"run_trigger":"run_once"}',
+        identifier: '81c5cb434712c31016bda144846d431b',
+        identifier_type: 'playbook',
+        runner: 'PDTriggerRunner',
+        trigger: '238c9db547aa8f5016bda144846d434d',
+    },
+})
+Record({
+    $id: Now.ID['238c9db547aa8f5016bda144846d434d'],
+    table: 'sys_flow_record_trigger',
+    data: {
+        active: 'true',
+        condition: 'guidance.process_definition=41c5cb434712c31016bda144846d431b',
+        on_delete: 'false',
+        on_insert: 'true',
+        on_update: 'true',
+        run_flow_in: 'background',
+        run_on_extended: 'false',
+        run_when_setting: 'both',
+        run_when_user_setting: 'any',
+        sys_domain: 'global',
+        sys_domain_path: '/',
+        table: 'help_user_interaction',
+    },
+})
