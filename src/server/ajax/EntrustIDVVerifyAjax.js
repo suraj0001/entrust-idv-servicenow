@@ -33,7 +33,7 @@ EntrustIDVVerifyAjax.prototype = Object.extendsObject(global.AbstractAjaxProcess
             return '';
         }
         var vr = new GlideRecord('x_entru_entrustidv_verification_request');
-        vr.addQuery('source_record_id', incidentId);
+        vr.addQuery('incident', incidentId);
         vr.orderByDesc('sys_created_on');
         vr.setLimit(1);
         vr.query();

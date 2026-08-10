@@ -876,6 +876,10 @@ declare global {
                         table: 'sys_ui_action'
                         id: '668460c581d3435e9659a4403aa2688c'
                     }
+                    'idv-status-onload-cs': {
+                        table: 'sys_script_client'
+                        id: '3d7fab121b960fd05fdb2f05604bcb01'
+                    }
                 }
                 composite: [
                     {

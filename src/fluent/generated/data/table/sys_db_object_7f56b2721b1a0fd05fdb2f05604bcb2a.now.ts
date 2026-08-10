@@ -1,4 +1,4 @@
-import { Table, StringColumn, DateTimeColumn, ChoiceColumn } from '@servicenow/sdk/core'
+import { Table, StringColumn, DateTimeColumn, ChoiceColumn, ReferenceColumn } from '@servicenow/sdk/core'
 
 export const x_entru_entrustidv_verification_request = Table({
     allowWebServiceAccess: true,
@@ -8,6 +8,10 @@ export const x_entru_entrustidv_verification_request = Table({
     label: 'Entrust IDV Verification Request',
     name: 'x_entru_entrustidv_verification_request',
     schema: {
+        incident: ReferenceColumn({
+            label: 'Incident',
+            referenceTable: 'incident',
+        }),
         workflow_run_id: StringColumn({
             label: 'Workflow Run ID',
             mandatory: true,
