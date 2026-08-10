@@ -71,7 +71,8 @@ export function handleWebhookEvent(body: WorkflowRunPayload): WebhookHandleResul
     const incidentSysId = vr.getValue('incident') as string
     if (incidentSysId && status) {
         const incident = new GlideRecord('incident')
-        if (incident.get(incidentSysId)) {
+        incident.get(incidentSysId)
+        if (incident.isValidRecord()) {
             incident.setValue('x_entru_entrustidv_idv_status', status)
             incident.update()
         }
