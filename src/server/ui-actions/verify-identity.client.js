@@ -26,6 +26,7 @@ function x_entru_idvVerifyIdentity() {
                 msg += ' <a href="' + result.linkUrl + '" target="_blank" rel="noopener noreferrer">Open Smart Capture Link</a>';
             }
             g_form.addInfoMessage(msg);
+            g_ui_actions.setVisible('x_entru_entrustidv_verify_identity', false);
         } else {
             g_form.addErrorMessage((result && result.message) || 'Could not start identity verification.');
         }
