@@ -8,6 +8,12 @@ function x_entru_idvVerifyIdentity() {
         return;
     }
 
+    var existingStatus = g_form.getValue('x_entru_entrustidv_idv_status');
+    if (existingStatus) {
+        g_form.addInfoMessage('Identity verification has already been started for this incident. Please check the IDV Status field for the current status.');
+        return;
+    }
+
     var ga = new GlideAjax('x_entru_entrustidv.EntrustIDVVerifyAjax');
     ga.addParam('sysparm_name', 'startVerification');
     ga.addParam('sysparm_incident_id', g_form.getUniqueValue());
