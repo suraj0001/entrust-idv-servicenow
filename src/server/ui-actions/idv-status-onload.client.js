@@ -13,28 +13,33 @@ function onLoad() {
         'declined':       'Declined',
     };
 
+    function applyStatus(rawStatus) {
+        var label = STATUS_LABELS[rawStatus] || rawStatus;
+        g_form.setValue('x_entru_entrustidv_idv_status', label);
+        g_ui_actions.setVisible('Verify Identity', false);
+    }
+
     var incidentId = g_form.getUniqueValue();
 
     g_form.setReadOnly('x_entru_entrustidv_idv_status', true);
 
-    // Synchronous check — hide button immediately if the field already has a value on the record.
-    if (g_form.getValue('x_entru_entrustidv_idv_status')) {
-        g_ui_actions.setVisible('x_entru_entrustidv_verify_identity', false);
+    // Apply label mapping synchronously if the field already has a value on the record.
+    var existingStatus = g_form.getValue('x_entru_entrustidv_idv_status');
+    if (existingStatus) {
+        applyStatus(existingStatus);
     }
 
     if (!incidentId) {
         return;
     }
 
+    // Ajax call gets the freshest status from the verification request table.
     var ga = new GlideAjax('x_entru_entrustidv.EntrustIDVVerifyAjax');
     ga.addParam('sysparm_name', 'getIdvStatus');
     ga.addParam('sysparm_incident_id', incidentId);
     ga.getXMLAnswer(function (status) {
         if (status) {
-            var label = STATUS_LABELS[status] || status;
-            g_form.setValue('x_entru_entrustidv_idv_status', label);
-            // A verification is already in progress — hide the button.
-            g_ui_actions.setVisible('x_entru_entrustidv_verify_identity', false);
+            applyStatus(status);
         }
     });
 }
