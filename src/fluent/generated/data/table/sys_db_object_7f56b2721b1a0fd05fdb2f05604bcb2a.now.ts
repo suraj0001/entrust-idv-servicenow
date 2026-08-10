@@ -21,10 +21,6 @@ export const x_entru_entrustidv_verification_request = Table({
             label: 'Triggered By',
             maxLength: 50,
         }),
-        source_record_id: StringColumn({
-            label: 'Source Record ID',
-            maxLength: 100,
-        }),
         completed_at: DateTimeColumn({
             label: 'Completed At',
         }),
