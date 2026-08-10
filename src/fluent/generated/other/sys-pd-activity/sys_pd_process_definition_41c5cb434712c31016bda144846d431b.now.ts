@@ -16,7 +16,7 @@ Record({
         name: 'iframe',
         order: '1',
         process_definition: '41c5cb434712c31016bda144846d431b',
-        restart_rule: 'RUN_ONLY_ONCE',
+        restart_rule: 'RUN_ALWAYS',
         start_rule_name: 'immediate',
     },
 })

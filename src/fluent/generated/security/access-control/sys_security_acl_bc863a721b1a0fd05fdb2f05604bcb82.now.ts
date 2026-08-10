@@ -8,4 +8,8 @@ Acl({
     type: 'record',
     operation: 'read',
     table: 'x_entru_entrustidv_verification_request',
+    script: `answer = gs.getSession().isLoggedIn();
+if (!answer) {
+    answer = gs.getProperty('glide.security.allow_unauth_roleless_acl', false);
+}`,
 })
