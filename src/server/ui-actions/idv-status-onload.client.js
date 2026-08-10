@@ -17,6 +17,11 @@ function onLoad() {
 
     g_form.setReadOnly('x_entru_entrustidv_idv_status', true);
 
+    // Synchronous check — hide button immediately if the field already has a value on the record.
+    if (g_form.getValue('x_entru_entrustidv_idv_status')) {
+        g_ui_actions.setVisible('x_entru_entrustidv_verify_identity', false);
+    }
+
     if (!incidentId) {
         return;
     }
