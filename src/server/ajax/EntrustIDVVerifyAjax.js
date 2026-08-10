@@ -26,5 +26,22 @@ EntrustIDVVerifyAjax.prototype = Object.extendsObject(global.AbstractAjaxProcess
         }
     },
 
+    /** Returns the most recent verification status string for the given incident, or '' if none. */
+    getIdvStatus: function () {
+        var incidentId = this.getParameter('sysparm_incident_id');
+        if (!incidentId) {
+            return '';
+        }
+        var vr = new GlideRecord('x_entru_entrustidv_verification_request');
+        vr.addQuery('source_record_id', incidentId);
+        vr.orderByDesc('sys_created_on');
+        vr.setLimit(1);
+        vr.query();
+        if (vr.next()) {
+            return vr.getValue('status') || '';
+        }
+        return '';
+    },
+
     type: 'EntrustIDVVerifyAjax'
 });
