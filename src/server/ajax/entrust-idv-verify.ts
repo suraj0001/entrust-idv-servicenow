@@ -21,7 +21,6 @@ interface CreateApplicantResult {
 
 const ENTRUST_ALIAS_NAME = 'entrust_idv_api'
 const SMART_CAPTURE_EVENT = 'x_entru_entrustidv.smart_capture.created'
-const DEFAULT_WORKFLOW_ID = '4aa50569-b226-4785-b5e1-ee9e30eee7e6'
 
 /**
  * Normalise whitespace in a name field per the Entrust API requirement:
@@ -410,7 +409,13 @@ export function startVerification(incidentId: string): VerifyResult {
         }
     }
 
-    const workflowId = DEFAULT_WORKFLOW_ID
+    const workflowId = config.getValue('default_workflow_id')
+    if (!workflowId) {
+        return {
+            success: false,
+            message: 'No default workflow is configured for Entrust IDV.',
+        }
+    }
 
     const incident = new GlideRecord('incident')
     incident.get(incidentId)

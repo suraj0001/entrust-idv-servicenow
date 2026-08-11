@@ -46,7 +46,10 @@ export function testConnection(
         // client input — to avoid SSRF via a tampered/forged URL from the browser.
         request.setEndpoint(baseUrl + '/oauth/token')
         request.setHttpMethod('post')
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.setRequestHeader(
+            'Content-Type',
+            'application/x-www-form-urlencoded',
+        )
         request.setRequestHeader('Accept', 'application/json')
         // Client Credentials grant — no grant_type per the Entrust IDV spec.
         request.setRequestBody(
@@ -60,10 +63,14 @@ export function testConnection(
         const response = request.execute()
 
         if (response.haveError()) {
-            gs.error('[EntrustIDV] Test connection transport error: ' + response.getErrorMessage())
+            gs.error(
+                '[EntrustIDV] Test connection transport error: ' +
+                    response.getErrorMessage(),
+            )
             return {
                 success: false,
-                message: 'Connection failed. Please try again later or contact your administrator.',
+                message:
+                    'Connection failed. Please try again later or contact your administrator.',
             }
         }
 
@@ -91,12 +98,22 @@ export function testConnection(
             return {
                 success: false,
                 message:
-                    'Authentication failed (HTTP ' + status + '). Check your Client ID and Client Secret.',
+                    'Authentication failed (HTTP ' +
+                    status +
+                    '). Check your Client ID and Client Secret.',
             }
         }
 
-        gs.error('[EntrustIDV] Test connection failed with HTTP ' + status + ': ' + body)
-        return { success: false, message: 'Connection failed (HTTP ' + status + ').' }
+        gs.error(
+            '[EntrustIDV] Test connection failed with HTTP ' +
+                status +
+                ': ' +
+                body,
+        )
+        return {
+            success: false,
+            message: 'Connection failed (HTTP ' + status + ').',
+        }
     } catch (err) {
         gs.error('[EntrustIDV] Test connection error: ' + String(err))
         return {
@@ -144,7 +161,10 @@ export function getAliasInfo(): AliasInfoResult {
         aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
         aliasGr.query()
         if (!aliasGr.next()) {
-            return { success: false, message: 'Entrust IDV connection alias not found.' }
+            return {
+                success: false,
+                message: 'Entrust IDV connection alias not found.',
+            }
         }
         const aliasSysId = aliasGr.getUniqueValue()
 
@@ -154,10 +174,18 @@ export function getAliasInfo(): AliasInfoResult {
         connGr.orderByDesc('sys_created_on')
         connGr.query()
 
-        return { success: true, message: '', aliasSysId: aliasSysId, hasConnection: connGr.next() }
+        return {
+            success: true,
+            message: '',
+            aliasSysId: aliasSysId,
+            hasConnection: connGr.next(),
+        }
     } catch (err) {
         gs.error('[EntrustIDV] getAliasInfo error: ' + String(err))
-        return { success: false, message: 'Could not look up the Entrust IDV connection alias.' }
+        return {
+            success: false,
+            message: 'Could not look up the Entrust IDV connection alias.',
+        }
     }
 }
 
@@ -176,8 +204,15 @@ function updateEntrustConnection(
     aliasGr.addQuery('name', ENTRUST_ALIAS_NAME)
     aliasGr.query()
     if (!aliasGr.next()) {
-        gs.error('[EntrustIDV] Connection & Credential alias "' + ENTRUST_ALIAS_NAME + '" not found.')
-        return { success: false, message: 'Could not save credentials: connection alias not found.' }
+        gs.error(
+            '[EntrustIDV] Connection & Credential alias "' +
+                ENTRUST_ALIAS_NAME +
+                '" not found.',
+        )
+        return {
+            success: false,
+            message: 'Could not save credentials: connection alias not found.',
+        }
     }
     const aliasSysId = aliasGr.getUniqueValue()
 
@@ -186,32 +221,55 @@ function updateEntrustConnection(
     connGr.orderByDesc('sys_created_on')
     connGr.query()
     if (!connGr.next()) {
-        gs.error('[EntrustIDV] No http_connection linked to alias "' + ENTRUST_ALIAS_NAME + '".')
+        gs.error(
+            '[EntrustIDV] No http_connection linked to alias "' +
+                ENTRUST_ALIAS_NAME +
+                '".',
+        )
         return {
             success: false,
-            message: 'No connection found for alias. Complete the initial Connection & Credential setup first.',
+            message:
+                'No connection found for alias. Complete the initial Connection & Credential setup first.',
         }
     }
 
     const credGr = new GlideRecord('oauth_2_0_credentials')
     credGr.get(connGr.getValue('credential'))
     if (!credGr.isValidRecord()) {
-        gs.error('[EntrustIDV] updateEntrustConnection: oauth_2_0_credentials not found for connection.')
-        return { success: false, message: 'OAuth credentials not found. Re-create the Connection & Credential.' }
+        gs.error(
+            '[EntrustIDV] updateEntrustConnection: oauth_2_0_credentials not found for connection.',
+        )
+        return {
+            success: false,
+            message:
+                'OAuth credentials not found. Re-create the Connection & Credential.',
+        }
     }
 
     const profileGr = new GlideRecord('oauth_entity_profile')
     profileGr.get(credGr.getValue('oauth_entity_profile'))
     if (!profileGr.isValidRecord()) {
-        gs.error('[EntrustIDV] updateEntrustConnection: oauth_entity_profile not found.')
-        return { success: false, message: 'OAuth profile not found. Re-create the Connection & Credential.' }
+        gs.error(
+            '[EntrustIDV] updateEntrustConnection: oauth_entity_profile not found.',
+        )
+        return {
+            success: false,
+            message:
+                'OAuth profile not found. Re-create the Connection & Credential.',
+        }
     }
 
     const entityGr = new GlideRecord('oauth_entity')
     entityGr.get(profileGr.getValue('oauth_entity'))
     if (!entityGr.isValidRecord()) {
-        gs.error('[EntrustIDV] updateEntrustConnection: oauth_entity not found.')
-        return { success: false, message: 'OAuth entity not found. Re-create the Connection & Credential.' }
+        gs.error(
+            '[EntrustIDV] updateEntrustConnection: oauth_entity not found.',
+        )
+        return {
+            success: false,
+            message:
+                'OAuth entity not found. Re-create the Connection & Credential.',
+        }
     }
 
     entityGr.setValue('client_id', clientId)
@@ -260,6 +318,7 @@ export interface GetConfigResult {
     region?: string
     baseUrl?: string
     tokenUrl?: string
+    workflowId?: string
     connectionTested?: boolean
 }
 
@@ -279,6 +338,7 @@ export function getConfig(): GetConfigResult {
             region: region,
             baseUrl: baseUrl,
             tokenUrl: baseUrl ? baseUrl + '/oauth/token' : '',
+            workflowId: (gr.getValue('default_workflow_id') || '') as string,
             connectionTested: tested === 'true' || tested === '1',
         }
     } catch (err) {
@@ -300,18 +360,30 @@ export function saveConfig(
     baseUrl: string,
     tokenUrl: string,
     region: string,
+    workflowId: string,
 ): SaveConfigResult {
     if (!baseUrl || !tokenUrl || !region) {
         return { success: false, message: 'Region is required.' }
     }
+    if (!workflowId) {
+        return { success: false, message: 'Workflow ID is required.' }
+    }
     if ((clientId && !clientSecret) || (!clientId && clientSecret)) {
-        return { success: false, message: 'Provide both Client ID and Client Secret, or neither.' }
+        return {
+            success: false,
+            message: 'Provide both Client ID and Client Secret, or neither.',
+        }
     }
     const updateCredentials = !!(clientId && clientSecret)
 
     try {
         if (updateCredentials) {
-            const credentialResult = updateEntrustConnection(clientId, clientSecret, baseUrl, tokenUrl)
+            const credentialResult = updateEntrustConnection(
+                clientId,
+                clientSecret,
+                baseUrl,
+                tokenUrl,
+            )
             if (!credentialResult.success) {
                 return credentialResult
             }
@@ -325,6 +397,7 @@ export function saveConfig(
         }
 
         gr.setValue('region', region)
+        gr.setValue('default_workflow_id', workflowId)
         if (!gr.getValue('delivery_channel')) {
             gr.setValue('delivery_channel', DEFAULT_DELIVERY_CHANNEL)
         }
@@ -338,13 +411,21 @@ export function saveConfig(
 
         const sysId = isNew ? gr.insert() : gr.update()
         if (!sysId) {
-            gs.error('[EntrustIDV] saveConfig: insert/update returned no sys_id')
-            return { success: false, message: 'Could not save configuration. Please try again.' }
+            gs.error(
+                '[EntrustIDV] saveConfig: insert/update returned no sys_id',
+            )
+            return {
+                success: false,
+                message: 'Could not save configuration. Please try again.',
+            }
         }
 
         return { success: true, message: 'Configuration saved successfully.' }
     } catch (err) {
         gs.error('[EntrustIDV] saveConfig error: ' + String(err))
-        return { success: false, message: 'Could not save configuration: ' + String(err) }
+        return {
+            success: false,
+            message: 'Could not save configuration: ' + String(err),
+        }
     }
 }
