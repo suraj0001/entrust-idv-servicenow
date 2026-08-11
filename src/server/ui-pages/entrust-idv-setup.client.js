@@ -21,7 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
     ga.addParam('sysparm_name', 'getConfig')
     ga.getXMLAnswer(function (answer) {
         var config
-        try { config = JSON.parse(answer) } catch (e) { config = null }
+        try {
+            config = JSON.parse(answer)
+        } catch (e) {
+            config = null
+        }
         if (!config || !config.success) return
 
         if (config.region) {
@@ -33,11 +37,19 @@ document.addEventListener('DOMContentLoaded', function () {
         if (config.tokenUrl) {
             document.getElementById('idv_token_url').value = config.tokenUrl
         }
+        if (config.workflowId) {
+            document.getElementById('idv_workflow_id').value = config.workflowId
+        }
         if (config.connectionTested) {
             _idvHasStoredCredentials = true
-            document.getElementById('idv_client_id').placeholder = 'Stored — enter to update'
-            document.getElementById('idv_client_secret').placeholder = 'Stored — enter to update'
-            document.getElementById('idv_credentials_hint').style.display = 'block'
+            document.getElementById('idv_client_id').placeholder =
+                'Stored — enter to update'
+            document.getElementById('idv_client_secret').placeholder =
+                'Stored — enter to update'
+            document.getElementById('idv_credentials_hint').style.display =
+                'block'
+            // Credentials already verified — allow saving without re-testing.
+            _idvEnableSave()
         }
     })
 })
@@ -45,11 +57,15 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById('idv_region').addEventListener('change', function () {
     var base = BASE_URLS[this.value] || ''
     document.getElementById('idv_base_url').value = base
-    document.getElementById('idv_token_url').value = base ? base + '/oauth/token' : ''
+    document.getElementById('idv_token_url').value = base
+        ? base + '/oauth/token'
+        : ''
     if (_idvHasStoredCredentials) {
         _idvHasStoredCredentials = false
-        document.getElementById('idv_client_id').placeholder = 'Enter your Entrust Client ID'
-        document.getElementById('idv_client_secret').placeholder = 'Enter your Entrust Client Secret'
+        document.getElementById('idv_client_id').placeholder =
+            'Enter your Entrust Client ID'
+        document.getElementById('idv_client_secret').placeholder =
+            'Enter your Entrust Client Secret'
         document.getElementById('idv_credentials_hint').style.display = 'none'
     }
     _idvShowStatus('', '')
@@ -73,15 +89,45 @@ document.getElementById('btn_test').addEventListener('click', function () {
         return
     }
     if (!clientId || !clientSecret) {
-        _idvShowStatus('error', 'Client ID and Client Secret are required to test the connection.')
+        if (_idvHasStoredCredentials) {
+            _idvShowStatus(
+                'error',
+                'Enter a new Client ID and Client Secret to re-test, or click Save to keep the existing credentials.',
+            )
+        } else {
+            _idvShowStatus(
+                'error',
+                'Client ID and Client Secret are required to test the connection.',
+            )
+        }
         return
     }
-    if (clientId.length < CLIENT_FIELD_MIN || clientId.length > CLIENT_FIELD_MAX) {
-        _idvShowStatus('error', 'Client ID must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+    if (
+        clientId.length < CLIENT_FIELD_MIN ||
+        clientId.length > CLIENT_FIELD_MAX
+    ) {
+        _idvShowStatus(
+            'error',
+            'Client ID must be between ' +
+                CLIENT_FIELD_MIN +
+                ' and ' +
+                CLIENT_FIELD_MAX +
+                ' characters.',
+        )
         return
     }
-    if (clientSecret.length < CLIENT_FIELD_MIN || clientSecret.length > CLIENT_FIELD_MAX) {
-        _idvShowStatus('error', 'Client Secret must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+    if (
+        clientSecret.length < CLIENT_FIELD_MIN ||
+        clientSecret.length > CLIENT_FIELD_MAX
+    ) {
+        _idvShowStatus(
+            'error',
+            'Client Secret must be between ' +
+                CLIENT_FIELD_MIN +
+                ' and ' +
+                CLIENT_FIELD_MAX +
+                ' characters.',
+        )
         return
     }
 
@@ -104,7 +150,10 @@ document.getElementById('btn_test').addEventListener('click', function () {
         try {
             result = JSON.parse(answer)
         } catch (e) {
-            console.error('[EntrustIDV] testConnection: could not parse answer as JSON.', e)
+            console.error(
+                '[EntrustIDV] testConnection: could not parse answer as JSON.',
+                e,
+            )
             _idvShowStatus('error', '❌ Unexpected response from server.')
             return
         }
@@ -113,7 +162,10 @@ document.getElementById('btn_test').addEventListener('click', function () {
             _idvShowStatus('success', '✅ ' + result.message)
             _idvEnableSave()
         } else {
-            _idvShowStatus('error', '❌ ' + (result ? result.message : 'Unknown error.'))
+            _idvShowStatus(
+                'error',
+                '❌ ' + (result ? result.message : 'Unknown error.'),
+            )
             _idvDisableSave()
         }
     })
@@ -126,10 +178,15 @@ document.getElementById('btn_save').addEventListener('click', function () {
     var tokenUrl = document.getElementById('idv_token_url').value.trim()
     var clientId = document.getElementById('idv_client_id').value.trim()
     var clientSecret = document.getElementById('idv_client_secret').value
+    var workflowId = document.getElementById('idv_workflow_id').value.trim()
     var btn = this
 
     if (!region || !baseUrl || !tokenUrl) {
         _idvShowStatus('error', 'Please select a region.')
+        return
+    }
+    if (!workflowId) {
+        _idvShowStatus('error', 'Workflow ID is required.')
         return
     }
     var hasNewCredentials = clientId.length > 0 || clientSecret.length > 0
@@ -138,12 +195,32 @@ document.getElementById('btn_save').addEventListener('click', function () {
         return
     }
     if (hasNewCredentials) {
-        if (clientId.length < CLIENT_FIELD_MIN || clientId.length > CLIENT_FIELD_MAX) {
-            _idvShowStatus('error', 'Client ID must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+        if (
+            clientId.length < CLIENT_FIELD_MIN ||
+            clientId.length > CLIENT_FIELD_MAX
+        ) {
+            _idvShowStatus(
+                'error',
+                'Client ID must be between ' +
+                    CLIENT_FIELD_MIN +
+                    ' and ' +
+                    CLIENT_FIELD_MAX +
+                    ' characters.',
+            )
             return
         }
-        if (clientSecret.length < CLIENT_FIELD_MIN || clientSecret.length > CLIENT_FIELD_MAX) {
-            _idvShowStatus('error', 'Client Secret must be between ' + CLIENT_FIELD_MIN + ' and ' + CLIENT_FIELD_MAX + ' characters.')
+        if (
+            clientSecret.length < CLIENT_FIELD_MIN ||
+            clientSecret.length > CLIENT_FIELD_MAX
+        ) {
+            _idvShowStatus(
+                'error',
+                'Client Secret must be between ' +
+                    CLIENT_FIELD_MIN +
+                    ' and ' +
+                    CLIENT_FIELD_MAX +
+                    ' characters.',
+            )
             return
         }
     }
@@ -160,7 +237,10 @@ document.getElementById('btn_save').addEventListener('click', function () {
         try {
             info = JSON.parse(infoAnswer)
         } catch (e) {
-            console.error('[EntrustIDV] getAliasInfo: could not parse answer as JSON.', e)
+            console.error(
+                '[EntrustIDV] getAliasInfo: could not parse answer as JSON.',
+                e,
+            )
             btn.disabled = false
             btn.textContent = 'Save'
             _idvShowStatus('error', '❌ Unexpected response from server.')
@@ -171,12 +251,23 @@ document.getElementById('btn_save').addEventListener('click', function () {
             console.error('[EntrustIDV] getAliasInfo failed:', info)
             _idvEnableSave()
             btn.textContent = 'Save'
-            _idvShowStatus('error', '❌ ' + (info ? info.message : 'Unknown error.'))
+            _idvShowStatus(
+                'error',
+                '❌ ' + (info ? info.message : 'Unknown error.'),
+            )
             return
         }
 
         if (info.hasConnection) {
-            _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn)
+            _idvFinishSave(
+                region,
+                baseUrl,
+                tokenUrl,
+                clientId,
+                clientSecret,
+                workflowId,
+                btn,
+            )
             return
         }
 
@@ -195,30 +286,56 @@ document.getElementById('btn_save').addEventListener('click', function () {
         ccGa.addParam('sysparm_formData', JSON.stringify(formData))
         ccGa.addParam('sysparm_aliasSysID', info.aliasSysId)
         ccGa.getXMLAnswer(function (ccAnswer) {
-            console.log('[EntrustIDV] createConnectionAndCredential raw answer:', ccAnswer)
+            console.log(
+                '[EntrustIDV] createConnectionAndCredential raw answer:',
+                ccAnswer,
+            )
 
             // This processor doesn't document a success payload, so only treat it as an
             // error when the answer clearly says so — anything else falls through to Save,
             // which will surface a specific failure if the connection/credential still isn't there.
             if (ccAnswer && /error|exception/i.test(ccAnswer)) {
-                console.error('[EntrustIDV] createConnectionAndCredential returned an error:', ccAnswer)
+                console.error(
+                    '[EntrustIDV] createConnectionAndCredential returned an error:',
+                    ccAnswer,
+                )
                 _idvEnableSave()
                 btn.textContent = 'Save'
-                _idvShowStatus('error', '❌ Failed to create connection: ' + ccAnswer)
+                _idvShowStatus(
+                    'error',
+                    '❌ Failed to create connection: ' + ccAnswer,
+                )
                 return
             }
 
-            _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn)
+            _idvFinishSave(
+                region,
+                baseUrl,
+                tokenUrl,
+                clientId,
+                clientSecret,
+                workflowId,
+                btn,
+            )
         })
     })
 })
 
-function _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn) {
+function _idvFinishSave(
+    region,
+    baseUrl,
+    tokenUrl,
+    clientId,
+    clientSecret,
+    workflowId,
+    btn,
+) {
     var ga = new GlideAjax('EntrustIDVSetupAjax')
     ga.addParam('sysparm_name', 'saveConfig')
     ga.addParam('sysparm_region', region)
     ga.addParam('sysparm_base_url', baseUrl)
     ga.addParam('sysparm_token_url', tokenUrl)
+    ga.addParam('sysparm_workflow_id', workflowId)
     if (clientId) ga.addParam('sysparm_client_id', clientId)
     if (clientSecret) ga.addParam('sysparm_client_secret', clientSecret)
 
@@ -230,7 +347,10 @@ function _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn) 
         try {
             result = JSON.parse(answer)
         } catch (e) {
-            console.error('[EntrustIDV] saveConfig: could not parse answer as JSON.', e)
+            console.error(
+                '[EntrustIDV] saveConfig: could not parse answer as JSON.',
+                e,
+            )
             _idvEnableSave()
             _idvShowStatus('error', '❌ Unexpected response from server.')
             return
@@ -241,7 +361,10 @@ function _idvFinishSave(region, baseUrl, tokenUrl, clientId, clientSecret, btn) 
             _idvShowStatus('success', '✅ ' + result.message)
         } else {
             _idvEnableSave()
-            _idvShowStatus('error', '❌ ' + (result ? result.message : 'Unknown error.'))
+            _idvShowStatus(
+                'error',
+                '❌ ' + (result ? result.message : 'Unknown error.'),
+            )
         }
     })
 }
