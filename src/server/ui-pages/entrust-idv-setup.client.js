@@ -48,8 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Stored — enter to update'
             document.getElementById('idv_credentials_hint').style.display =
                 'block'
-            // Credentials already verified — allow saving without re-testing.
-            _idvEnableSave()
         }
     })
 })
@@ -76,6 +74,15 @@ document.getElementById('idv_region').addEventListener('change', function () {
 ;['idv_client_id', 'idv_client_secret'].forEach(function (id) {
     document.getElementById(id).addEventListener('input', _idvDisableSave)
 })
+
+// Workflow ID is not a connection parameter — enable save directly when stored config exists.
+document
+    .getElementById('idv_workflow_id')
+    .addEventListener('input', function () {
+        if (_idvHasStoredCredentials) {
+            _idvEnableSave()
+        }
+    })
 
 // Test Connection button
 document.getElementById('btn_test').addEventListener('click', function () {
