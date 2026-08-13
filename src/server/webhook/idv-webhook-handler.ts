@@ -24,31 +24,43 @@ interface WorkflowRunPayload {
     }
 }
 
-export function handleWebhookEvent(body: WorkflowRunPayload): WebhookHandleResult {
+export function handleWebhookEvent(
+    body: WorkflowRunPayload,
+): WebhookHandleResult {
     const payload = body && body.payload
 
     if (!payload || !payload.resource) {
-        gs.error('[IDV_WEBHOOK] Invalid or missing payload: ' + JSON.stringify(body))
+        gs.error(
+            '[IDV_WEBHOOK] Invalid or missing payload: ' + JSON.stringify(body),
+        )
         return { status: 'error', message: 'Invalid payload structure' }
     }
 
-    if (payload.action !== 'workflow_run.completed') {
+    if (
+        payload.action !== 'workflow_run.completed' ||
+        payload.resource_type !== 'workflow_run'
+    ) {
         return { status: 'ignored' }
     }
 
-    const resource      = payload.resource
-    const object        = payload.object
-    const workflowRunId = resource.id
-    const status        = resource.status || ''
-    const completedAt   = (object && object.completed_at_iso8601) || ''
-    const outcome       = (resource.output && resource.output.workflow_output) || ''
+    const resource = payload.resource
+    const object = payload.object
+    const workflowRunId = resource.id || (object && object.id)
+    const status = resource.status || (object && object.status) || ''
+    const completedAt = (object && object.completed_at_iso8601) || ''
+    const outcome = (resource.output && resource.output.workflow_output) || ''
 
     if (!workflowRunId) {
         gs.error('[IDV_WEBHOOK] Missing workflow run id in payload')
         return { status: 'error', message: 'Missing workflow run id' }
     }
 
-    gs.info('[IDV_WEBHOOK] workflow_run.completed: id=' + workflowRunId + ', status=' + status)
+    gs.info(
+        '[IDV_WEBHOOK] workflow_run.completed: id=' +
+            workflowRunId +
+            ', status=' +
+            status,
+    )
 
     const vr = new GlideRecord('x_entru_entrustidv_verification_request')
     vr.addQuery('workflow_run_id', workflowRunId)
@@ -56,15 +68,27 @@ export function handleWebhookEvent(body: WorkflowRunPayload): WebhookHandleResul
     vr.query()
 
     if (!vr.next()) {
-        gs.warn('[IDV_WEBHOOK] No verification request found for workflow_run_id=' + workflowRunId)
+        gs.warn(
+            '[IDV_WEBHOOK] No verification request found for workflow_run_id=' +
+                workflowRunId,
+        )
         // Return success so Entrust does not keep retrying an unresolvable event.
         return { status: 'not_found' }
     }
 
-    vr.setValue('status',              status)
-    vr.setValue('completed_at',        completedAt)
-    vr.setValue('outcome',             outcome)
-    vr.setValue('raw_webhook_payload', JSON.stringify(body))
+    if (status) {
+        vr.setValue('status', status)
+    }
+    if (completedAt) {
+        vr.setValue(
+            'completed_at',
+            completedAt.replace('T', ' ').replace('Z', ''),
+        )
+    }
+    if (outcome) {
+        vr.setValue('outcome', outcome)
+    }
+    vr.setValue('raw_webhook_payload', JSON.stringify(body).substring(0, 4000))
     vr.update()
 
     // Propagate status to the linked incident.

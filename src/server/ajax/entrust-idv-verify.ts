@@ -207,6 +207,7 @@ function createApplicant(
 interface CreateWorkflowRunResult {
     success: boolean
     workflowRunId?: string
+    status?: string
     linkUrl?: string
     message: string
 }
@@ -319,7 +320,11 @@ function createWorkflowRun(
         }
 
         if (status === 201) {
-            let parsed: { id?: string; link?: { url?: string } } = {}
+            let parsed: {
+                id?: string
+                status?: string
+                link?: { url?: string }
+            } = {}
             try {
                 parsed = body ? JSON.parse(body) : {}
             } catch (_) {
@@ -338,6 +343,7 @@ function createWorkflowRun(
             return {
                 success: true,
                 workflowRunId: parsed.id,
+                status: parsed.status,
                 linkUrl: parsed.link && parsed.link.url,
                 message: 'Workflow run created.',
             }
@@ -485,19 +491,33 @@ export function startVerification(incidentId: string): VerifyResult {
         }
     }
 
+    const vr = new GlideRecord('x_entru_entrustidv_verification_request')
+    vr.initialize()
+    vr.setValue('incident', incidentId)
+    vr.setValue('workflow_run_id', workflowResult.workflowRunId!)
+    vr.setValue('applicant_id', applicantResult.applicantId!)
+    if (workflowResult.status) {
+        vr.setValue('status', workflowResult.status)
+    }
+    vr.setValue('triggered_by', gs.getUserID())
+    vr.setValue('link_sent_to', email)
+    const verificationRequestId = vr.insert()
+    if (!verificationRequestId) {
+        gs.error(
+            '[EntrustIDV] Failed to save verification request for workflow run ' +
+                workflowResult.workflowRunId,
+        )
+        return {
+            success: false,
+            message:
+                'Identity verification started, but its tracking record could not be saved.',
+        }
+    }
+
     const emailQueued = config.getValue('delivery_channel') === 'email'
     if (emailQueued) {
         gs.eventQueue(SMART_CAPTURE_EVENT, incident, workflowResult.linkUrl, '')
     }
-
-    const vr = new GlideRecord('x_entru_entrustidv_verification_request')
-    vr.setValue('incident',         incidentId)
-    vr.setValue('workflow_run_id',  workflowResult.workflowRunId!)
-    vr.setValue('applicant_id',     applicantResult.applicantId!)
-    vr.setValue('status',           'awaiting')
-    vr.setValue('triggered_by',     gs.getUserID())
-    vr.setValue('link_sent_to',     email)
-    vr.insert()
 
     const incidentNumber = incident.getValue('number') as string
     const callerName = normaliseWhitespace(firstName + ' ' + lastName)
@@ -511,7 +531,7 @@ export function startVerification(incidentId: string): VerifyResult {
             ' on ' +
             incidentNumber +
             (emailQueued
-                                ? '. The Smart Capture Link email event has been queued for ' +
+                ? '. The Smart Capture Link email event has been queued for ' +
                   email +
                   '.'
                 : '. The configured delivery channel is not email, so no email was queued.'),
