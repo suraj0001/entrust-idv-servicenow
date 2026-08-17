@@ -6,6 +6,6 @@ export const IdvStatusOnLoad = ClientScript({
     name: 'IDV Status - Load from Verification Request',
     table: 'incident',
     type: 'onLoad',
-    active: true,
+    active: false, // TODO: re-activate once EntrustIDVVerifyAjax bridge is re-implemented
     script: Now.include('../../server/ui-actions/idv-status-onload.client.js'),
 })

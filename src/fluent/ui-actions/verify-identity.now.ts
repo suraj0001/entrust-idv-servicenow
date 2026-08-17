@@ -6,7 +6,7 @@ export const VerifyIdentityUiAction = UiAction({
     table: 'incident',
     name: 'Verify Identity',
     actionName: 'x_entru_entrustidv_verify_identity',
-    active: true,
+    active: false, // TODO: re-activate once EntrustIDVVerifyAjax bridge is re-implemented
     order: 100,
     form: {
         showButton: true,

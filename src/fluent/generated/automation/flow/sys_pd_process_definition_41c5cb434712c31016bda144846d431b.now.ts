@@ -180,3 +180,75 @@ Record({
         table: 'help_user_interaction',
     },
 })
+Record({
+    $id: Now.ID['4451f5c31b224b105fdb2f05604bcbaa'],
+    table: 'sys_trigger_runner_mapping',
+    data: {
+        active: 'true',
+        data: '{"trigger_on_unique_change":"false","parent_record":{"elementMapping":"{{triggerRecord}}","variableValue":"{{triggerRecord}}","elementMappingOrVariableValue":"{{triggerRecord}}"},"run_trigger":"run_once"}',
+        identifier: '81c5cb434712c31016bda144846d431b',
+        identifier_type: 'playbook',
+        runner: 'PDTriggerRunner',
+        trigger: '8c51f5c31b224b105fdb2f05604bcba8',
+    },
+})
+Record({
+    $id: Now.ID['c369f1091bfe87105fdb2f05604bcbf8'],
+    table: 'sys_trigger_runner_mapping',
+    data: {
+        active: 'true',
+        data: '{"trigger_on_unique_change":"false","parent_record":{"elementMapping":"{{triggerRecord}}","variableValue":"{{triggerRecord}}","elementMappingOrVariableValue":"{{triggerRecord}}"},"run_trigger":"run_once"}',
+        identifier: '81c5cb434712c31016bda144846d431b',
+        identifier_type: 'playbook',
+        runner: 'PDTriggerRunner',
+        trigger: '0f69f1091bfe87105fdb2f05604bcbf6',
+    },
+})
+Record({
+    $id: Now.ID['0f69f1091bfe87105fdb2f05604bcbf6'],
+    table: 'sys_flow_record_trigger',
+    data: {
+        active: 'true',
+        condition: 'guidance.process_definition=41c5cb434712c31016bda144846d431b',
+        on_delete: 'false',
+        on_insert: 'true',
+        on_update: 'true',
+        run_flow_in: 'background',
+        run_on_extended: 'false',
+        run_when_setting: 'both',
+        run_when_user_setting: 'any',
+        sys_domain: 'global',
+        sys_domain_path: '/',
+        table: 'help_user_interaction',
+    },
+})
+Record({
+    $id: Now.ID['7aaaf10d1bfe87105fdb2f05604bcb1d'],
+    table: 'sys_trigger_runner_mapping',
+    data: {
+        active: 'true',
+        data: '{"trigger_on_unique_change":"false","parent_record":{"elementMapping":"{{triggerRecord}}","variableValue":"{{triggerRecord}}","elementMappingOrVariableValue":"{{triggerRecord}}"},"run_trigger":"run_once"}',
+        identifier: '81c5cb434712c31016bda144846d431b',
+        identifier_type: 'playbook',
+        runner: 'PDTriggerRunner',
+        trigger: '7eaaf10d1bfe87105fdb2f05604bcb1c',
+    },
+})
+Record({
+    $id: Now.ID['7eaaf10d1bfe87105fdb2f05604bcb1c'],
+    table: 'sys_flow_record_trigger',
+    data: {
+        active: 'true',
+        condition: 'guidance.process_definition=41c5cb434712c31016bda144846d431b',
+        on_delete: 'false',
+        on_insert: 'true',
+        on_update: 'true',
+        run_flow_in: 'background',
+        run_on_extended: 'false',
+        run_when_setting: 'both',
+        run_when_user_setting: 'any',
+        sys_domain: 'global',
+        sys_domain_path: '/',
+        table: 'help_user_interaction',
+    },
+})

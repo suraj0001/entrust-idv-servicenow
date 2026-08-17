@@ -19,7 +19,7 @@ Record({
         run_strategy: 'run_once',
         run_strategy_on_process_definition: 'true',
         schema_version: '3',
-        snapshot: '6b62253947ea8f5016bda144846d4308',
+        snapshot: 'b6aaf10d1bfe87105fdb2f05604bcb1e',
         start_non_blocking: 'true',
         status: 'published',
         sync_state: 'COMPLETE',

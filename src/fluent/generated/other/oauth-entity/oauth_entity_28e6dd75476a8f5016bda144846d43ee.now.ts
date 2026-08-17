@@ -12,7 +12,7 @@ Record({
         auth_code_lifespan: '60',
         bff_cookie_exchange_allowed: 'false',
         bind_token_to_session: 'false',
-        client_id: '50c7df90-138f-44de-a046-ac0323377861',
+        client_id: '',
         client_secret: '',
         client_uuid: '68e6dd75476a8f5016bda144846d43ee',
         code_challenge_method: 'S256',

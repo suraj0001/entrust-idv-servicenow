@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es2019",
+        "lib": ["es2019", "dom"],
+        "strict": false,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "checkJs": false,
+        "allowJs": true
+    },
+    "include": ["./**/*.ts", "./**/*.js"]
+}
