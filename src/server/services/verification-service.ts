@@ -2,7 +2,7 @@ import { gs } from '@servicenow/glide'
 import { findSourceRecordContext } from '../repositories/source-record-repository.ts'
 import { findSubjectUser } from '../repositories/subject-user-repository.ts'
 import { getVerificationConfiguration } from '../repositories/verification-configuration-repository.ts'
-import { createVerificationRequest, findApplicantIdBySubjectUser } from '../repositories/verification-request-repository.ts'
+import { createVerificationRequest } from '../repositories/verification-request-repository.ts'
 import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
 import { createApplicant, createWorkflowRun } from '../entrust/entrust-verification-client.ts'
 import { sendVerificationLinkEmail } from './verification-email-service.ts'
@@ -35,6 +35,7 @@ export function startVerification(
     if (!subjectUser.firstName || !subjectUser.lastName) {
         throw new Error('The subject user must have a first name and last name.')
     }
+
     if (!subjectUser.email) {
         throw new Error('The subject user must have an email address.')
     }
@@ -51,17 +52,13 @@ export function startVerification(
         throw new Error('Entrust API connection is not configured.')
     }
 
-    // Reuse an existing Entrust applicant for this subject user if one already exists
-    let applicantId = findApplicantIdBySubjectUser(sourceContext.subjectUserId)
-    if (!applicantId) {
-        const applicant = createApplicant(connection, {
-            firstName: subjectUser.firstName,
-            lastName: subjectUser.lastName,
-        })
-        applicantId = applicant.applicantId
-    }
+    const applicant = createApplicant(connection, {
+        firstName: subjectUser.firstName,
+        lastName: subjectUser.lastName,
+    })
+    const applicantId = applicant.applicantId
 
-    // Always create a fresh workflow run, even when reusing an existing applicant
+    // create a fresh workflow run
     const workflowRun = createWorkflowRun(connection, {
         applicantId,
         workflowId: configuration.workflowId,
@@ -94,7 +91,6 @@ export function startVerification(
         smartCaptureUrl: workflowRun.smartCaptureUrl,
     }
 }
-
 
 function calculateExpiry(linkExpiryMinutes: number): string {
     return new Date(Date.now() + linkExpiryMinutes * 60 * 1000).toISOString()
