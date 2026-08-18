@@ -12,10 +12,6 @@ UiAction({
         showButton: true,
         style: 'unstyled',
     },
-    client: {
-        isClient: true,
-        onClick: 'executeVerifyIdentity',
-    },
     showInsert: false,
     showUpdate: true,
     condition: "current.getTableName() == 'incident' || current.getTableName() == 'sn_hr_core_case'",

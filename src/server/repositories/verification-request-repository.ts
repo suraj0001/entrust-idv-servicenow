@@ -1,6 +1,5 @@
 import { GlideRecord } from '@servicenow/glide'
-
-const VERIFICATION_REQUEST_TABLE = 'x_entru_entrustidv_verification_request'
+import { VERIFICATION_REQUEST_TABLE } from '../constants.ts'
 
 export interface CreateVerificationRequest {
     sourceTable: string

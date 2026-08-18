@@ -1,8 +1,5 @@
-const SUPPORTED_REGIONS = ['us', 'eu', 'ca'] as const
-type Region = typeof SUPPORTED_REGIONS[number]
-
-const MIN_LEN = 5
-const MAX_LEN = 255
+import { SUPPORTED_REGIONS, EntrustRegion, MIN_LEN, MAX_LEN } from '../constants.ts'
+type Region = EntrustRegion
 
 export interface SaveConfigInput {
     region: string

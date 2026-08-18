@@ -1,22 +1,17 @@
 import { RESTMessageV2 } from '@servicenow/glide/sn_ws'
+import { API_VERSION, EntrustRegion, BASE_URLS } from '../constants.ts'
 
-export type EntrustRegion = 'eu' | 'us' | 'ca'
+export type { EntrustRegion }
 
 export interface EntrustConnectionTestResult {
    success: boolean
    message: string
 }
 
-export const BASE_URLS: Record<EntrustRegion, string> = {
-   eu: 'https://api.eu.onfido.com/v3.6',
-   us: 'https://api.us.onfido.com/v3.6',
-   ca: 'https://api.ca.onfido.com/v3.6',
-}
-
 const TOKEN_URLS: Record<EntrustRegion, string> = {
-   eu: BASE_URLS.eu + '/oauth/token',
-   us: BASE_URLS.us + '/oauth/token',
-   ca: BASE_URLS.ca + '/oauth/token',
+   eu: BASE_URLS.eu + '/' + API_VERSION + '/oauth/token',
+   us: BASE_URLS.us + '/' + API_VERSION + '/oauth/token',
+   ca: BASE_URLS.ca + '/' + API_VERSION + '/oauth/token',
 }
 
 function fail(message: string): EntrustConnectionTestResult {

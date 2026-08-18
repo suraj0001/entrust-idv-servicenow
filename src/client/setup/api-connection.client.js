@@ -1,10 +1,11 @@
 /* eslint-disable */
 
-// BASE_URLS must match TOKEN_URLS base in src/server/entrust/entrust-auth-client.ts
+// BASE_URLS must match src/server/entrust/entrust-auth-client.ts
+var API_VERSION = 'v3.6'
 var BASE_URLS = {
-    us: 'https://api.us.onfido.com/v3.6',
-    eu: 'https://api.eu.onfido.com/v3.6',
-    ca: 'https://api.ca.onfido.com/v3.6',
+    us: 'https://api.us.onfido.com',
+    eu: 'https://api.eu.onfido.com',
+    ca: 'https://api.ca.onfido.com',
 }
 
 var _idvHasStoredCredentials = false
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
 _el('idv_region').addEventListener('change', function () {
     var base = BASE_URLS[this.value] || ''
     _el('idv_base_url').value = base
-    _el('idv_token_url').value = base ? base + '/oauth/token' : ''
+    _el('idv_token_url').value = base ? base + '/' + API_VERSION + '/oauth/token' : ''
     if (_idvHasStoredCredentials) _clearStoredCredentialPlaceholders()
     _idvShowStatus('', '')
     _idvDisableSave()

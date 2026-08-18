@@ -1,7 +1,5 @@
 import { gs, GlideRecord } from '@servicenow/glide'
-
-const ALIAS_NAME = 'entrust_idv_api'
-const CONFIG_TABLE = 'x_entru_entrustidv_configuration'
+import { ALIAS_NAME, CONFIG_TABLE } from '../constants.ts'
 
 export interface ConfigRecord   { sysId: string; region: string }
 export interface AliasRecord    { sysId: string }
@@ -85,7 +83,7 @@ export class ApiConnectionRepository {
         entityGr.setValue('client_id', clientId)
         entityGr.setValue('client_secret', clientSecret)
         entityGr.setValue('token_url', tokenUrl)
-        entityGr.setValue('refresh_token_url', tokenUrl)
+        entityGr.setValue('refresh_token_url', '')
         entityGr.setValue('default_grant_type', 'client_credentials')
         // Onfido requires credentials in the POST body, not as Basic auth
         entityGr.setValue('send_client_credentials_as', 'request_body_parameter')

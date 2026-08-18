@@ -1038,6 +1038,10 @@ declare global {
                         id: '2de013eb9c4b481bb98280b6cd1c22af'
                         deleted: true
                     }
+                    src_server_constants_ts: {
+                        table: 'sys_module'
+                        id: 'f4a096ec83cd4290a214c1dbfe90bc66'
+                    }
                     'src_server_entrust_entrust-auth-client_ts': {
                         table: 'sys_module'
                         id: '30d0d403d39f4a2aaa0d2efe67d170f0'

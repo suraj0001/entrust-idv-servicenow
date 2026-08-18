@@ -1,7 +1,5 @@
 import { GlideRecord } from '@servicenow/glide'
-
-const CONFIG_TABLE =
-    'x_entru_entrustidv_configuration'
+import { CONFIG_TABLE, DEFAULT_WORKFLOW_ID, DEFAULT_LINK_EXPIRY_MINUTES } from '../constants.ts'
 
 export interface VerificationConfiguration {
     workflowId: string
@@ -17,11 +15,15 @@ export function getVerificationConfiguration():
     config.query()
 
     if (!config.next()) {
-        return null
+        return {
+            workflowId: DEFAULT_WORKFLOW_ID,
+            linkExpiryMinutes: DEFAULT_LINK_EXPIRY_MINUTES,
+            redirectUrl: '',
+        }
     }
 
     const workflowId =
-        (config.getValue('workflow_id') as string) || ''
+        (config.getValue('workflow_id') as string) || DEFAULT_WORKFLOW_ID
 
     const linkExpiryValue =
         (config.getValue('link_expiry_minutes') as string) || ''
@@ -29,23 +31,14 @@ export function getVerificationConfiguration():
     const redirectUrl =
         (config.getValue('redirect_url') as string) || ''
 
-    if (!workflowId || !linkExpiryValue) {
-        return null
-    }
-
     const linkExpiryMinutes =
         parseInt(linkExpiryValue, 10)
 
-    if (
-        Number.isNaN(linkExpiryMinutes) ||
-        linkExpiryMinutes <= 0
-    ) {
-        return null
-    }
-
     return {
         workflowId,
-        linkExpiryMinutes,
+        linkExpiryMinutes: (Number.isNaN(linkExpiryMinutes) || linkExpiryMinutes <= 0)
+            ? DEFAULT_LINK_EXPIRY_MINUTES
+            : linkExpiryMinutes,
         redirectUrl,
     }
 }

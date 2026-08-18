@@ -1,9 +1,8 @@
 import {
-    EntrustRegion,
     EntrustConnectionTestResult,
     testEntrustConnection,
-    BASE_URLS,
 } from '../entrust/entrust-auth-client.ts'
+import { EntrustRegion, BASE_URLS, API_VERSION } from '../constants.ts'
 import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
 import { validateSaveInput, isSupportedRegion, SaveConfigInput } from '../setup/api-connection-validator.ts'
 
@@ -54,7 +53,7 @@ export function getConfig(): GetConfigResult {
             success: true,
             region: config.region,
             baseUrl: base,
-            tokenUrl: base ? base + '/oauth/token' : '',
+            tokenUrl: base ? base + '/' + API_VERSION + '/oauth/token' : '',
             connectionTested: connected,
         }
     } catch (err) {
