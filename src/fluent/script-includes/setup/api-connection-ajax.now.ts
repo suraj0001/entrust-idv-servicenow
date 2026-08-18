@@ -7,7 +7,7 @@ ScriptInclude({
    apiName: 'x_entru_entrustidv.ApiConnectionAjax',
    description: 'GlideAjax bridge for the API Connection setup page.',
    script: Now.include(
-       '../../../server/setup/api-connection/api-connection-ajax.server.js'
+       '../../../server/setup/api-connection-ajax.server.js'
    ),
    clientCallable: true,
    mobileCallable: false,

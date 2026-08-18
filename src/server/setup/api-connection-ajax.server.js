@@ -39,7 +39,7 @@ ApiConnectionAjax.prototype = Object.extendsObject(
 
 function _call(ctx, fn) {
     try {
-        var svc = require('./src/server/setup/api-connection/api-connection-service.ts');
+        var svc = require('./src/server/services/api-connection-service.ts');
         return JSON.stringify(fn(svc));
     } catch (err) {
         gs.error('[ApiConnectionAjax] ' + err);
