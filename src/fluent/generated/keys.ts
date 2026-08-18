@@ -706,6 +706,10 @@ declare global {
                         table: 'sys_ui_application'
                         id: 'a8863a721b1a0fd05fdb2f05604bcb4d'
                     }
+                    a9dc52111b728b105fdb2f05604bcb00: {
+                        table: 'sys_scope_privilege'
+                        id: 'a9dc52111b728b105fdb2f05604bcb00'
+                    }
                     af9b14d3475ec31016bda144846d43e8: {
                         table: 'sys_scope_privilege'
                         id: 'af9b14d3475ec31016bda144846d43e8'

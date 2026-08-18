@@ -5,7 +5,9 @@ import { getVerificationConfiguration } from '../repositories/verification-confi
 import { createVerificationRequest } from '../repositories/verification-request-repository.ts'
 import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
 import { createApplicant, createWorkflowRun } from '../entrust/entrust-verification-client.ts'
-import { sendVerificationLinkEmail } from './verification-email-service.ts'
+import {
+    queueVerificationEmail
+} from './verification-email-service.ts'
 
 
 export interface StartVerificationResult {
@@ -78,17 +80,28 @@ export function startVerification(
         status: workflowRun.status,
     })
 
-    // Email the Smart Capture link to the subject user; log but don't fail on email errors
-    try {
-        sendVerificationLinkEmail(subjectUser.email, subjectUser.firstName, workflowRun.smartCaptureUrl)
-    } catch (emailError) {
-        gs.warn('[IdentityVerification] Failed to send verification email: ' + emailError)
-    }
+    queueVerificationEmail({
+        recipientEmail:
+            subjectUser.email,
+
+        firstName:
+            subjectUser.firstName,
+
+        smartCaptureUrl:
+            workflowRun.smartCaptureUrl,
+
+        linkExpiryMinutes:
+            configuration.linkExpiryMinutes,
+    })
 
     return {
         verificationRequestId,
-        workflowRunId: workflowRun.workflowRunId,
-        smartCaptureUrl: workflowRun.smartCaptureUrl,
+    
+        workflowRunId:
+            workflowRun.workflowRunId,
+    
+        smartCaptureUrl:
+            workflowRun.smartCaptureUrl,
     }
 }
 

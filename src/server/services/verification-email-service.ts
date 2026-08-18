@@ -1,21 +1,66 @@
-// GlideEmailOutbound is not in @servicenow/glide stubs
-declare const GlideEmailOutbound: any
+import { GlideRecord } from '@servicenow/glide'
 
-export function sendVerificationLinkEmail(
-    toEmail: string,
-    firstName: string,
-    smartCaptureUrl: string,
-): void {
-    const email = new GlideEmailOutbound()
-    email.setTo(toEmail)
-    email.setSubject('Action Required: Complete Your Identity Verification')
-    email.setBody(
-        'Hello ' + firstName + ',\n\n' +
-        'You have been requested to complete an identity verification. ' +
-        'Please click the link below to begin:\n\n' +
-        smartCaptureUrl + '\n\n' +
-        'This link will expire, so please complete the verification promptly.\n\n' +
-        'If you did not expect this request, please contact your administrator.'
+export interface VerificationEmailRequest {
+    recipientEmail: string
+    firstName: string
+    smartCaptureUrl: string
+    linkExpiryMinutes: number
+}
+
+export function queueVerificationEmail(
+    input: VerificationEmailRequest
+): boolean {
+
+    if (!input.recipientEmail || !input.smartCaptureUrl) {
+        return false
+    }
+
+    const email = new GlideRecord('sys_email')
+    email.initialize()
+
+    email.setValue(
+        'type',
+        'send-ready'
     )
-    email.save()
+
+    email.setValue(
+        'recipients',
+        input.recipientEmail
+    )
+
+    email.setValue(
+        'subject',
+        'Complete your identity verification'
+    )
+
+    email.setValue(
+        'body_text',
+        buildEmailBody(input)
+    )
+
+    const emailSysId = email.insert()
+
+    return !!emailSysId
+}
+
+function buildEmailBody(
+    input: VerificationEmailRequest
+): string {
+
+    return (
+        'Hello ' + input.firstName + ',\n\n' +
+
+        'Please complete your identity verification using the secure link below:\n\n' +
+
+        input.smartCaptureUrl + '\n\n' +
+
+        'This link will expire in ' +
+        input.linkExpiryMinutes +
+        ' minutes.\n\n' +
+
+        'If you did not expect this identity verification request, ' +
+        'please contact your support team.\n\n' +
+
+        'Thank you.'
+    )
 }

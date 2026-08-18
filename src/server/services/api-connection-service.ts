@@ -30,15 +30,27 @@ export interface SaveConfigResult {
 const repo = new ApiConnectionRepository()
 
 function tokenUrl(region: EntrustRegion): string {
-    return BASE_URLS[region] + '/oauth/token'
+    return BASE_URLS[region] + '/' + API_VERSION + '/oauth/token'
 }
 
-// Traverses alias → connection; returns null if either is missing
 function resolveConnection() {
     const alias = repo.findAlias()
-    if (!alias) return null
-    const connection = repo.findConnection(alias.sysId)
-    return connection ? { alias, connection } : null
+
+    if (!alias) {
+        return null
+    }
+
+    const connection =
+        repo.getConnectionInfo(alias.sysId)
+
+    if (!connection) {
+        return null
+    }
+
+    return {
+        alias,
+        connection
+    }
 }
 
 export function getConfig(): GetConfigResult {
@@ -64,11 +76,30 @@ export function getConfig(): GetConfigResult {
 export function getAliasInfo(): AliasInfoResult {
     try {
         const alias = repo.findAlias()
-        if (!alias) return { success: false, message: 'Connection alias not found.' }
-        const connection = repo.findConnection(alias.sysId)
-        return { success: true, aliasSysId: alias.sysId, hasConnection: !!connection }
+
+        if (!alias) {
+            return {
+                success: false,
+                message: 'Connection alias not found.'
+            }
+        }
+
+        const connection =
+            repo.getConnectionInfo(alias.sysId)
+
+        return {
+            success: true,
+            aliasSysId: alias.sysId,
+            hasConnection: !!connection
+        }
+
     } catch (err) {
-        return { success: false, message: 'Failed to look up connection alias: ' + String(err) }
+        return {
+            success: false,
+            message:
+                'Failed to look up connection alias: ' +
+                String(err)
+        }
     }
 }
 

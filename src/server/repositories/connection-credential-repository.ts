@@ -1,9 +1,21 @@
 import { gs, GlideRecord } from '@servicenow/glide'
-import { ALIAS_NAME, CONFIG_TABLE } from '../constants.ts'
+import { ALIAS_ID, CONFIG_TABLE } from '../constants.ts'
+import { ConnectionInfoProvider } from '@servicenow/glide/sn_cc'
 
 export interface ConfigRecord   { sysId: string; region: string }
 export interface AliasRecord    { sysId: string }
 export interface OAuthEntityRecord { sysId: string; profileSysId: string }
+export interface RuntimeConnectionInfo {
+    baseUrl: string
+    credentialSysId: string
+}
+
+export interface EntrustRuntimeConnection {
+    baseUrl: string
+    oauthProfileId: string
+    requestorContext: string
+    requestorId: string
+}
 
 // Returns a GlideRecord after get(); null if the record doesn't exist
 function getRecord(table: string, sysId: string): GlideRecord | null {
@@ -36,36 +48,52 @@ export class ApiConnectionRepository {
 
     findAlias(): AliasRecord | null {
         const gr = new GlideRecord('sys_alias')
-        gr.addQuery('name', ALIAS_NAME)
+    
+        gr.addQuery('id', ALIAS_ID)
         gr.query()
-        return gr.next() ? { sysId: gr.getUniqueValue() } : null
-    }
-
-    findConnection(aliasSysId: string): ConnectionRecord | null {
-        const gr = new GlideRecord('http_connection')
-        gr.addQuery('connection_alias', aliasSysId)
-        gr.addQuery('active', true)
-        gr.orderByDesc('sys_created_on')
-        gr.query()
-
-        if (!gr.next()) return null
-
+    
+        if (!gr.next()) {
+            return null
+        }
+    
         return {
-            sysId: gr.getUniqueValue(),
-            baseUrl: (gr.getValue('connection_url') as string) || '',
-            credentialSysId: (gr.getValue('credential') as string) || '',
+            sysId: gr.getUniqueValue()
         }
     }
 
-    findOAuthEntity(credentialSysId: string): OAuthEntityRecord | null {
-        const credGr = getRecord('oauth_2_0_credentials', credentialSysId)
+    findOAuthEntity(
+        credentialSysId: string
+    ): OAuthEntityRecord | null {
+    
+        const credGr =
+            getRecord(
+                'oauth_2_0_credentials',
+                credentialSysId
+            )
+    
         if (!credGr) return null
-
-        const profileSysId = (credGr.getValue('oauth_entity_profile') as string) || ''
-        const profileGr = getRecord('oauth_entity_profile', profileSysId)
+    
+        const profileSysId =
+            (credGr.getValue(
+                'oauth_entity_profile'
+            ) as string) || ''
+    
+        const profileGr =
+            getRecord(
+                'oauth_entity_profile',
+                profileSysId
+            )
+    
         if (!profileGr) return null
-
-        return { sysId: (profileGr.getValue('oauth_entity') as string) || '', profileSysId }
+    
+        return {
+            sysId:
+                (profileGr.getValue(
+                    'oauth_entity'
+                ) as string) || '',
+    
+            profileSysId,
+        }
     }
 
     updateOAuthCredentials(
@@ -97,49 +125,84 @@ export class ApiConnectionRepository {
         return true
     }
 
+    getConnectionInfo(
+        aliasSysId: string
+    ): RuntimeConnectionInfo | null {
+    
+        const provider = new ConnectionInfoProvider()
+    
+        const connectionInfo =
+            provider.getConnectionInfo(aliasSysId)
+    
+        if (!connectionInfo) {
+            return null
+        }
+    
+        const baseUrl =
+            String(
+                connectionInfo.getAttribute('connection_url') || ''
+            )
+    
+        const credentialSysId =
+            String(
+                connectionInfo.getCredentialAttribute('sys_id') || ''
+            )
+    
+        if (!baseUrl || !credentialSysId) {
+            return null
+        }
+    
+        return {
+            baseUrl,
+            credentialSysId,
+        }
+    }
+
     getRuntimeConnection(): EntrustRuntimeConnection | null {
 
-    const alias = this.findAlias()
+        const alias = this.findAlias()
     if (!alias) return null
 
-    const connection = this.findConnection(alias.sysId)
-    if (!connection) return null
+    const provider = new ConnectionInfoProvider()
 
-    if (!connection.baseUrl || !connection.credentialSysId) {
+    const connectionInfo =
+        provider.getConnectionInfo(alias.sysId)
+
+    if (!connectionInfo) {
         return null
     }
-
-    const oauthEntity =
-        this.findOAuthEntity(connection.credentialSysId)
-
-    if (!oauthEntity || !oauthEntity.profileSysId) {
-        return null
+    
+        const baseUrl =
+            connectionInfo.getAttribute('connection_url') || ''
+    
+        const credentialSysId =
+            connectionInfo.getCredentialAttribute('sys_id') || ''
+    
+        if (!baseUrl || !credentialSysId) {
+            return null
+        }
+    
+        const oauthEntity =
+            this.findOAuthEntity(credentialSysId)
+    
+        if (!oauthEntity || !oauthEntity.profileSysId) {
+            return null
+        }
+    
+        return {
+            baseUrl: baseUrl.replace(
+                /\/v\d+\.\d+\/?$/,
+                ''
+            ),
+    
+            oauthProfileId:
+                oauthEntity.profileSysId,
+    
+            requestorContext:
+                'oauth_2_0_credentials',
+    
+            requestorId:
+                credentialSysId,
+        }
     }
-
-    return {
-        baseUrl: connection.baseUrl,
-
-        oauthProfileId:
-            oauthEntity.profileSysId,
-
-        requestorContext:
-            'oauth_2_0_credentials',
-
-        requestorId:
-            connection.credentialSysId,
-    }
-}
-}
-
-export interface EntrustRuntimeConnection {
-    baseUrl: string
-    oauthProfileId: string
-    requestorContext: string
-    requestorId: string
-}
-
-export interface ConnectionRecord {
-    sysId: string
-    baseUrl: string
-    credentialSysId: string
 }

@@ -13,6 +13,8 @@ export const MIN_LEN = 5
 export const MAX_LEN = 255
 
 export const ALIAS_NAME = 'entrust_idv_api'
+export const ALIAS_ID =
+    'x_entru_entrustidv.entrust_idv_api'
 export const CONFIG_TABLE = 'x_entru_entrustidv_configuration'
 export const VERIFICATION_REQUEST_TABLE = 'x_entru_entrustidv_verification_request'
 
