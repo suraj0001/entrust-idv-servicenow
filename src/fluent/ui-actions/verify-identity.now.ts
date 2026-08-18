@@ -1,12 +1,12 @@
 import '@servicenow/sdk/global'
 import { UiAction } from '@servicenow/sdk/core'
 
-export const VerifyIdentityUiAction = UiAction({
+UiAction({
     $id: Now.ID['verify-identity-ui-action'],
-    table: 'incident',
+    table: 'task',
     name: 'Verify Identity',
-    actionName: 'x_entru_entrustidv_verify_identity',
-    active: false, // TODO: re-activate once EntrustIDVVerifyAjax bridge is re-implemented
+    actionName: 'executeVerifyIdentity',
+    active: true,
     order: 100,
     form: {
         showButton: true,
@@ -14,12 +14,12 @@ export const VerifyIdentityUiAction = UiAction({
     },
     client: {
         isClient: true,
-        onClick: 'x_entru_idvVerifyIdentity()',
+        onClick: 'executeVerifyIdentity',
     },
     showInsert: false,
     showUpdate: true,
-    condition: "gs.hasRole('x_entru_entrustidv.agent') || gs.hasRole('admin')",
-    script: Now.include('../../server/ui-actions/verify-identity.client.js'),
-    roles: ['x_entru_entrustidv.agent', 'admin'],
+    condition: "current.getTableName() == 'incident' || current.getTableName() == 'sn_hr_core_case'",
+    script: Now.include('../../server/ui-actions/verify-identity.server.js'),
+    roles: ['x_entru_entrustidv.agent'],
     comments: 'Starts an Entrust identity verification for the incident.',
 })

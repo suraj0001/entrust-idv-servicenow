@@ -1,0 +1,43 @@
+import { GlideRecord } from '@servicenow/glide'
+
+export type SupportedSourceTable = 'incident' | 'sn_hr_core_case'
+
+export interface SourceRecordContext {
+    sourceTable: SupportedSourceTable
+    sourceRecordId: string
+    subjectUserId: string
+}
+
+// Maps each supported table to the field that references the subject user
+const SUBJECT_USER_FIELD: Record<SupportedSourceTable, string> = {
+    incident: 'caller_id',
+    sn_hr_core_case: 'subject_person',
+}
+
+export function findSourceRecordContext(
+    sourceTable: string,
+    sourceRecordId: string,
+): SourceRecordContext | null {
+    if (!isSupportedSourceTable(sourceTable) || !sourceRecordId) {
+        return null
+    }
+
+    const sourceRecord = new GlideRecord(sourceTable)
+    sourceRecord.get(sourceRecordId)
+    if (!sourceRecord.isValidRecord()) {
+        return null
+    }
+
+    const subjectUserId = sourceRecord.getValue(SUBJECT_USER_FIELD[sourceTable])
+    if (!subjectUserId) {
+        return null
+    }
+
+    return { sourceTable, sourceRecordId, subjectUserId }
+}
+
+function isSupportedSourceTable(
+    sourceTable: string,
+): sourceTable is SupportedSourceTable {
+    return sourceTable === 'incident' || sourceTable === 'sn_hr_core_case'
+}

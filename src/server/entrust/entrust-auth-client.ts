@@ -54,7 +54,7 @@ export function testEntrustConnection(
            if (body.access_token) return { success: true, message: 'Connection successful.' }
            return fail('Reached Entrust but no access token was returned. Re-check credentials.')
        }
-       return fail('Unable to authenticate with Entrust. HTTP ' + status)
+       return fail('Connection failed (HTTP ' + status + '). Please check your credentials and try again.')
    } catch (error) {
        return fail('Unable to connect to Entrust.')
    }

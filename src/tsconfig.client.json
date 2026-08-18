@@ -17,5 +17,5 @@
     "include": [
         "./**/*.client.js",
         "../@types/servicenow/*.client.d.ts"
-    ]
+, "server/ui-actions/verify-identity.server.js"    ]
 }
