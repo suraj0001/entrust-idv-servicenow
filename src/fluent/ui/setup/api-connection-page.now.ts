@@ -6,7 +6,7 @@ UiPage({
     endpoint: 'x_entru_entrustidv_entrust_api_connection_setup.do',
     description: 'Configure the Entrust Identity Verification API connection.',
     category: 'general',
-    html: Now.include('../../../client/setup/api-connection/api-connection.html'),
-    clientScript: Now.include('../../../client/setup/api-connection/api-connection.client.js'),
+    html: Now.include('../../../client/setup/api-connection.html'),
+    clientScript: Now.include('../../../client/setup/api-connection.client.js'),
     direct: false,
 })

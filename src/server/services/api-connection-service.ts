@@ -3,9 +3,9 @@ import {
     EntrustConnectionTestResult,
     testEntrustConnection,
     BASE_URLS,
-} from '../../entrust/entrust-auth-client.ts'
-import { ApiConnectionRepository } from './api-connection-repository.ts'
-import { validateSaveInput, isSupportedRegion, SaveConfigInput } from './api-connection-validator.ts'
+} from '../entrust/entrust-auth-client.ts'
+import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
+import { validateSaveInput, isSupportedRegion, SaveConfigInput } from '../setup/api-connection-validator.ts'
 
 export interface GetConfigResult {
     success: boolean
