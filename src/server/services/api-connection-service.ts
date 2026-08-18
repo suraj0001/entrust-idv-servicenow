@@ -4,7 +4,7 @@ import {
     testEntrustConnection,
     BASE_URLS,
 } from '../entrust/entrust-auth-client.ts'
-import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
+import { ApiConnectionRepository } from '../repositories/api-connection-repository.ts'
 import { validateSaveInput, isSupportedRegion, SaveConfigInput } from '../setup/api-connection-validator.ts'
 
 export interface GetConfigResult {
