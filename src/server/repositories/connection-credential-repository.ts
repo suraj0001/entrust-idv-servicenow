@@ -5,7 +5,6 @@ const CONFIG_TABLE = 'x_entru_entrustidv_configuration'
 
 export interface ConfigRecord   { sysId: string; region: string }
 export interface AliasRecord    { sysId: string }
-export interface ConnectionRecord { sysId: string; credentialSysId: string }
 export interface OAuthEntityRecord { sysId: string; profileSysId: string }
 
 // Returns a GlideRecord after get(); null if the record doesn't exist
@@ -47,11 +46,15 @@ export class ApiConnectionRepository {
     findConnection(aliasSysId: string): ConnectionRecord | null {
         const gr = new GlideRecord('http_connection')
         gr.addQuery('connection_alias', aliasSysId)
+        gr.addQuery('active', true)
         gr.orderByDesc('sys_created_on')
         gr.query()
+
         if (!gr.next()) return null
+
         return {
             sysId: gr.getUniqueValue(),
+            baseUrl: (gr.getValue('connection_url') as string) || '',
             credentialSysId: (gr.getValue('credential') as string) || '',
         }
     }
@@ -95,4 +98,50 @@ export class ApiConnectionRepository {
         }
         return true
     }
+
+    getRuntimeConnection(): EntrustRuntimeConnection | null {
+
+    const alias = this.findAlias()
+    if (!alias) return null
+
+    const connection = this.findConnection(alias.sysId)
+    if (!connection) return null
+
+    if (!connection.baseUrl || !connection.credentialSysId) {
+        return null
+    }
+
+    const oauthEntity =
+        this.findOAuthEntity(connection.credentialSysId)
+
+    if (!oauthEntity || !oauthEntity.profileSysId) {
+        return null
+    }
+
+    return {
+        baseUrl: connection.baseUrl,
+
+        oauthProfileId:
+            oauthEntity.profileSysId,
+
+        requestorContext:
+            'oauth_2_0_credentials',
+
+        requestorId:
+            connection.credentialSysId,
+    }
+}
+}
+
+export interface EntrustRuntimeConnection {
+    baseUrl: string
+    oauthProfileId: string
+    requestorContext: string
+    requestorId: string
+}
+
+export interface ConnectionRecord {
+    sysId: string
+    baseUrl: string
+    credentialSysId: string
 }

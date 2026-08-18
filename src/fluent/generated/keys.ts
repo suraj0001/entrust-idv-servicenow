@@ -1042,6 +1042,10 @@ declare global {
                         table: 'sys_module'
                         id: '30d0d403d39f4a2aaa0d2efe67d170f0'
                     }
+                    'src_server_entrust_entrust-verification-client_ts': {
+                        table: 'sys_module'
+                        id: 'c9019785b02d4474b053e2f9ada2e268'
+                    }
                     'src_server_js_entrust-idv-setup-client_js': {
                         table: 'sys_module'
                         id: '3fbbf828991747a78b3de31b979fa079'
@@ -1051,6 +1055,26 @@ declare global {
                         table: 'sys_module'
                         id: '812ac2a8661d4e089949f6cadab00270'
                         deleted: true
+                    }
+                    'src_server_repositories_connection-credential-repository_ts': {
+                        table: 'sys_module'
+                        id: '5edfa8c38e124cf7861cbf27533492c8'
+                    }
+                    'src_server_repositories_source-record-repository_ts': {
+                        table: 'sys_module'
+                        id: 'f7165abb19884d0da2dacacb08336d03'
+                    }
+                    'src_server_repositories_subject-user-repository_ts': {
+                        table: 'sys_module'
+                        id: '9770cb88a3b2430d86058743111aa821'
+                    }
+                    'src_server_repositories_verification-configuration-repository_ts': {
+                        table: 'sys_module'
+                        id: 'a7d189efed354553996573dab9c8895c'
+                    }
+                    'src_server_repositories_verification-request-repository_ts': {
+                        table: 'sys_module'
+                        id: '3b3d64fcae2a4b02a131f29fa1cd6618'
                     }
                     'src_server_script-includes_entrust-idv-setup_ts': {
                         table: 'sys_module'
@@ -1067,21 +1091,45 @@ declare global {
                         id: '58a2a2edd7ad4b5c92fac5508f170583'
                         deleted: true
                     }
+                    'src_server_services_api-connection-service_ts': {
+                        table: 'sys_module'
+                        id: 'ac049fa92c134f14ae9b547f75919e37'
+                    }
+                    'src_server_services_verification-email-service_ts': {
+                        table: 'sys_module'
+                        id: 'a9d9b763d5744a539dd695a011232bb0'
+                    }
+                    'src_server_services_verification-service_ts': {
+                        table: 'sys_module'
+                        id: '842dd081a7bf47dd8b7241dfd6b1df00'
+                    }
                     'src_server_setup_api-connection_api-connection-ajax_server_js': {
                         table: 'sys_module'
                         id: '6a564407cea14f4a982f0f3e447228fe'
+                        deleted: true
                     }
                     'src_server_setup_api-connection_api-connection-repository_ts': {
                         table: 'sys_module'
                         id: 'eb671a7378e244e1a4e4817c6b206a89'
+                        deleted: true
                     }
                     'src_server_setup_api-connection_api-connection-service_ts': {
                         table: 'sys_module'
                         id: '918fc54878de425b9100e7375523055c'
+                        deleted: true
                     }
                     'src_server_setup_api-connection_api-connection-validator_ts': {
                         table: 'sys_module'
                         id: '34829dea185c45b99b6369bed62b4393'
+                        deleted: true
+                    }
+                    'src_server_setup_api-connection-ajax_server_js': {
+                        table: 'sys_module'
+                        id: 'b67cb9a7ef6841bbb92e6b2c24668c8b'
+                    }
+                    'src_server_setup_api-connection-validator_ts': {
+                        table: 'sys_module'
+                        id: '8035c623380c428c8bf8865efdb99ba1'
                     }
                     'src_server_setup_entrust-setup_ts': {
                         table: 'sys_module'
@@ -1100,6 +1148,11 @@ declare global {
                     'src_server_ui-actions_verify-identity_client_js': {
                         table: 'sys_module'
                         id: 'a230e18d90624b57bc09893e6c1ff832'
+                        deleted: true
+                    }
+                    'src_server_ui-actions_verify-identity_server_js': {
+                        table: 'sys_module'
+                        id: '48cd38d7dc214af8916127e1056986be'
                     }
                     'src_server_ui-pages_entrust-idv-setup_client_js': {
                         table: 'sys_module'
@@ -1844,6 +1897,7 @@ declare global {
                     {
                         table: 'sys_ui_action_role'
                         id: '4474eaa8ca114884a17d181b69d72f9b'
+                        deleted: true
                         key: {
                             sys_ui_action: '668460c581d3435e9659a4403aa2688c'
                             sys_user_role: {
@@ -2195,6 +2249,13 @@ declare global {
                             name: 'var__m_sys_pd_snapshot_input_b6aaf10d1bfe87105fdb2f05604bcb1e'
                             element: 'parent_record'
                             language: 'en'
+                        }
+                    },
+                    {
+                        table: 'sys_ux_lib_asset'
+                        id: '7bba47a9683b4fe9b433c3d4e4e7f0e5'
+                        key: {
+                            name: 'x_entru_entrustidv/setup/api-connection.client'
                         }
                     },
                     {
@@ -2684,6 +2745,13 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ux_lib_asset'
+                        id: 'b056a6b5f8794336b16adf245d98d57b'
+                        key: {
+                            name: 'x_entru_entrustidv/setup/api-connection.client.js.map'
+                        }
+                    },
+                    {
                         table: 'sys_documentation'
                         id: 'b08c1db547aa8f5016bda144846d4306'
                         key: {
@@ -3132,6 +3200,7 @@ declare global {
                     {
                         table: 'sys_ux_lib_asset'
                         id: 'e3b8915a148d4778a82cd5c0bd9afe28'
+                        deleted: true
                         key: {
                             name: 'x_entru_entrustidv/setup/api-connection/api-connection.client'
                         }
@@ -3209,6 +3278,7 @@ declare global {
                     {
                         table: 'sys_ux_lib_asset'
                         id: 'f2f748321b9d41a182faccfad6486580'
+                        deleted: true
                         key: {
                             name: 'x_entru_entrustidv/setup/api-connection/api-connection.client.js.map'
                         }
