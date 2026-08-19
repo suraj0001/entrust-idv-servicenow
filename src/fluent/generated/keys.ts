@@ -374,6 +374,7 @@ declare global {
                     '5f7ac5e81bee4f145fdb2f05604bcbaf': {
                         table: 'sys_alias_templates'
                         id: '5f7ac5e81bee4f145fdb2f05604bcbaf'
+                        deleted: true
                     }
                     '5fef72721b9a0fd05fdb2f05604bcb20': {
                         table: 'sys_ws_operation'
@@ -522,6 +523,7 @@ declare global {
                     '79ef22fe1b960fd05fdb2f05604bcb6f': {
                         table: 'sys_alias'
                         id: '79ef22fe1b960fd05fdb2f05604bcb6f'
+                        deleted: true
                     }
                     '7aaaf10d1bfe87105fdb2f05604bcb1d': {
                         table: 'sys_trigger_runner_mapping'
@@ -680,6 +682,7 @@ declare global {
                     a4e6dd75476a8f5016bda144846d43f3: {
                         table: 'oauth_entity_profile'
                         id: 'a4e6dd75476a8f5016bda144846d43f3'
+                        deleted: true
                     }
                     a5a6e0ef1bde83145fdb2f05604bcb9f: {
                         table: 'oauth_entity'
