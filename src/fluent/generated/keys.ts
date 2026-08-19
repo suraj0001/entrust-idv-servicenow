@@ -183,10 +183,6 @@ declare global {
                         table: 'sys_flow_compiled_flow_chunk'
                         id: '278c9db547aa8f5016bda144846d4354'
                     }
-                    '28e6dd75476a8f5016bda144846d43ee': {
-                        table: 'oauth_entity'
-                        id: '28e6dd75476a8f5016bda144846d43ee'
-                    }
                     '2a1d73a6472a071016bda144846d43be': {
                         table: 'sys_ws_definition'
                         id: '2a1d73a6472a071016bda144846d43be'
