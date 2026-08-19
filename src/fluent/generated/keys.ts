@@ -955,10 +955,12 @@ declare global {
                     'entrust-idv-smart-capture-email': {
                         table: 'sysevent_email_action'
                         id: 'd5bc41783d1648a6a55678ff57565e76'
+                        deleted: true
                     }
                     'entrust-idv-smart-capture-event': {
                         table: 'sysevent_register'
                         id: 'bc0ef96ad5404910bde63da9df48c326'
+                        deleted: true
                     }
                     'entrust-setup-ajax-si': {
                         table: 'sys_script_include'
@@ -1119,6 +1121,7 @@ declare global {
                     'src_server_services_verification-email-service_ts': {
                         table: 'sys_module'
                         id: 'a9d9b763d5744a539dd695a011232bb0'
+                        deleted: true
                     }
                     'src_server_services_verification-service_ts': {
                         table: 'sys_module'
@@ -1204,9 +1207,18 @@ declare global {
                         table: 'sys_module'
                         id: '52d85201c68c40538d08ddb6378e345d'
                     }
+                    'verification-request-created-event': {
+                        table: 'sysevent_register'
+                        id: 'fe95cdbb04ff463c84c52ebfc3668cc8'
+                    }
                     'verification-requested-created-event': {
                         table: 'sysevent_register'
                         id: '1153521976954157a7f374947cf0bb9b'
+                        deleted: true
+                    }
+                    'verification-smart-capture-link-notification': {
+                        table: 'sysevent_email_action'
+                        id: 'b8a876370892429ba2ccc0070092df48'
                     }
                     'verify-identity-ui-action': {
                         table: 'sys_ui_action'

@@ -12,6 +12,7 @@ Acl({
    operation: 'read',
    roles: [adminRole],
    description: 'Allows IDV administrators to read IDV configuration.',
+   active: false
 })
 
 Acl({
@@ -21,6 +22,7 @@ Acl({
    operation: 'create',
    roles: [adminRole],
    description: 'Allows IDV administrators to create IDV configuration.',
+   active: false
 })
 
 Acl({
@@ -30,6 +32,7 @@ Acl({
    operation: 'write',
    roles: [adminRole],
    description: 'Allows IDV administrators to update IDV configuration.',
+   active: false
 })
 
 Acl({
@@ -39,6 +42,7 @@ Acl({
    operation: 'delete',
    script: 'answer = false;',
    description: 'Prevents application users from deleting IDV configuration.',
+   active: false
 })
 
 //
@@ -52,6 +56,7 @@ Acl({
    roles: [adminRole, agentRole],
    description:
        'Allows IDV administrators and agents to read verification requests.',
+   active: false
 })
 
 Acl({
@@ -62,6 +67,7 @@ Acl({
    script: 'answer = false;',
    description:
        'Prevents application users from manually creating verification requests.',
+   active: false
 })
 
 Acl({
@@ -72,6 +78,7 @@ Acl({
    script: 'answer = false;',
    description:
        'Prevents application users from manually updating verification requests.',
+   active: false
 })
 
 Acl({
@@ -82,4 +89,5 @@ Acl({
    script: 'answer = false;',
    description:
        'Prevents application users from deleting verification requests.',
+   active: false
 })

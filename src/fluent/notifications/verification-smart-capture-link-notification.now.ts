@@ -28,7 +28,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
         eventName: VERIFICATION_REQUEST_CREATED_EVENT,
     },
     recipientDetails: {
-        recipientFields: ['subject_user.email'],
+        recipientFields: ['subject_user'],
         sendToCreator: false,
         isSubscribableByAllUsers: false,
     },
