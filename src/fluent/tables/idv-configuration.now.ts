@@ -27,6 +27,7 @@ export const x_entru_entrustidv_configuration = Table({
             label: 'Smart Link Delivery Channel',
             mandatory: true,
             maxLength: 10,
+            defaultValue: 'email',
         }),
 
         redirect_url: UrlColumn({
