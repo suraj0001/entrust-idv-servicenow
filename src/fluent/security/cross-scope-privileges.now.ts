@@ -59,6 +59,7 @@ CrossScopePrivilege({ $id: Now.ID['cross-scope-certificate-encryption'], operati
 CrossScopePrivilege({ $id: Now.ID['693dc4e847e6035016bda144846d4320'], operation: 'read',   status: 'allowed', targetName: 'sys_user',              targetScope: 'global', targetType: 'sys_db_object' })
 CrossScopePrivilege({ $id: Now.ID['6b9f04eb4716871016bda144846d4361'], operation: 'read',   status: 'allowed', targetName: 'sys_alias',             targetScope: 'global', targetType: 'sys_db_object' })
 CrossScopePrivilege({ $id: Now.ID['6f9f04eb4716871016bda144846d4367'], operation: 'read',   status: 'allowed', targetName: 'http_connection',       targetScope: 'global', targetType: 'sys_db_object' })
+CrossScopePrivilege({ $id: Now.ID['cross-scope-http-connection-write'], operation: 'write',  status: 'allowed', targetName: 'http_connection',       targetScope: 'global', targetType: 'sys_db_object' })
 CrossScopePrivilege({ $id: Now.ID['573858a34796871016bda144846d43e4'], operation: 'read',   status: 'allowed', targetName: 'oauth_entity',          targetScope: 'global', targetType: 'sys_db_object' })
 CrossScopePrivilege({ $id: Now.ID['902d60631b52c3145fdb2f05604bcbd1'], operation: 'read',   status: 'allowed', targetName: 'oauth_entity_profile',  targetScope: 'global', targetType: 'sys_db_object' })
 CrossScopePrivilege({ $id: Now.ID['5f38d06f4756871016bda144846d4326'], operation: 'read',   status: 'allowed', targetName: 'oauth_2_0_credentials', targetScope: 'global', targetType: 'sys_db_object' })

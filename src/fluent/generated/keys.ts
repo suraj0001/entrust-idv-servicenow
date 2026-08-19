@@ -833,6 +833,10 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: 'd3e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0'
                     }
+                    'cross-scope-http-connection-write': {
+                        table: 'sys_scope_privilege'
+                        id: 'e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0b1'
+                    }
                     d203f3dc1b224f145fdb2f05604bcb88: {
                         table: 'sys_trigger_runner_mapping'
                         id: 'd203f3dc1b224f145fdb2f05604bcb88'

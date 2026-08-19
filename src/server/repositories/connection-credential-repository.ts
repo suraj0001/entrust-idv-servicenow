@@ -205,4 +205,68 @@ export class ApiConnectionRepository {
                 credentialSysId,
         }
     }
+
+    // Direct GlideRecord query on http_connection to bypass ConnectionInfoProvider timing/caching
+    findRawHttpConnection(aliasSysId: string): { sysId: string; credentialSysId: string } | null {
+        const gr = new GlideRecord('http_connection')
+        gr.addQuery('credential_alias', aliasSysId)
+        gr.query()
+        if (!gr.next()) return null
+        return {
+            sysId: gr.getUniqueValue(),
+            credentialSysId: (gr.getValue('credential') as string) || '',
+        }
+    }
+
+    createCredentialChain(clientId: string, clientSecret: string, tokenUrl: string): string | null {
+        const entityGr = new GlideRecord('oauth_entity')
+        entityGr.initialize()
+        entityGr.setValue('name', 'Entrust IDV OAuth')
+        entityGr.setValue('type', 'consumer')
+        entityGr.setValue('client_id', clientId)
+        entityGr.setValue('client_secret', clientSecret)
+        entityGr.setValue('token_url', tokenUrl)
+        entityGr.setValue('default_grant_type', 'client_credentials')
+        entityGr.setValue('send_client_credentials_as', 'request_body_parameter')
+        const entitySysId = String(entityGr.insert() || '')
+        if (!entitySysId) {
+            gs.error('[ApiConnection] createCredentialChain: oauth_entity insert failed')
+            return null
+        }
+
+        const profileGr = new GlideRecord('oauth_entity_profile')
+        profileGr.initialize()
+        profileGr.setValue('name', 'Entrust IDV Profile')
+        profileGr.setValue('oauth_entity', entitySysId)
+        profileGr.setValue('grant_type', 'client_credentials')
+        profileGr.setValue('default', true)
+        const profileSysId = String(profileGr.insert() || '')
+        if (!profileSysId) {
+            gs.error('[ApiConnection] createCredentialChain: oauth_entity_profile insert failed')
+            return null
+        }
+
+        const credGr = new GlideRecord('oauth_2_0_credentials')
+        credGr.initialize()
+        credGr.setValue('name', 'Entrust IDV Credential')
+        credGr.setValue('oauth_entity_profile', profileSysId)
+        const credSysId = String(credGr.insert() || '')
+        if (!credSysId) {
+            gs.error('[ApiConnection] createCredentialChain: oauth_2_0_credentials insert failed')
+            return null
+        }
+
+        return credSysId
+    }
+
+    attachCredentialToConnection(connectionSysId: string, credentialSysId: string): boolean {
+        const gr = getRecord('http_connection', connectionSysId)
+        if (!gr) {
+            gs.error('[ApiConnection] attachCredentialToConnection: http_connection not found: ' + connectionSysId)
+            return false
+        }
+        gr.setValue('credential', credentialSysId)
+        gr.update()
+        return true
+    }
 }

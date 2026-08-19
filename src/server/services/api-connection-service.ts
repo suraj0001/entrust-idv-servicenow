@@ -59,6 +59,56 @@ function resolveConnection() {
     }
 }
 
+function resolveOAuthEntity() {
+    const chain = resolveConnection()
+    if (chain) {
+        gs.info('[ApiConnection] resolveOAuthEntity: found via ConnectionInfoProvider credentialSysId=' + chain.connection.credentialSysId)
+        const entity = repo.findOAuthEntity(chain.connection.credentialSysId)
+        if (entity) return entity
+        gs.warn('[ApiConnection] resolveOAuthEntity: findOAuthEntity returned null for credentialSysId=' + chain.connection.credentialSysId)
+    }
+
+    gs.warn('[ApiConnection] resolveOAuthEntity: falling back to direct http_connection query')
+    const alias = repo.findAlias()
+    if (!alias) {
+        gs.warn('[ApiConnection] resolveOAuthEntity: alias not found')
+        return null
+    }
+
+    const rawConn = repo.findRawHttpConnection(alias.sysId)
+    if (!rawConn) {
+        gs.warn('[ApiConnection] resolveOAuthEntity: no http_connection found for aliasSysId=' + alias.sysId)
+        return null
+    }
+
+    gs.info('[ApiConnection] resolveOAuthEntity: raw connection sysId=' + rawConn.sysId + ' credentialSysId=' + rawConn.credentialSysId)
+
+    if (rawConn.credentialSysId) {
+        const entity = repo.findOAuthEntity(rawConn.credentialSysId)
+        if (entity) {
+            gs.info('[ApiConnection] resolveOAuthEntity: found via direct query sysId=' + entity.sysId)
+            return entity
+        }
+        gs.warn('[ApiConnection] resolveOAuthEntity: findOAuthEntity returned null for direct credentialSysId=' + rawConn.credentialSysId)
+    }
+
+    gs.warn('[ApiConnection] resolveOAuthEntity: no credential on connection, creating new credential chain')
+    const newCredentialSysId = repo.createCredentialChain('', '', '')
+    if (!newCredentialSysId) {
+        gs.error('[ApiConnection] resolveOAuthEntity: createCredentialChain failed')
+        return null
+    }
+
+    const attached = repo.attachCredentialToConnection(rawConn.sysId, newCredentialSysId)
+    if (!attached) {
+        gs.error('[ApiConnection] resolveOAuthEntity: attachCredentialToConnection failed')
+        return null
+    }
+
+    gs.info('[ApiConnection] resolveOAuthEntity: credential chain created and attached credentialSysId=' + newCredentialSysId)
+    return repo.findOAuthEntity(newCredentialSysId)
+}
+
 export function getConfig(): GetConfigResult {
     try {
         const config = repo.findConfiguration()
@@ -118,14 +168,10 @@ export function saveConfig(input: SaveConfigInput): SaveConfigResult {
     try {
         if (input.clientId && input.clientSecret) {
             gs.info('[ApiConnection] saveConfig: credentials provided, resolving connection chain')
-            const chain = resolveConnection()
-            if (!chain) return { success: false, message: 'No connection found. Complete initial setup first.' }
-
-            gs.info('[ApiConnection] saveConfig: looking up OAuth entity for credentialSysId=' + chain.connection.credentialSysId)
-            const entity = repo.findOAuthEntity(chain.connection.credentialSysId)
+            const entity = resolveOAuthEntity()
             if (!entity) {
-                gs.warn('[ApiConnection] saveConfig: OAuth entity not found for credentialSysId=' + chain.connection.credentialSysId)
-                return { success: false, message: 'OAuth credentials not found. Re-run initial setup.' }
+                gs.warn('[ApiConnection] saveConfig: unable to resolve OAuth entity')
+                return { success: false, message: 'Failed to resolve or create OAuth credentials.' }
             }
 
             gs.info('[ApiConnection] saveConfig: OAuth entity found sysId=' + entity.sysId + ' profileSysId=' + entity.profileSysId)
