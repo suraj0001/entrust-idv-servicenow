@@ -41,6 +41,10 @@ declare global {
                         table: 'sys_flow_compiled_flow'
                         id: '0851f5c3c8224b10102cb531d11f4cb2'
                     }
+                    '08b2b29d1b368b105fdb2f05604bcb3b': {
+                        table: 'sys_scope_privilege'
+                        id: '08b2b29d1b368b105fdb2f05604bcb3b'
+                    }
                     '0c51f5c31b224b105fdb2f05604bcbaf': {
                         table: 'sys_pd_snapshot_chunk'
                         id: '0c51f5c31b224b105fdb2f05604bcbaf'
@@ -759,6 +763,15 @@ declare global {
                         table: 'sys_pd_snapshot_input'
                         id: 'baaaf10d1bfe87105fdb2f05604bcb26'
                     }
+                    bba2b29d1b368b105fdb2f05604bcb24: {
+                        table: 'sys_scope_privilege'
+                        id: 'bba2b29d1b368b105fdb2f05604bcb24'
+                    }
+                    bc0ef96ad5404910bde63da9df48c326: {
+                        table: 'sysevent_register'
+                        id: 'bc0ef96ad5404910bde63da9df48c326'
+                        deleted: true
+                    }
                     bc863a721b1a0fd05fdb2f05604bcb82: {
                         table: 'sys_security_acl'
                         id: 'bc863a721b1a0fd05fdb2f05604bcb82'
@@ -1190,6 +1203,10 @@ declare global {
                     'src_server_webhook_idv-webhook-handler_ts': {
                         table: 'sys_module'
                         id: '52d85201c68c40538d08ddb6378e345d'
+                    }
+                    'verification-requested-created-event': {
+                        table: 'sysevent_register'
+                        id: '1153521976954157a7f374947cf0bb9b'
                     }
                     'verify-identity-ui-action': {
                         table: 'sys_ui_action'
