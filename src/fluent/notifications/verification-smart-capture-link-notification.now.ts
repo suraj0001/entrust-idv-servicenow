@@ -47,7 +47,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
                         <tr>
                             <td style="padding:32px; color:#263746; font-family:Verdana, sans-serif; font-size:15px; line-height:1.6;">
                                 <p style="margin:0 0 20px;">Hello \${subject_user.first_name},</p>
-                                <p style="margin:0 0 20px;">Please complete the identity verification requested for the case <strong>\${event.param2}</strong></p>
+                                <p style="margin:0 0 20px;">Please complete the identity verification requested for the case <strong>\${event.parm2}</strong></p>
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0;">
                                     <tr>
                                         <td style="background-color:#176b5b; border-radius:4px;">
@@ -62,7 +62,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
                         </tr>
                         <tr>
                             <td style="padding:20px 32px; border-top:1px solid #e3e7ea; color:#6a7884; font-family:Verdana, sans-serif; font-size:12px; line-height:1.5;">
-                                This is an automated message regarding case \${event.param2}. Please do not reply to this email.
+                                This is an automated message regarding case \${event.parm2}. Please do not reply to this email.
                             </td>
                         </tr>
                     </table>
@@ -71,7 +71,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
         </table>`,
         messageText: `Hello \${subject_user.first_name},
 
-Please complete the identity verification requested for case \${event.param2}.
+Please complete the identity verification requested for case \${event.parm2}.
 
 Start identity verification: \${event.parm1}
 
