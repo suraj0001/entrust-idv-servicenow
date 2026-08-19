@@ -34,7 +34,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
     emailContent: {
         contentType: 'multipart/mixed',
         subject:
-            'Action required: complete identity verification for ${number}',
+            'Action required: complete identity verification for ${event.parm2}',
         messageHtml: `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#f3f5f7; margin:0; padding:0;">
             <tr>
                 <td align="center" style="padding:32px 16px;">
@@ -47,7 +47,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
                         <tr>
                             <td style="padding:32px; color:#263746; font-family:Verdana, sans-serif; font-size:15px; line-height:1.6;">
                                 <p style="margin:0 0 20px;">Hello \${subject_user.first_name},</p>
-                                <p style="margin:0 0 20px;">Please complete the identity verification requested for case <strong>\${event.param2}</strong>.</p>
+                                <p style="margin:0 0 20px;">Please complete the identity verification requested for the case <strong>\${event.param2}</strong></p>
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0;">
                                     <tr>
                                         <td style="background-color:#176b5b; border-radius:4px;">
