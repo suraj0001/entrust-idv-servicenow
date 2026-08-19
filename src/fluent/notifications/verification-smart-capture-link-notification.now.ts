@@ -1,7 +1,6 @@
 import '@servicenow/sdk/global'
 import { EmailNotification, Record } from '@servicenow/sdk/core'
-
-const VERIFICATION_REQUEST_CREATED_EVENT = 'x_entru_entrustidv.verification-request.created'
+import { VERIFICATION_REQUEST_CREATED_EVENT } from '../../server/constants.ts'
 
 export const VerificationRequestCreatedEvent = Record({
     $id: Now.ID['verification-request-created-event'],

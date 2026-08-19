@@ -5,6 +5,7 @@ import { getVerificationConfiguration } from '../repositories/verification-confi
 import { createVerificationRequest, findVerificationRequestById } from '../repositories/verification-request-repository.ts'
 import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
 import { createApplicant, createWorkflowRun } from '../entrust/entrust-verification-client.ts'
+import { VERIFICATION_REQUEST_CREATED_EVENT } from '../constants.ts'
 
 
 export interface StartVerificationResult {
@@ -87,7 +88,7 @@ export function startVerification(
     }
 
     gs.eventQueue(
-    'x_entru_entrustidv.verification.created',
+    VERIFICATION_REQUEST_CREATED_EVENT,
     verificationRequest,
     workflowRun.smartCaptureUrl,
     sourceContext.sourceRecordNumber

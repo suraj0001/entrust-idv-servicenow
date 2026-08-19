@@ -20,3 +20,5 @@ export const VERIFICATION_REQUEST_TABLE = 'x_entru_entrustidv_verification_reque
 
 export const DEFAULT_WORKFLOW_ID = '4aa50569-b226-4785-b5e1-ee9e30eee7e6'
 export const DEFAULT_LINK_EXPIRY_MINUTES = 60
+
+export const VERIFICATION_REQUEST_CREATED_EVENT = 'x_entru_entrustidv.verification.created'
