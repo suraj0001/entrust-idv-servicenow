@@ -1,7 +1,7 @@
 import '@servicenow/sdk/global'
 import { EmailNotification, Record } from '@servicenow/sdk/core'
 
-const SMART_CAPTURE_EVENT = 'x_entru_entrustidv.smart_capture.created'
+const SMART_CAPTURE_EVENT = 'x_entru_entrustidv.verification-request.created'
 
 export const SmartCaptureEvent = Record({
     $id: Now.ID['entrust-idv-smart-capture-event'],
