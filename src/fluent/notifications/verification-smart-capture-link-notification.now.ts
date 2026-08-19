@@ -1,32 +1,36 @@
 import '@servicenow/sdk/global'
 import { EmailNotification, Record } from '@servicenow/sdk/core'
 
-const SMART_CAPTURE_EVENT = 'x_entru_entrustidv.verification-request.created'
+const VERIFICATION_REQUEST_CREATED_EVENT = 'x_entru_entrustidv.verification-request.created'
 
-export const SmartCaptureEvent = Record({
-    $id: Now.ID['entrust-idv-smart-capture-event'],
+export const VerificationRequestCreatedEvent = Record({
+    $id: Now.ID['verification-request-created-event'],
     table: 'sysevent_register',
     data: {
-        event_name: SMART_CAPTURE_EVENT,
-        table: 'incident',
-        description: 'An Entrust IDV Smart Capture link is ready for delivery.',
-    },
+        event_name:
+            VERIFICATION_REQUEST_CREATED_EVENT,
+        table:
+            'x_entru_entrustidv_verification_request',
+        description:
+            'Triggered after an Entrust identity verification workflow has been created.'
+    }
 })
 
-export const SmartCaptureEmailNotification = EmailNotification({
-    $id: Now.ID['entrust-idv-smart-capture-email'],
-    table: 'incident',
+export const VerificationSmartCaptureLinkNotification = EmailNotification({
+    $id: Now.ID['verification-smart-capture-link-notification'],
+    table: 'x_entru_entrustidv_verification_request',
     name: 'Entrust IDV Smart Capture Link',
     description:
-        'Send an Entrust IDV Smart Capture link to the incident caller.',
+        'Send an Entrust IDV Smart Capture link to the caller.',
     active: true,
     triggerConditions: {
         generationType: 'event',
-        eventName: SMART_CAPTURE_EVENT,
+        eventName: VERIFICATION_REQUEST_CREATED_EVENT,
     },
     recipientDetails: {
-        recipientFields: ['caller_id'],
+        recipientFields: ['subject_user.email'],
         sendToCreator: false,
+        isSubscribableByAllUsers: false,
     },
     emailContent: {
         contentType: 'multipart/mixed',
@@ -43,8 +47,8 @@ export const SmartCaptureEmailNotification = EmailNotification({
                         </tr>
                         <tr>
                             <td style="padding:32px; color:#263746; font-family:Verdana, sans-serif; font-size:15px; line-height:1.6;">
-                                <p style="margin:0 0 20px;">Hello \${caller_id.first_name},</p>
-                                <p style="margin:0 0 20px;">Please complete the identity verification requested for incident <strong>\${number}</strong>.</p>
+                                <p style="margin:0 0 20px;">Hello \${subject_user.first_name},</p>
+                                <p style="margin:0 0 20px;">Please complete the identity verification requested for case <strong>\${event.param2}</strong>.</p>
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0;">
                                     <tr>
                                         <td style="background-color:#176b5b; border-radius:4px;">
@@ -59,16 +63,16 @@ export const SmartCaptureEmailNotification = EmailNotification({
                         </tr>
                         <tr>
                             <td style="padding:20px 32px; border-top:1px solid #e3e7ea; color:#6a7884; font-family:Verdana, sans-serif; font-size:12px; line-height:1.5;">
-                                This is an automated message regarding incident \${number}. Please do not reply to this email.
+                                This is an automated message regarding case \${event.param2}. Please do not reply to this email.
                             </td>
                         </tr>
                     </table>
                 </td>
             </tr>
         </table>`,
-        messageText: `Hello \${caller_id.first_name},
+        messageText: `Hello \${subject_user.first_name},
 
-Please complete the identity verification requested for incident \${number}.
+Please complete the identity verification requested for case \${event.param2}.
 
 Start identity verification: \${event.parm1}
 

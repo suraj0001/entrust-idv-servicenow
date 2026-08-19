@@ -2,12 +2,9 @@ import { gs } from '@servicenow/glide'
 import { findSourceRecordContext } from '../repositories/source-record-repository.ts'
 import { findSubjectUser } from '../repositories/subject-user-repository.ts'
 import { getVerificationConfiguration } from '../repositories/verification-configuration-repository.ts'
-import { createVerificationRequest } from '../repositories/verification-request-repository.ts'
+import { createVerificationRequest, findVerificationRequestById } from '../repositories/verification-request-repository.ts'
 import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
 import { createApplicant, createWorkflowRun } from '../entrust/entrust-verification-client.ts'
-import {
-    queueVerificationEmail
-} from './verification-email-service.ts'
 
 
 export interface StartVerificationResult {
@@ -80,26 +77,26 @@ export function startVerification(
         status: workflowRun.status,
     })
 
-    queueVerificationEmail({
-        recipientEmail:
-            subjectUser.email,
+   const verificationRequest =
+    findVerificationRequestById(
+        verificationRequestId
+    )
 
-        firstName:
-            subjectUser.firstName,
+    if (!verificationRequest) {
+        throw new Error('Unable to resolve the created verification request.')
+    }
 
-        smartCaptureUrl:
-            workflowRun.smartCaptureUrl,
-
-        linkExpiryMinutes:
-            configuration.linkExpiryMinutes,
-    })
+    gs.eventQueue(
+    'x_entru_entrustidv.verification.created',
+    verificationRequest,
+    workflowRun.smartCaptureUrl,
+    sourceContext.sourceRecordNumber
+)
 
     return {
-        verificationRequestId,
-    
+        verificationRequestId,    
         workflowRunId:
-            workflowRun.workflowRunId,
-    
+            workflowRun.workflowRunId,    
         smartCaptureUrl:
             workflowRun.smartCaptureUrl,
     }

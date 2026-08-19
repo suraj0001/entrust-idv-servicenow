@@ -5,6 +5,7 @@ export type SupportedSourceTable = 'incident' | 'sn_hr_core_case'
 export interface SourceRecordContext {
     sourceTable: SupportedSourceTable
     sourceRecordId: string
+    sourceRecordNumber: string
     subjectUserId: string
 }
 
@@ -14,7 +15,7 @@ const SUBJECT_USER_FIELD: Record<SupportedSourceTable, string> = {
     sn_hr_core_case: 'subject_person',
 }
 
-export function findSourceRecordContext(
+export function find(
     sourceTable: string,
     sourceRecordId: string,
 ): SourceRecordContext | null {
@@ -33,7 +34,13 @@ export function findSourceRecordContext(
         return null
     }
 
-    return { sourceTable, sourceRecordId, subjectUserId }
+    return {
+    sourceTable,
+    sourceRecordId,
+    sourceRecordNumber:
+        (sourceRecord.getValue('number') as string) || '',
+    subjectUserId,
+}
 }
 
 function isSupportedSourceTable(

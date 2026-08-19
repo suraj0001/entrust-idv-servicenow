@@ -30,3 +30,17 @@ export function createVerificationRequest(input: CreateVerificationRequest): str
     }
     return sysId.toString()
 }
+
+export function findVerificationRequestById(
+    sysId: string
+): GlideRecord | null {
+    if (!sysId) {
+        return null
+    }
+    const gr =
+        new GlideRecord(VERIFICATION_REQUEST_TABLE)
+    if (!gr.get(sysId)) {
+        return null
+    }
+    return gr
+}
