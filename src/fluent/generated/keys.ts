@@ -187,6 +187,10 @@ declare global {
                         table: 'sys_flow_compiled_flow_chunk'
                         id: '278c9db547aa8f5016bda144846d4354'
                     }
+                    '28e6dd75476a8f5016bda144846d43ee': {
+                        table: 'oauth_entity'
+                        id: '28e6dd75476a8f5016bda144846d43ee'
+                    }
                     '2a1d73a6472a071016bda144846d43be': {
                         table: 'sys_ws_definition'
                         id: '2a1d73a6472a071016bda144846d43be'
@@ -694,7 +698,7 @@ declare global {
                     a4e6dd75476a8f5016bda144846d43f3: {
                         table: 'oauth_entity_profile'
                         id: 'a4e6dd75476a8f5016bda144846d43f3'
-                        deleted: true
+                        deleted: false
                     }
                     a5a6e0ef1bde83145fdb2f05604bcb9f: {
                         table: 'oauth_entity'
@@ -1112,6 +1116,10 @@ declare global {
                         id: '812ac2a8661d4e089949f6cadab00270'
                         deleted: true
                     }
+                    'src_server_repositories_configuration-repository_ts': {
+                        table: 'sys_module'
+                        id: '5bb0db0080a64b1e94fcb0fe6bc6df6d'
+                    }
                     'src_server_repositories_connection-credential-repository_ts': {
                         table: 'sys_module'
                         id: '5edfa8c38e124cf7861cbf27533492c8'
@@ -1127,6 +1135,7 @@ declare global {
                     'src_server_repositories_verification-configuration-repository_ts': {
                         table: 'sys_module'
                         id: 'a7d189efed354553996573dab9c8895c'
+                        deleted: true
                     }
                     'src_server_repositories_verification-request-repository_ts': {
                         table: 'sys_module'
@@ -1160,6 +1169,10 @@ declare global {
                         table: 'sys_module'
                         id: '842dd081a7bf47dd8b7241dfd6b1df00'
                     }
+                    'src_server_services_verification-settings-service_ts': {
+                        table: 'sys_module'
+                        id: '51ea5c6097c8424fbceb27c4ba101178'
+                    }
                     'src_server_setup_api-connection_api-connection-ajax_server_js': {
                         table: 'sys_module'
                         id: '6a564407cea14f4a982f0f3e447228fe'
@@ -1192,6 +1205,14 @@ declare global {
                         table: 'sys_module'
                         id: '2ab0663c5adc427d960caa451766b53c'
                         deleted: true
+                    }
+                    'src_server_setup_verification-settings-ajax_server_js': {
+                        table: 'sys_module'
+                        id: '0f52e99134ed4bb393616ed85d8e9dbb'
+                    }
+                    'src_server_setup_verification-settings-validator_ts': {
+                        table: 'sys_module'
+                        id: '0a74d48df05b40fdaafd06f979da8943'
                     }
                     'src_server_ts_entrust-idv-setup_ts': {
                         table: 'sys_module'
@@ -1248,6 +1269,10 @@ declare global {
                         table: 'sysevent_register'
                         id: '1153521976954157a7f374947cf0bb9b'
                         deleted: true
+                    }
+                    'verification-settings-ajax': {
+                        table: 'sys_script_include'
+                        id: 'd2c5cfb160b34289ab1526263c3bfcf9'
                     }
                     'verification-smart-capture-link-notification': {
                         table: 'sysevent_email_action'
@@ -1933,6 +1958,13 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ux_lib_asset'
+                        id: '36f1d1841ff14e92ae4ad9b2b4cd0b78'
+                        key: {
+                            name: 'x_entru_entrustidv/setup/verification-settings.client'
+                        }
+                    },
+                    {
                         table: 'sys_user_role'
                         id: '37c7a63a1b560fd05fdb2f05604bcbda'
                         deleted: true
@@ -2580,6 +2612,7 @@ declare global {
                     {
                         table: 'sys_ui_page'
                         id: '90fe780d1b7687105fdb2f05604bcbca'
+                        deleted: true
                         key: {
                             endpoint: 'x_entru_entrustidv_entrust_workflow_config.do'
                         }
@@ -3193,6 +3226,13 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ux_lib_asset'
+                        id: 'ce4c74cbb19645e58559c2f93c813afb'
+                        key: {
+                            name: 'x_entru_entrustidv/setup/verification-settings.client.js.map'
+                        }
+                    },
+                    {
                         table: 'sys_dictionary'
                         id: 'ceaa609d98534a04afb58a384140a520'
                         key: {
@@ -3207,6 +3247,13 @@ declare global {
                             name: 'var__m_sys_pd_snapshot_input_1603f3dc1b224f145fdb2f05604bcb8a'
                             element: 'parent_record'
                             language: 'en'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_page'
+                        id: 'd2808354e53e48c4a2ce88fcc156eaf2'
+                        key: {
+                            endpoint: 'x_entru_entrustidv_verification_settings_setup.do'
                         }
                     },
                     {
