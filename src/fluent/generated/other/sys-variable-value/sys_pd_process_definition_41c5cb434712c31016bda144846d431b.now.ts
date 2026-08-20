@@ -201,3 +201,171 @@ Record({
         variable: '1dc54b074712c31016bda144846d43dc',
     },
 })
+Record({
+    $id: Now.ID['20fe2f3d4736cf1016bda144846d431d'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        variable: '47057a4eeb3331107626211f1a5228dc',
+    },
+})
+Record({
+    $id: Now.ID['24fe2f3d4736cf1016bda144846d4316'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 1,
+        value: '0',
+        variable: 'a3187cef37b356106c62349be2924b61',
+    },
+})
+Record({
+    $id: Now.ID['24fe2f3d4736cf1016bda144846d431e'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        value: '{{act.d2e8624a87891e006d7b8ff907860bd4.label}}',
+        variable: '32057a4eeb3331107626211f1a522880',
+    },
+})
+Record({
+    $id: Now.ID['2cfe2f3d4736cf1016bda144846d431b'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        variable: '0b057a4eeb3331107626211f1a5228b2',
+    },
+})
+Record({
+    $id: Now.ID['60fe2f3d4736cf1016bda144846d431c'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        variable: '7e057a4eeb3331107626211f1a522890',
+    },
+})
+Record({
+    $id: Now.ID['64fe2f3d4736cf1016bda144846d4315'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 5,
+        value: 'yes',
+        variable: 'aa81ba4aeb3331107626211f1a522896',
+    },
+})
+Record({
+    $id: Now.ID['64fe2f3d4736cf1016bda144846d431d'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        value: 'sys_flow_data',
+        variable: '87057a4eeb3331107626211f1a5228d0',
+    },
+})
+Record({
+    $id: Now.ID['68fe2f3d4736cf1016bda144846d4316'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 4,
+        variable: 'e281ba4aeb3331107626211f1a522893',
+    },
+})
+Record({
+    $id: Now.ID['68fe2f3d4736cf1016bda144846d431e'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        variable: 'f3163e8eeb3331107626211f1a522880',
+    },
+})
+Record({
+    $id: Now.ID['a4fe2f3d4736cf1016bda144846d431c'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        value: 'sys_flow_data',
+        variable: 'fe057a4eeb3331107626211f1a5228a6',
+    },
+})
+Record({
+    $id: Now.ID['a8fe2f3d4736cf1016bda144846d431d'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        variable: '7e057a4eeb3331107626211f1a52289b',
+    },
+})
+Record({
+    $id: Now.ID['acfe2f3d4736cf1016bda144846d4316'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 2,
+        value: '/x_entru_entrustidv_verification_settings_setup.do',
+        variable: '9e817a0aeb3331107626211f1a522893',
+    },
+})
+Record({
+    $id: Now.ID['e0fe2f3d4736cf1016bda144846d4317'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 3,
+        variable: 'd681ba4aeb3331107626211f1a52288f',
+    },
+})
+Record({
+    $id: Now.ID['e4fe2f3d4736cf1016bda144846d431b'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        value: '0',
+        variable: '7a9c34eb37f356106c62349be2924b0a',
+    },
+})
+Record({
+    $id: Now.ID['e8fe2f3d4736cf1016bda144846d431c'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        variable: '2e057a4eeb3331107626211f1a522844',
+    },
+})
+Record({
+    $id: Now.ID['ecfe2f3d4736cf1016bda144846d431d'],
+    table: 'sys_variable_value',
+    data: {
+        document: 'sys_pd_activity',
+        document_key: 'd2e8624a87891e006d7b8ff907860bd4',
+        order: 100,
+        value: '<p>{<!-- -->{act.d2e8624a87891e006d7b8ff907860bd4.description}}</p>',
+        variable: 'ae057a4eeb3331107626211f1a52286e',
+    },
+})

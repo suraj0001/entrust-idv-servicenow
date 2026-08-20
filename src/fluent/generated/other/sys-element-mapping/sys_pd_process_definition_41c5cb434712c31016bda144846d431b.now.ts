@@ -160,3 +160,153 @@ Record({
         value: '{{triggerRecord}}',
     },
 })
+Record({
+    $id: Now.ID['e0fe2f3d4736cf1016bda144846d4314'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'allow_skip',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_hub_flow_input_6470760aeb3331107626211f1a52288c',
+    },
+})
+Record({
+    $id: Now.ID['a0fe2f3d4736cf1016bda144846d4318'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'allow_skip',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+        value: '{{vl.GS Iframe./start.allow_skip}}',
+    },
+})
+Record({
+    $id: Now.ID['a0fe2f3d4736cf1016bda144846d4315'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'assigned_to',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_hub_flow_input_6470760aeb3331107626211f1a52288c',
+    },
+})
+Record({
+    $id: Now.ID['28fe2f3d4736cf1016bda144846d4314'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'assignment_group',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_hub_flow_input_6470760aeb3331107626211f1a52288c',
+    },
+})
+Record({
+    $id: Now.ID['e8fe2f3d4736cf1016bda144846d4319'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'associated_record',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+        value: '{{vl.GS Iframe.e11c6c21-d76c-476d-91cf-b5cd4d5e703c./end.record}}',
+    },
+})
+Record({
+    $id: Now.ID['60fe2f3d4736cf1016bda144846d4319'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'associated_table',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+    },
+})
+Record({
+    $id: Now.ID['a8fe2f3d4736cf1016bda144846d431a'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'description',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+        value: '{{act.d2e8624a87891e006d7b8ff907860bd4.description}}',
+    },
+})
+Record({
+    $id: Now.ID['2cfe2f3d4736cf1016bda144846d4318'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'experience_status_record',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+        value: '{{vl.GS Iframe.e11c6c21-d76c-476d-91cf-b5cd4d5e703c./end.record}}',
+    },
+})
+Record({
+    $id: Now.ID['20fe2f3d4736cf1016bda144846d431a'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'experience_status_table',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+    },
+})
+Record({
+    $id: Now.ID['e4fe2f3d4736cf1016bda144846d4318'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'footer',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+    },
+})
+Record({
+    $id: Now.ID['a4fe2f3d4736cf1016bda144846d4319'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'icon',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+    },
+})
+Record({
+    $id: Now.ID['64fe2f3d4736cf1016bda144846d431a'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'tagline',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+    },
+})
+Record({
+    $id: Now.ID['ecfe2f3d4736cf1016bda144846d431a'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'title',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+        value: '{{act.d2e8624a87891e006d7b8ff907860bd4.label}}',
+    },
+})
+Record({
+    $id: Now.ID['6cfe2f3d4736cf1016bda144846d4314'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'url',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_hub_flow_input_6470760aeb3331107626211f1a52288c',
+    },
+})
+Record({
+    $id: Now.ID['24fe2f3d4736cf1016bda144846d431b'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'url',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_pd_activity_type_prop_9205f64eeb3331107626211f1a52284f',
+        value: '{{vl.GS Iframe./start.url}}',
+    },
+})
+Record({
+    $id: Now.ID['a4fe2f3d4736cf1016bda144846d4313'],
+    table: 'sys_element_mapping',
+    data: {
+        field: 'wait',
+        id: 'd2e8624a87891e006d7b8ff907860bd4',
+        table: 'var__m_sys_hub_flow_input_6470760aeb3331107626211f1a52288c',
+    },
+})
