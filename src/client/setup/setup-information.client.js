@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable */
 
-var WEBHOOK_PATH = "/api/x_entru_entrustidv/entrust/webhook/events";
+var WEBHOOK_PATH = "/api/x_entru_entrustidv/entrustidv/webhook/events";
 
 function _el(id) {
   return document.getElementById(id);

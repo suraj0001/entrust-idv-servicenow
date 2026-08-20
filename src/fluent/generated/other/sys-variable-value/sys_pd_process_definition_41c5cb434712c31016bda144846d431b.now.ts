@@ -58,7 +58,7 @@ Record({
         document: 'sys_pd_activity',
         document_key: 'e682c1fe196c676e71706da4f9f5cb06',
         order: 2,
-        value: '/x_entru_entrustidv_enrtust_api_connection_setup.do',
+        value: '/x_entru_entrustidv_entrust_api_connection_setup.do',
         variable: '9e817a0aeb3331107626211f1a522893',
     },
 })
