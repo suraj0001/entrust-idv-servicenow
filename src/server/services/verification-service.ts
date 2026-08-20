@@ -1,7 +1,7 @@
 import { gs } from '@servicenow/glide'
 import { findSourceRecordContext } from '../repositories/source-record-repository.ts'
 import { findSubjectUser } from '../repositories/subject-user-repository.ts'
-import { getVerificationConfiguration } from '../repositories/verification-configuration-repository.ts'
+import { getVerificationConfiguration } from '../repositories/configuration-repository.ts'
 import { createVerificationRequest, findVerificationRequestById } from '../repositories/verification-request-repository.ts'
 import { ApiConnectionRepository } from '../repositories/connection-credential-repository.ts'
 import { createApplicant, createWorkflowRun } from '../entrust/entrust-verification-client.ts'
@@ -43,7 +43,7 @@ export function startVerification(
     // Load verification configuration (workflow ID, link expiry, redirect URL)
     const configuration = getVerificationConfiguration()
     if (!configuration) {
-        throw new Error('Identity Verification configuration is incomplete.')
+        throw new Error('Verification configuration is not complete. Please contact your administrator.')
     }
 
     // Resolve the Entrust API connection and OAuth credentials
