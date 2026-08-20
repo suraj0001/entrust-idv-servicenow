@@ -1,21 +1,15 @@
-import { StringColumn, Table } from '@servicenow/sdk/core'
+import { StringColumn, Table } from "@servicenow/sdk/core";
 
 export const sn_hr_core_case = Table({
-    augments: 'sn_hr_core_case',
+  augments: "sn_hr_core_case",
 
-    schema: {
+  schema: {
+    x_entru_entrustidv_verification_status: StringColumn({
+      label: "Identity Verification Status",
 
-        x_entru_entrustidv_verification_status: StringColumn({
+      mandatory: false,
 
-            label: 'Identity Verification Status',
-
-            mandatory: false,
-
-            maxLength: 100,
-
-        }),
-
-    },
-
-})
- 
+      maxLength: 100,
+    }),
+  },
+});

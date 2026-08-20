@@ -1,41 +1,38 @@
-import '@servicenow/sdk/global'
-import { EmailNotification, Record } from '@servicenow/sdk/core'
-import { VERIFICATION_REQUEST_CREATED_EVENT } from '../../server/constants.ts'
+import "@servicenow/sdk/global";
+import { EmailNotification, Record } from "@servicenow/sdk/core";
+import { VERIFICATION_REQUEST_CREATED_EVENT } from "../../server/constants.ts";
 
 export const VerificationRequestCreatedEvent = Record({
-    $id: Now.ID['verification-request-created-event'],
-    table: 'sysevent_register',
-    data: {
-        event_name:
-            VERIFICATION_REQUEST_CREATED_EVENT,
-        table:
-            'x_entru_entrustidv_verification_request',
-        description:
-            'Triggered after an Entrust identity verification workflow has been created.'
-    }
-})
+  $id: Now.ID["verification-request-created-event"],
+  table: "sysevent_register",
+  data: {
+    event_name: VERIFICATION_REQUEST_CREATED_EVENT,
+    table: "x_entru_entrustidv_verification_request",
+    description:
+      "Triggered after an Entrust identity verification workflow has been created.",
+  },
+});
 
 export const VerificationSmartCaptureLinkNotification = EmailNotification({
-    $id: Now.ID['verification-smart-capture-link-notification'],
-    table: 'x_entru_entrustidv_verification_request',
-    name: 'Entrust IDV Smart Capture Link',
-    description:
-        'Send an Entrust IDV Smart Capture link to the caller.',
-    active: true,
-    triggerConditions: {
-        generationType: 'event',
-        eventName: VERIFICATION_REQUEST_CREATED_EVENT,
-    },
-    recipientDetails: {
-        recipientFields: ['subject_user'],
-        sendToCreator: false,
-        isSubscribableByAllUsers: false,
-    },
-    emailContent: {
-        contentType: 'multipart/mixed',
-        subject:
-            'Action required: complete identity verification for ${event.parm2}',
-        messageHtml: `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#f3f5f7; margin:0; padding:0;">
+  $id: Now.ID["verification-smart-capture-link-notification"],
+  table: "x_entru_entrustidv_verification_request",
+  name: "Entrust IDV Smart Capture Link",
+  description: "Send an Entrust IDV Smart Capture link to the caller.",
+  active: true,
+  triggerConditions: {
+    generationType: "event",
+    eventName: VERIFICATION_REQUEST_CREATED_EVENT,
+  },
+  recipientDetails: {
+    recipientFields: ["subject_user"],
+    sendToCreator: false,
+    isSubscribableByAllUsers: false,
+  },
+  emailContent: {
+    contentType: "multipart/mixed",
+    subject:
+      "Action required: complete identity verification for ${event.parm2}",
+    messageHtml: `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#f3f5f7; margin:0; padding:0;">
             <tr>
                 <td align="center" style="padding:32px 16px;">
                     <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:600px; background-color:#ffffff; border:1px solid #d9dee3; border-radius:6px;">
@@ -69,7 +66,7 @@ export const VerificationSmartCaptureLinkNotification = EmailNotification({
                 </td>
             </tr>
         </table>`,
-        messageText: `Hello \${subject_user.first_name},
+    messageText: `Hello \${subject_user.first_name},
 
 Please complete the identity verification requested for case \${event.parm2}.
 
@@ -80,7 +77,7 @@ For your security, this link is unique to your verification. Do not forward or s
 If you were not expecting this request, do not open the link and contact your support team.
 
 This is an automated message. Please do not reply.`,
-        omitWatermark: true,
-        forceDelivery: true,
-    },
-})
+    omitWatermark: true,
+    forceDelivery: true,
+  },
+});

@@ -1,32 +1,20 @@
 (function executeVerifyIdentity() {
+  try {
+    var verificationService = require("./src/server/services/verification-service.ts");
 
-    try {
+    verificationService.startVerification(
+      current.getTableName(),
+      current.getUniqueValue(),
+    );
 
-        var verificationService = require(
-            './src/server/services/verification-service.ts'
-        );
+    gs.addInfoMessage("Identity verification started successfully.");
+  } catch (error) {
+    gs.error(
+      "[IdentityVerification] Failed to start verification. " + String(error),
+    );
 
-        verificationService.startVerification(
-            current.getTableName(),
-            current.getUniqueValue()
-        );
+    gs.addErrorMessage("Unable to start identity verification.");
+  }
 
-        gs.addInfoMessage(
-            'Identity verification started successfully.'
-        );
-
-    } catch (error) {
-
-        gs.error(
-            '[IdentityVerification] Failed to start verification. ' +
-            String(error)
-        );
-
-        gs.addErrorMessage(
-            'Unable to start identity verification.'
-        );
-    }
-
-    action.setRedirectURL(current);
-
+  action.setRedirectURL(current);
 })();
