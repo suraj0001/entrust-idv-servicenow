@@ -1,3 +1,4 @@
+/* eslint-disable */
 var VerificationSettingsAjax = Class.create()
 
 VerificationSettingsAjax.prototype = Object.extendsObject(

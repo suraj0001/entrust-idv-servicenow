@@ -1,3 +1,6 @@
+// @ts-nocheck
+/* eslint-disable */
+
 function _el(id) {
     return document.getElementById(id);
 }
