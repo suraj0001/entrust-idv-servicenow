@@ -3650,6 +3650,7 @@ declare global {
                     {
                         table: 'sys_ui_section'
                         id: 'd121a50b6a704cf68ff01dab43bac001'
+                        deleted: true
                         key: {
                             name: 'incident'
                             caption: 'Identity Verification'
@@ -3669,6 +3670,21 @@ declare global {
                             sys_ui_section: 'd121a50b6a704cf68ff01dab43bac001'
                             element: 'x_entru_entrustidv_verification_status'
                             position: '0'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_section'
+                        id: 'd121a50b6a704cf68ff01dab43bac003'
+                        key: {
+                            name: 'incident'
+                            caption: 'NULL'
+                            view: {
+                                id: '1f7399a3502f428da9ba4309ffe65ad0'
+                                key: {
+                                    name: 'NULL'
+                                }
+                            }
+                            sys_domain: 'global'
                         }
                     },
                     {
