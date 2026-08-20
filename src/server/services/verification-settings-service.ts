@@ -5,12 +5,29 @@ import {
 
 import {
     saveVerificationSettingsConfig,
+    getVerificationSettings,
     type VerificationSettingsConfig,
+    type VerificationSettingsReadResult,
 } from '../repositories/configuration-repository.ts'
+
+export type GetVerificationSettingsResult = {
+    success: boolean
+    message?: string
+    settings?: VerificationSettingsReadResult
+}
 
 export type SaveVerificationSettingsResult = {
     success: boolean
     message: string
+}
+
+export function getVerificationSettingsConfig(): GetVerificationSettingsResult {
+    const settings = getVerificationSettings()
+
+    return {
+        success: true,
+        settings: settings ?? undefined,
+    }
 }
 
 export function saveVerificationSettings(

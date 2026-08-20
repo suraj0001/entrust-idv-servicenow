@@ -1,9 +1,30 @@
+// @ts-nocheck
 /* eslint-disable */
 var VerificationSettingsAjax = Class.create()
 
 VerificationSettingsAjax.prototype = Object.extendsObject(
     global.AbstractAjaxProcessor,
     {
+
+        getConfig: function () {
+            try {
+                var svc = require(
+                    './src/server/services/verification-settings-service.ts',
+                )
+
+                return JSON.stringify(svc.getVerificationSettingsConfig())
+            } catch (e) {
+                gs.error(
+                    '[Entrust IDV] Failed to load verification settings: ' +
+                        e.message,
+                )
+
+                return JSON.stringify({
+                    success: false,
+                    message: e.message || 'Unable to load verification settings.',
+                })
+            }
+        },
 
         saveConfig: function () {
             try {
@@ -21,6 +42,8 @@ VerificationSettingsAjax.prototype = Object.extendsObject(
                         'sysparm_webhook_secret',
                     ),
                     redirectUrl: this.getParameter('sysparm_redirect_url'),
+                    hasStoredSecret:
+                        this.getParameter('sysparm_has_stored_secret') === 'true',
                 }
 
                 var result =

@@ -4,6 +4,7 @@ export type VerificationSettingsInput = {
     deliveryChannel: string
     webhookSecret: string
     redirectUrl: string
+    hasStoredSecret?: boolean
 }
 
 export function validateVerificationSettings(
@@ -37,7 +38,7 @@ export function validateVerificationSettings(
         )
     }
 
-    if (!webhookSecret) {
+    if (!webhookSecret && !input.hasStoredSecret) {
         throw new Error('Webhook secret is required.')
     }
 

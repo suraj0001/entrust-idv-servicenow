@@ -15,6 +15,37 @@ export type VerificationConfiguration = {
     redirectUrl: string
 }
 
+export type VerificationSettingsReadResult = {
+    workflowId: string
+    linkExpiry: number
+    deliveryChannel: string
+    hasWebhookSecret: boolean
+    redirectUrl: string
+}
+
+export function getVerificationSettings(): VerificationSettingsReadResult | null {
+    const configGr = getExistingConfigurationRecord()
+
+    if (!configGr) {
+        return null
+    }
+
+    const workflowId = ((configGr.getValue('workflow_id') as string) || '').trim()
+    const linkExpiryValue = (configGr.getValue('link_expiry') as string) || ''
+    const deliveryChannel = ((configGr.getValue('link_delivery_channel') as string) || '').trim()
+    const webhookSecret = ((configGr.getValue('webhook_secret') as string) || '').trim()
+    const redirectUrl = ((configGr.getValue('redirect_url') as string) || '').trim()
+    const linkExpiry = parseInt(linkExpiryValue, 10)
+
+    return {
+        workflowId,
+        linkExpiry: Number.isNaN(linkExpiry) ? 0 : linkExpiry,
+        deliveryChannel,
+        hasWebhookSecret: webhookSecret.length > 0,
+        redirectUrl,
+    }
+}
+
 export function getVerificationConfiguration(): VerificationConfiguration | null {
     const configGr = getExistingConfigurationRecord()
 

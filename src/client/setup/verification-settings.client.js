@@ -82,6 +82,29 @@ function focusField(id) {
     }
 }
 
+var _hasStoredSecret = false;
+
+document.addEventListener('DOMContentLoaded', function () {
+    ajax('getConfig', {}, function (result) {
+        if (!result || !result.success || !result.settings) {
+            return;
+        }
+
+        var s = result.settings;
+
+        if (s.workflowId)     _el('workflow_id').value     = s.workflowId;
+        if (s.linkExpiry)     _el('link_expiry').value     = s.linkExpiry;
+        if (s.deliveryChannel) _el('delivery_channel').value = s.deliveryChannel;
+        if (s.redirectUrl)    _el('redirect_url').value    = s.redirectUrl;
+
+        if (s.hasWebhookSecret) {
+            _hasStoredSecret = true;
+            _el('webhook_secret').placeholder = 'Stored — leave blank to keep, or enter new value';
+            _el('webhook_secret_status').style.display = 'block';
+        }
+    });
+});
+
 function validateWorkflowId() {
     if (!_value('workflow_id')) {
         showError('Workflow ID is required.');
@@ -123,7 +146,7 @@ function validateDeliveryChannel() {
 }
 
 function validateWebhookSecret() {
-    if (!_value('webhook_secret')) {
+    if (!_value('webhook_secret') && !_hasStoredSecret) {
         showError('Webhook secret is required.');
         focusField('webhook_secret');
         return false;
@@ -182,9 +205,10 @@ _el('btn_save').addEventListener('click', function () {
         sysparm_delivery_channel: _value('delivery_channel'),
         sysparm_webhook_secret: _value('webhook_secret'),
         sysparm_redirect_url: _value('redirect_url'),
+        sysparm_has_stored_secret: String(_hasStoredSecret),
     }, function (result) {
         button.disabled = false;
-        button.textContent = 'Save and Continue';
+        button.textContent = 'Save';
 
         if (result && result.success) {
             showSuccess(result.message || 'Verification settings saved successfully.');
