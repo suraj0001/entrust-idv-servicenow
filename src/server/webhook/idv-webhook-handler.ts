@@ -95,10 +95,11 @@ export function handleWebhookEvent(
         sourceRecord.get(sourceRecordId)
 
         if (sourceRecord.isValidRecord()) {
-            sourceRecord.setValue(
-                'x_entru_entrustidv_verification_status',
-                status,
-            )
+            const statusField =
+                sourceTable === 'incident'
+                    ? 'x_entru_entrustidv_idv_status'
+                    : 'x_entru_entrustidv_verification_status'
+            sourceRecord.setValue(statusField, status)
             sourceRecord.update()
         }
     }

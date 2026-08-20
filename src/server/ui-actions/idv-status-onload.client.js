@@ -16,7 +16,7 @@ function onLoad() {
         error: 'Error',
     }
 
-    var STATUS_FIELD = 'x_entru_entrustidv_verification_status'
+    var STATUS_FIELD = 'x_entru_entrustidv_idv_status'
 
     function applyStatus(rawStatus) {
         var label = STATUS_LABELS[rawStatus] || rawStatus

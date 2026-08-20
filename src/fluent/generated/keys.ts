@@ -198,6 +198,7 @@ declare global {
                     '28e6dd75476a8f5016bda144846d43ee': {
                         table: 'oauth_entity'
                         id: '28e6dd75476a8f5016bda144846d43ee'
+                        deleted: true
                     }
                     '2a1d73a6472a071016bda144846d43be': {
                         table: 'sys_ws_definition'
@@ -762,7 +763,7 @@ declare global {
                     a4e6dd75476a8f5016bda144846d43f3: {
                         table: 'oauth_entity_profile'
                         id: 'a4e6dd75476a8f5016bda144846d43f3'
-                        deleted: false
+                        deleted: true
                     }
                     a5a6e0ef1bde83145fdb2f05604bcb9f: {
                         table: 'oauth_entity'
@@ -1428,6 +1429,7 @@ declare global {
                     {
                         table: 'sys_documentation'
                         id: '01168f6b13b74c5695862104d9f3b291'
+                        deleted: true
                         key: {
                             name: 'incident'
                             element: 'x_entru_entrustidv_verification_status'
@@ -2186,7 +2188,7 @@ declare global {
                     {
                         table: 'sys_documentation'
                         id: '383eace796f24d489b7a1a36fcf83248'
-                        deleted: true
+                        deleted: false
                         key: {
                             name: 'incident'
                             element: 'x_entru_entrustidv_idv_status'
@@ -2735,6 +2737,7 @@ declare global {
                     {
                         table: 'sys_dictionary'
                         id: '74edae3a42814ab3b2f6525474ad43bb'
+                        deleted: true
                         key: {
                             name: 'incident'
                             element: 'x_entru_entrustidv_verification_status'
@@ -3650,7 +3653,7 @@ declare global {
                     {
                         table: 'sys_ui_section'
                         id: 'd121a50b6a704cf68ff01dab43bac001'
-                        deleted: true
+                        deleted: false
                         key: {
                             name: 'incident'
                             caption: 'Identity Verification'
@@ -3666,6 +3669,7 @@ declare global {
                     {
                         table: 'sys_ui_element'
                         id: 'd121a50b6a704cf68ff01dab43bac002'
+                        deleted: true
                         key: {
                             sys_ui_section: 'd121a50b6a704cf68ff01dab43bac001'
                             element: 'x_entru_entrustidv_verification_status'
@@ -3675,6 +3679,7 @@ declare global {
                     {
                         table: 'sys_ui_section'
                         id: 'd121a50b6a704cf68ff01dab43bac003'
+                        deleted: true
                         key: {
                             name: 'incident'
                             caption: 'NULL'
@@ -3685,6 +3690,15 @@ declare global {
                                 }
                             }
                             sys_domain: 'global'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'd121a50b6a704cf68ff01dab43bac004'
+                        key: {
+                            sys_ui_section: 'd121a50b6a704cf68ff01dab43bac001'
+                            element: 'x_entru_entrustidv_idv_status'
+                            position: '0'
                         }
                     },
                     {
@@ -4052,7 +4066,7 @@ declare global {
                     {
                         table: 'sys_dictionary'
                         id: 'ecc976891497413c9ba9bb598e7e03b3'
-                        deleted: true
+                        deleted: false
                         key: {
                             name: 'incident'
                             element: 'x_entru_entrustidv_idv_status'
