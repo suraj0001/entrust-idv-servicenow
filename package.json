@@ -4,7 +4,6 @@
   "description": "Identity Verification for ServiceNow",
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "node -e \"const fs=require('fs');['src/fluent/generated/other/oauth-entity','src/fluent/generated/other/oauth-entity-profile'].forEach(d=>{try{fs.rmSync(d,{recursive:true,force:true})}catch(e){}});\"",
     "build": "now-sdk build",
     "deploy": "now-sdk install",
     "transform": "now-sdk transform",

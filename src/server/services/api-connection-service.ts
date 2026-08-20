@@ -1,9 +1,13 @@
 import {
   EntrustConnectionTestResult,
   testEntrustConnection,
-} from "../entrust/entrust-auth-client.ts";
+} from '../entrust/entrust-auth-client.ts'
 
-import { EntrustRegion, BASE_URLS, API_VERSION } from "../constants.ts";
+import {
+  EntrustRegion,
+  BASE_URLS,
+  API_VERSION,
+} from '../constants.ts'
 
 import {
   ApiConnectionRepository,
@@ -11,86 +15,71 @@ import {
   HttpConnectionRecord,
   OAuthCredentialRecord,
   OAuthEntityRecord,
-} from "../repositories/connection-credential-repository.ts";
+} from '../repositories/connection-credential-repository.ts'
 
 import {
   validateSaveInput,
   isSupportedRegion,
   SaveConfigInput,
-} from "../setup/api-connection-validator.ts";
+} from '../setup/api-connection-validator.ts'
 
-import { gs } from "@servicenow/glide";
+import { gs } from '@servicenow/glide'
 
 export interface GetConfigResult {
-  success: boolean;
-  region?: string;
-  baseUrl?: string;
-  tokenUrl?: string;
-  connectionTested?: boolean;
-  message?: string;
+  success: boolean
+  region?: string
+  baseUrl?: string
+  tokenUrl?: string
+  connectionTested?: boolean
+  message?: string
 }
 
 export interface AliasInfoResult {
-  success: boolean;
-  aliasSysId?: string;
-  hasConnection?: boolean;
-  message?: string;
+  success: boolean
+  aliasSysId?: string
+  hasConnection?: boolean
+  message?: string
 }
 
 export interface SaveConfigResult {
-  success: boolean;
-  message: string;
+  success: boolean
+  message: string
 }
 
 interface ConnectionSetupState {
-  alias: AliasRecord;
+  alias: AliasRecord
 
-  connection: HttpConnectionRecord | null;
+  connection:
+      HttpConnectionRecord | null
 
-  credential: OAuthCredentialRecord | null;
+  credential:
+      OAuthCredentialRecord | null
 
-  oauthEntity: OAuthEntityRecord | null;
-
-  /**
-   * true when the credential was found through
-   * http_connection.credential rather than credential_alias.
-   *
-   * This supports credentials created by the old implementation.
-   */
-  credentialFoundViaConnection: boolean;
+  oauthEntity:
+      OAuthEntityRecord | null
 }
 
-interface EnsureCredentialResult {
-  credentialSysId: string;
-
-  /**
-   * true when this save operation created a brand-new
-   * OAuth credential chain.
-   */
-  created: boolean;
-
-  /**
-   * If an existing credential had a broken OAuth chain,
-   * we create a replacement first and remove the old chain
-   * only after the replacement is successfully attached.
-   */
-  replacedCredentialSysId?: string;
-}
-
-const repo = new ApiConnectionRepository();
+const repo =
+  new ApiConnectionRepository()
 
 // -------------------------------------------------------------------------
 // URL helpers
 // -------------------------------------------------------------------------
 
-function apiUrl(region: EntrustRegion): string {
-  const base = BASE_URLS[region].replace(/\/+$/, "");
+function tokenUrl(
+  region: EntrustRegion
+): string {
 
-  return base + "/" + API_VERSION;
-}
+  const base =
+      BASE_URLS[region]
+          .replace(/\/+$/, '')
 
-function tokenUrl(region: EntrustRegion): string {
-  return apiUrl(region) + "/oauth/token";
+  return (
+      base +
+      '/' +
+      API_VERSION +
+      '/oauth/token'
+  )
 }
 
 // -------------------------------------------------------------------------
@@ -98,480 +87,415 @@ function tokenUrl(region: EntrustRegion): string {
 // -------------------------------------------------------------------------
 
 /**
- * Loads the existing records underneath the packaged alias.
- *
- * No records are created or updated here.
- */
-function loadConnectionSetupState(): ConnectionSetupState | null {
-  const alias = repo.findAlias();
+* Loads the complete structural Connection & Credential chain.
+*
+* This function NEVER creates or updates records.
+*/
+function loadConnectionSetupState():
+  ConnectionSetupState | null {
+
+  const alias =
+      repo.findAlias()
 
   if (!alias) {
-    gs.warn(
-      "[ApiConnection] " + "loadConnectionSetupState: " + "alias not found",
-    );
 
-    return null;
+      gs.warn(
+          '[ApiConnection] ' +
+          'loadConnectionSetupState: ' +
+          'alias not found'
+      )
+
+      return null
   }
 
-  const connection = repo.findHttpConnection(alias.sysId);
+  const connection =
+      repo.findHttpConnection(
+          alias.sysId
+      )
 
   /*
-   * Preferred lookup:
-   *
-   * Alias
-   *   └── OAuth Credential
+   * The credential actually attached to the HTTP connection
+   * is authoritative for runtime resolution.
    */
-  let credential = repo.findOAuthCredentialByAlias(alias.sysId);
+  let credential:
+      OAuthCredentialRecord | null =
+      null
 
-  let credentialFoundViaConnection = false;
+  if (
+      connection &&
+      connection.credentialSysId
+  ) {
 
-  /*
-   * Backwards compatibility:
-   *
-   * Older code attached the credential directly to
-   * http_connection but did not populate credential_alias
-   * on oauth_2_0_credentials.
-   */
-  if (!credential && connection?.credentialSysId) {
-    credential = repo.findOAuthCredentialById(connection.credentialSysId);
-
-    credentialFoundViaConnection = !!credential;
+      credential =
+          repo.findOAuthCredentialById(
+              connection.credentialSysId
+          )
   }
 
-  const oauthEntity = credential
-    ? repo.findOAuthEntity(credential.sysId)
-    : null;
+  /*
+   * Fallback for configuration/template variations where
+   * credential_alias exists but the HTTP connection lookup
+   * didn't provide the credential reference.
+   *
+   * saveConnectionDetails() will still require the credential
+   * to actually be attached to the HTTP connection.
+   */
+  if (!credential) {
+
+      credential =
+          repo.findOAuthCredentialByAlias(
+              alias.sysId
+          )
+  }
+
+  const oauthEntity =
+      credential
+          ? repo.findOAuthEntity(
+              credential.sysId
+          )
+          : null
 
   return {
-    alias,
-    connection,
-    credential,
-    oauthEntity,
-    credentialFoundViaConnection,
-  };
+      alias,
+      connection,
+      credential,
+      oauthEntity,
+  }
 }
 
 // -------------------------------------------------------------------------
-// HTTP connection reconciliation
+// Structural validation
 // -------------------------------------------------------------------------
 
-function ensureHttpConnection(
-  state: ConnectionSetupState,
-  connectionUrl: string,
-): string | null {
-  if (state.connection) {
-    gs.info(
-      "[ApiConnection] " +
-        "ensureHttpConnection: " +
-        "existing connection found sysId=" +
-        state.connection.sysId,
-    );
+function isConnectionStructureReady():
+  boolean {
 
-    const updated = repo.updateHttpConnection(
-      state.connection.sysId,
-      connectionUrl,
-    );
+  const state =
+      loadConnectionSetupState()
 
-    if (!updated) {
-      gs.error(
-        "[ApiConnection] " +
-          "ensureHttpConnection: " +
-          "failed to update existing connection",
-      );
-
-      return null;
-    }
-
-    return state.connection.sysId;
-  }
-
-  gs.info(
-    "[ApiConnection] " +
-      "ensureHttpConnection: " +
-      "no connection found; creating",
-  );
-
-  return repo.createHttpConnection(state.alias.sysId, connectionUrl);
-}
-
-// -------------------------------------------------------------------------
-// OAuth reconciliation
-// -------------------------------------------------------------------------
-
-function ensureOAuthCredential(
-  state: ConnectionSetupState,
-  clientId: string,
-  clientSecret: string,
-  oauthTokenUrl: string,
-): EnsureCredentialResult | null {
-  /*
-   * Existing credential.
-   */
-  if (state.credential) {
-    /*
-     * Migration from the old implementation:
-     *
-     * Credential was attached to the connection,
-     * but credential_alias wasn't populated.
-     */
-    if (state.credentialFoundViaConnection) {
-      gs.info(
-        "[ApiConnection] " +
-          "ensureOAuthCredential: " +
-          "adopting existing credential into alias",
-      );
-
-      const assigned = repo.assignCredentialAlias(
-        state.credential.sysId,
-        state.alias.sysId,
-      );
-
-      if (!assigned) {
-        gs.error(
-          "[ApiConnection] " +
-            "ensureOAuthCredential: " +
-            "failed to assign credential alias",
-        );
-
-        return null;
-      }
-    }
-
-    /*
-     * Complete existing OAuth chain.
-     *
-     * Update runtime values.
-     */
-    if (state.oauthEntity) {
-      gs.info(
-        "[ApiConnection] " +
-          "ensureOAuthCredential: " +
-          "existing OAuth chain found; updating",
-      );
-
-      const updated = repo.updateOAuthCredentials(
-        state.oauthEntity.sysId,
-        state.oauthEntity.profileSysId,
-        clientId,
-        clientSecret,
-        oauthTokenUrl,
-      );
-
-      if (!updated) {
-        gs.error(
-          "[ApiConnection] " +
-            "ensureOAuthCredential: " +
-            "failed to update OAuth chain",
-        );
-
-        return null;
-      }
-
-      return {
-        credentialSysId: state.credential.sysId,
-
-        created: false,
-      };
-    }
-
-    /*
-     * Credential exists but its OAuth Profile / Entity
-     * chain is incomplete.
-     *
-     * Do not delete it yet.
-     *
-     * Create the replacement first, attach it to the
-     * HTTP connection, and only then remove the broken
-     * credential.
-     */
-    gs.warn(
-      "[ApiConnection] " +
-        "ensureOAuthCredential: " +
-        "existing credential has broken OAuth chain; " +
-        "creating replacement",
-    );
-
-    const replacementCredentialSysId = repo.createCredentialChain(
-      state.alias.sysId,
-      clientId,
-      clientSecret,
-      oauthTokenUrl,
-    );
-
-    if (!replacementCredentialSysId) {
-      return null;
-    }
-
-    return {
-      credentialSysId: replacementCredentialSysId,
-
-      created: true,
-
-      replacedCredentialSysId: state.credential.sysId,
-    };
-  }
-
-  /*
-   * No credential at all.
-   */
-  gs.info(
-    "[ApiConnection] " +
-      "ensureOAuthCredential: " +
-      "no OAuth credential found; creating",
-  );
-
-  const credentialSysId = repo.createCredentialChain(
-    state.alias.sysId,
-    clientId,
-    clientSecret,
-    oauthTokenUrl,
-  );
-
-  if (!credentialSysId) {
-    return null;
-  }
-
-  return {
-    credentialSysId,
-    created: true,
-  };
-}
-
-// -------------------------------------------------------------------------
-// Main reconciliation operation
-// -------------------------------------------------------------------------
-
-function saveConnectionDetails(input: SaveConfigInput): boolean {
-  const state = loadConnectionSetupState();
-
-  /*
-   * Alias is part of the packaged application.
-   *
-   * We intentionally do not create it dynamically.
-   */
   if (!state) {
-    gs.error(
-      "[ApiConnection] " +
-        "saveConnectionDetails: " +
-        "connection & credential alias is missing",
-    );
-
-    return false;
+      return false
   }
 
-  const normalisedRegion = input.region.toLowerCase();
+  return !!(
+      state.connection &&
+      state.connection.credentialSysId &&
+      state.credential &&
+      state.oauthEntity
+  )
+}
 
-  if (!isSupportedRegion(normalisedRegion)) {
-    gs.error(
-      "[ApiConnection] " +
-        "saveConnectionDetails: " +
-        "unsupported region=" +
-        input.region,
-    );
+// -------------------------------------------------------------------------
+// Save runtime configuration
+// -------------------------------------------------------------------------
 
-    return false;
-  }
+/**
+* Updates CUSTOMER/RUNTIME OAuth values only.
+*
+* No Connection/Credential/OAuth records are created here.
+*
+* Application installation/configuration-template provisioning is
+* responsible for creating the complete structural chain.
+*/
+function saveConnectionDetails(
+  input: SaveConfigInput
+): boolean {
 
-  const region = normalisedRegion as EntrustRegion;
+  const state =
+      loadConnectionSetupState()
 
-  const desiredConnectionUrl = apiUrl(region);
+  if (!state) {
 
-  const desiredTokenUrl = tokenUrl(region);
-
-  // -----------------------------------------------------------------
-  // 1. Ensure HTTP connection exists and contains current runtime URL
-  // -----------------------------------------------------------------
-
-  const connectionSysId = ensureHttpConnection(state, desiredConnectionUrl);
-
-  if (!connectionSysId) {
-    gs.error(
-      "[ApiConnection] " +
-        "saveConnectionDetails: " +
-        "unable to create/update HTTP connection",
-    );
-
-    return false;
-  }
-
-  /*
-   * Region-only save.
-   *
-   * If credentials were not supplied, do not create or change
-   * the OAuth chain.
-   */
-  if (!input.clientId || !input.clientSecret) {
-    gs.info(
-      "[ApiConnection] " +
-        "saveConnectionDetails: " +
-        "no credentials supplied; HTTP connection updated only",
-    );
-
-    return true;
-  }
-
-  // -----------------------------------------------------------------
-  // 2. Ensure OAuth credential chain exists and contains runtime values
-  // -----------------------------------------------------------------
-
-  const credentialResult = ensureOAuthCredential(
-    state,
-    input.clientId,
-    input.clientSecret,
-    desiredTokenUrl,
-  );
-
-  if (!credentialResult) {
-    gs.error(
-      "[ApiConnection] " +
-        "saveConnectionDetails: " +
-        "unable to create/update OAuth credential",
-    );
-
-    return false;
-  }
-
-  // -----------------------------------------------------------------
-  // 3. Ensure HTTP connection references the correct credential
-  // -----------------------------------------------------------------
-
-  const alreadyAttached =
-    state.connection?.sysId === connectionSysId &&
-    state.connection?.credentialSysId === credentialResult.credentialSysId;
-
-  if (!alreadyAttached) {
-    const attached = repo.attachCredentialToConnection(
-      connectionSysId,
-      credentialResult.credentialSysId,
-    );
-
-    if (!attached) {
       gs.error(
-        "[ApiConnection] " +
-          "saveConnectionDetails: " +
-          "failed to attach credential to HTTP connection",
-      );
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'Connection & Credential Alias is missing'
+      )
 
-      /*
-       * If this operation created a new credential chain,
-       * clean it up rather than leaving orphan records.
-       */
-      if (credentialResult.created) {
-        repo.deleteCredentialChain(credentialResult.credentialSysId);
-      }
+      return false
+  }
 
-      return false;
-    }
+  if (!state.connection) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'Entrust IDV HTTP connection is missing'
+      )
+
+      return false
+  }
+
+  if (
+      !state.connection
+          .credentialSysId
+  ) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'OAuth credential is not attached ' +
+          'to the HTTP connection'
+      )
+
+      return false
+  }
+
+  if (!state.credential) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'Entrust IDV OAuth credential is missing'
+      )
+
+      return false
+  }
+
+  if (!state.oauthEntity) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'OAuth Entity/Profile configuration is missing'
+      )
+
+      return false
   }
 
   /*
-   * If we replaced a broken credential, it is now safe to
-   * remove the old one because the HTTP connection points
-   * to the replacement.
+   * Ensure the credential we resolved is the credential
+   * actually attached to the HTTP connection.
+   *
+   * We cannot repair http_connection at runtime because
+   * that table is protected from scoped writes.
    */
-  if (credentialResult.replacedCredentialSysId) {
-    repo.deleteCredentialChain(credentialResult.replacedCredentialSysId);
+  if (
+      state.connection
+          .credentialSysId !==
+      state.credential.sysId
+  ) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'HTTP connection is attached to an unexpected credential'
+      )
+
+      return false
   }
 
-  return true;
+  const normalisedRegion =
+      input.region
+          .toLowerCase()
+
+  if (
+      !isSupportedRegion(
+          normalisedRegion
+      )
+  ) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'unsupported region=' +
+          input.region
+      )
+
+      return false
+  }
+
+  const region = normalisedRegion as EntrustRegion
+
+  const oauthTokenUrl =
+      tokenUrl(region)
+
+  gs.info(
+      '[ApiConnection] ' +
+      'saveConnectionDetails: ' +
+      'updating existing OAuth entity sysId=' +
+      state.oauthEntity.sysId
+  )
+
+  /*
+   * Only runtime/customer-owned values are changed.
+   *
+   * We intentionally DO NOT write http_connection.
+   */
+  const updated =
+      repo.updateOAuthCredentials(
+          state.oauthEntity.sysId,
+          input.clientId,
+          input.clientSecret,
+          oauthTokenUrl
+      )
+
+  if (!updated) {
+
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConnectionDetails: ' +
+          'OAuth credentials were not updated'
+      )
+
+      return false
+  }
+
+  gs.info(
+      '[ApiConnection] ' +
+      'saveConnectionDetails: ' +
+      'OAuth credentials updated successfully'
+  )
+
+  return true
 }
 
 // -------------------------------------------------------------------------
 // Read configuration
 // -------------------------------------------------------------------------
 
-function isConnectionConfigured(): boolean {
-  const state = loadConnectionSetupState();
+export function getConfig():
+  GetConfigResult {
 
-  if (!state) {
-    return false;
-  }
-
-  return !!(state.connection && state.credential && state.oauthEntity);
-}
-
-export function getConfig(): GetConfigResult {
   try {
-    const config = repo.findConfiguration();
 
-    const configured = isConnectionConfigured();
+      const config =
+          repo.findConfiguration()
 
-    if (!config) {
+      /*
+       * Structural records existing alone does NOT mean
+       * the customer has configured the integration.
+       *
+       * Region is written only after our custom setup page
+       * successfully saves the runtime OAuth values.
+       */
+      const configured =
+          !!config &&
+          !!config.region &&
+          isConnectionStructureReady()
+
+      if (!config) {
+
+          return {
+              success:
+                  true,
+
+              connectionTested:
+                  false,
+          }
+      }
+
+      const region =
+          config.region
+              .toLowerCase()
+
+      const supported =
+          isSupportedRegion(
+              region
+          )
+
+      const base =
+          supported
+              ? BASE_URLS[
+                  region as EntrustRegion
+              ]
+              : ''
+
       return {
-        success: true,
+          success:
+              true,
 
-        connectionTested: configured,
-      };
-    }
+          region:
+              config.region,
 
-    const region = config.region.toLowerCase();
+          baseUrl:
+              base,
 
-    const supported = isSupportedRegion(region);
+          tokenUrl:
+              supported
+                  ? tokenUrl(
+                      region as EntrustRegion
+                  )
+                  : '',
 
-    const base = supported ? BASE_URLS[region as EntrustRegion] : "";
+          connectionTested:
+              configured,
+      }
 
-    return {
-      success: true,
-
-      region: config.region,
-
-      baseUrl: base,
-
-      tokenUrl: base ? tokenUrl(region as EntrustRegion) : "",
-
-      connectionTested: configured,
-    };
   } catch (err) {
-    gs.error("[ApiConnection] " + "getConfig: " + String(err));
 
-    return {
-      success: false,
+      gs.error(
+          '[ApiConnection] ' +
+          'getConfig: ' +
+          String(err)
+      )
 
-      message: "Failed to load configuration: " + String(err),
-    };
+      return {
+          success:
+              false,
+
+          message:
+              'Failed to load configuration: ' +
+              String(err),
+      }
   }
 }
 
 // -------------------------------------------------------------------------
-// Alias / setup information
+// Alias / structural setup information
 // -------------------------------------------------------------------------
 
-export function getAliasInfo(): AliasInfoResult {
+export function getAliasInfo():
+  AliasInfoResult {
+
   try {
-    const alias = repo.findAlias();
 
-    if (!alias) {
+      const alias =
+          repo.findAlias()
+
+      if (!alias) {
+
+          return {
+              success:
+                  false,
+
+              message:
+                  'Connection alias not found.',
+          }
+      }
+
+      const connection =
+          repo.findHttpConnection(
+              alias.sysId
+          )
+
       return {
-        success: false,
+          success:
+              true,
 
-        message: "Connection alias not found.",
-      };
-    }
+          aliasSysId:
+              alias.sysId,
 
-    /*
-     * Setup state should be determined directly from
-     * the http_connection record.
-     *
-     * Do not use ConnectionInfoProvider here because
-     * the credential may legitimately not exist yet.
-     */
-    const connection = repo.findHttpConnection(alias.sysId);
+          hasConnection:
+              !!connection,
+      }
 
-    return {
-      success: true,
-
-      aliasSysId: alias.sysId,
-
-      hasConnection: !!connection,
-    };
   } catch (err) {
-    gs.error("[ApiConnection] " + "getAliasInfo: " + String(err));
 
-    return {
-      success: false,
+      gs.error(
+          '[ApiConnection] ' +
+          'getAliasInfo: ' +
+          String(err)
+      )
 
-      message: "Failed to look up connection alias: " + String(err),
-    };
+      return {
+          success:
+              false,
+
+          message:
+              'Failed to look up connection alias: ' +
+              String(err),
+      }
   }
 }
 
@@ -579,59 +503,91 @@ export function getAliasInfo(): AliasInfoResult {
 // Save
 // -------------------------------------------------------------------------
 
-export function saveConfig(input: SaveConfigInput): SaveConfigResult {
-  const validationError = validateSaveInput(input);
+export function saveConfig(
+  input: SaveConfigInput
+): SaveConfigResult {
+
+  const validationError =
+      validateSaveInput(input)
 
   if (validationError) {
-    return {
-      success: false,
 
-      message: validationError,
-    };
+      return {
+          success:
+              false,
+
+          message:
+              validationError,
+      }
   }
 
   gs.info(
-    "[ApiConnection] " +
-      "saveConfig: region=" +
+      '[ApiConnection] ' +
+      'saveConfig: region=' +
       input.region +
-      " hasClientId=" +
+      ' hasClientId=' +
       !!input.clientId +
-      " hasClientSecret=" +
-      !!input.clientSecret,
-  );
+      ' hasClientSecret=' +
+      !!input.clientSecret
+  )
 
   try {
-    const saved = saveConnectionDetails(input);
 
-    if (!saved) {
+      const saved =
+          saveConnectionDetails(
+              input
+          )
+
+      if (!saved) {
+
+          return {
+              success:
+                  false,
+
+              message:
+                  'Failed to save connection configuration.',
+          }
+      }
+
+      /*
+       * Region is our runtime source of truth for the
+       * Entrust API endpoint.
+       *
+       * http_connection.connection_url remains untouched.
+       */
+      repo.saveRegion(
+          input.region
+      )
+
+      gs.info(
+          '[ApiConnection] ' +
+          'saveConfig: configuration saved successfully'
+      )
+
       return {
-        success: false,
+          success:
+              true,
 
-        message: "Failed to save connection configuration.",
-      };
-    }
+          message:
+              'Configuration saved.',
+      }
 
-    repo.saveRegion(input.region);
-
-    gs.info(
-      "[ApiConnection] " + "saveConfig: configuration saved successfully",
-    );
-
-    return {
-      success: true,
-
-      message: "Configuration saved.",
-    };
   } catch (err) {
-    gs.error(
-      "[ApiConnection] " + "saveConfig: unexpected error: " + String(err),
-    );
 
-    return {
-      success: false,
+      gs.error(
+          '[ApiConnection] ' +
+          'saveConfig: unexpected error: ' +
+          String(err)
+      )
 
-      message: "Failed to save configuration: " + String(err),
-    };
+      return {
+          success:
+              false,
+
+          message:
+              'Failed to save configuration: ' +
+              String(err),
+      }
   }
 }
 
@@ -642,29 +598,46 @@ export function saveConfig(input: SaveConfigInput): SaveConfigResult {
 export function testConnection(
   region: string,
   clientId: string,
-  clientSecret: string,
+  clientSecret: string
 ): EntrustConnectionTestResult {
-  if (!region || !clientId || !clientSecret) {
-    return {
-      success: false,
 
-      message: "Region, Client ID and Client Secret are all required.",
-    };
+  if (
+      !region ||
+      !clientId ||
+      !clientSecret
+  ) {
+
+      return {
+          success:
+              false,
+
+          message:
+              'Region, Client ID and Client Secret are all required.',
+      }
   }
 
-  const normalised = region.toLowerCase();
+  const normalised =
+      region.toLowerCase()
 
-  if (!isSupportedRegion(normalised)) {
-    return {
-      success: false,
+  if (
+      !isSupportedRegion(
+          normalised
+      )
+  ) {
 
-      message: "Unsupported region: " + region,
-    };
+      return {
+          success:
+              false,
+
+          message:
+              'Unsupported region: ' +
+              region,
+      }
   }
 
   return testEntrustConnection(
-    normalised as EntrustRegion,
-    clientId,
-    clientSecret,
-  );
+      normalised as EntrustRegion,
+      clientId,
+      clientSecret
+  )
 }

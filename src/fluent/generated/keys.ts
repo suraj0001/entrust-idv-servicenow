@@ -84,6 +84,10 @@ declare global {
                         table: 'sys_pd_snapshot_chunk'
                         id: '1369f1091bfe87105fdb2f05604bcbff'
                     }
+                    '13dbaa6147720f1016bda144846d43ec': {
+                        table: 'sys_alias'
+                        id: '13dbaa6147720f1016bda144846d43ec'
+                    }
                     '1603f3dc1b224f145fdb2f05604bcb8a': {
                         table: 'sys_pd_snapshot'
                         id: '1603f3dc1b224f145fdb2f05604bcb8a'
@@ -326,6 +330,10 @@ declare global {
                         table: 'sys_flow_compiled_flow_chunk'
                         id: '520af8f147268f5016bda144846d430b'
                     }
+                    '52fbee6147720f1016bda144846d433a': {
+                        table: 'sys_wdf_external_connection_mapping'
+                        id: '52fbee6147720f1016bda144846d433a'
+                    }
                     '5603f3dc1b224f145fdb2f05604bcb91': {
                         table: 'sys_flow_compiled_flow_chunk'
                         id: '5603f3dc1b224f145fdb2f05604bcb91'
@@ -333,6 +341,10 @@ declare global {
                     '5603f3dc1b224f145fdb2f05604bcba0': {
                         table: 'sys_pd_snapshot_input'
                         id: '5603f3dc1b224f145fdb2f05604bcba0'
+                    }
+                    '5645a76947ba0f1016bda144846d4328': {
+                        table: 'oauth_entity_profile'
+                        id: '5645a76947ba0f1016bda144846d4328'
                     }
                     '566d69a81b668f145fdb2f05604bcb1c': {
                         table: 'sys_scope_privilege'
@@ -733,6 +745,7 @@ declare global {
                     b1feec671b52c3145fdb2f05604bcb4f: {
                         table: 'sys_scope_privilege'
                         id: 'b1feec671b52c3145fdb2f05604bcb4f'
+                        deleted: true
                     }
                     b5e942f04726075016bda144846d4319: {
                         table: 'sys_pd_snapshot_chunk'
@@ -833,6 +846,11 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: 'd3e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0'
                     }
+                    'cross-scope-http-connection-create': {
+                        table: 'sys_scope_privilege'
+                        id: 'd57541704c954f6a888c9bfa909a2afe'
+                        deleted: true
+                    }
                     'cross-scope-http-connection-write': {
                         table: 'sys_scope_privilege'
                         id: 'e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0b1'
@@ -861,6 +879,10 @@ declare global {
                         table: 'sys_trigger_runner_mapping'
                         id: 'd60af8f147268f5016bda144846d4303'
                     }
+                    d645a76947ba0f1016bda144846d4327: {
+                        table: 'oauth_entity'
+                        id: 'd645a76947ba0f1016bda144846d4327'
+                    }
                     d78b88a447e6035016bda144846d4396: {
                         table: 'sys_scope_privilege'
                         id: 'd78b88a447e6035016bda144846d4396'
@@ -876,6 +898,10 @@ declare global {
                     db6935091bfe87105fdb2f05604bcb0f: {
                         table: 'sys_flow_compiled_flow_chunk'
                         id: 'db6935091bfe87105fdb2f05604bcb0f'
+                    }
+                    dbd52fa947ba0f1016bda144846d4393: {
+                        table: 'sys_scope_privilege'
+                        id: 'dbd52fa947ba0f1016bda144846d4393'
                     }
                     de0af8f147268f5016bda144846d4309: {
                         table: 'sys_flow_compiled_flow_chunk'
@@ -999,6 +1025,10 @@ declare global {
                     fde942f04726075016bda144846d4318: {
                         table: 'sys_pd_snapshot_chunk'
                         id: 'fde942f04726075016bda144846d4318'
+                    }
+                    fe1a266d47320f1016bda144846d43de: {
+                        table: 'sys_alias_templates'
+                        id: 'fe1a266d47320f1016bda144846d43de'
                     }
                     idv_configuration_create_acl: {
                         table: 'sys_security_acl'
@@ -1622,6 +1652,23 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: '23f2c2d51b3e4b105fdb2f05604bcb1a'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: '.split'
+                            position: '5'
+                        }
+                    },
+                    {
                         table: 'sys_dictionary'
                         id: '2495fc8646d3499ba93f052be267152f'
                         deleted: true
@@ -1673,6 +1720,23 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: '27f2c2d51b3e4b105fdb2f05604bcb18'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'region'
+                            position: '3'
+                        }
+                    },
+                    {
                         table: 'ua_table_licensing_config'
                         id: '28bd99baa73045ccb33d050cfbb534f5'
                         key: {
@@ -1713,6 +1777,23 @@ declare global {
                                 }
                             }
                             element: 'delivery_channel'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '2bf2c2d51b3e4b105fdb2f05604bcb16'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'workflow_id'
+                            position: '1'
                         }
                     },
                     {
@@ -1779,6 +1860,23 @@ declare global {
                                 }
                             }
                             element: 'connection_tested'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '2ff2c2d51b3e4b105fdb2f05604bcb1b'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: '.end_split'
+                            position: '7'
                         }
                     },
                     {
@@ -2197,6 +2295,23 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: '67f2c2d51b3e4b105fdb2f05604bcb15'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'redirect_url'
+                            position: '0'
+                        }
+                    },
+                    {
                         table: 'sys_ui_action_role'
                         id: '6873bfda0de344d9b59409888aa4d7f5'
                         key: {
@@ -2232,6 +2347,21 @@ declare global {
                         key: {
                             name: 'x_entru_entrustidv_configuration'
                             element: 'workflow_id'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_section'
+                        id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                        key: {
+                            name: 'x_entru_entrustidv_configuration'
+                            caption: 'NULL'
+                            view: {
+                                id: 'Default view'
+                                key: {
+                                    name: 'NULL'
+                                }
+                            }
+                            sys_domain: 'global'
                         }
                     },
                     {
@@ -2711,6 +2841,23 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: 'a3f2c2d51b3e4b105fdb2f05604bcb19'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'link_delivery_channel'
+                            position: '4'
+                        }
+                    },
+                    {
                         table: 'sys_ui_page'
                         id: 'a6208f4747de831016bda144846d43c1'
                         deleted: true
@@ -2726,6 +2873,23 @@ declare global {
                             name: 'x_entru_entrustidv_verification_request'
                             element: 'status'
                             language: 'en'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'a7f2c2d51b3e4b105fdb2f05604bcb17'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: '.begin_split'
+                            position: '2'
                         }
                     },
                     {
@@ -2756,6 +2920,23 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: 'abf2c2d51b3e4b105fdb2f05604bcb1c'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'webhook_signing_secret'
+                            position: '8'
+                        }
+                    },
+                    {
                         table: 'sys_documentation'
                         id: 'ad6136f21bd60fd05fdb2f05604bcb0a'
                         deleted: true
@@ -2782,6 +2963,23 @@ declare global {
                                 }
                             }
                             element: 'link_expiry_minutes'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'aff2c2d51b3e4b105fdb2f05604bcb1a'
+                        key: {
+                            sys_ui_section: {
+                                id: '6ff282951b3e4b105fdb2f05604bcb7e'
+                                key: {
+                                    name: 'x_entru_entrustidv_configuration'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'link_expiry_minutes'
+                            position: '6'
                         }
                     },
                     {
