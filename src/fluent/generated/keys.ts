@@ -1178,6 +1178,10 @@ declare global {
                         table: 'sys_security_acl'
                         id: 'ea16c5e402564aa883954cda3e9e6b76'
                     }
+                    'idv-status-ajax': {
+                        table: 'sys_script_include'
+                        id: 'fed65eac1ba1468ca1b0056c6ae1fffd'
+                    }
                     'idv-status-onload-cs': {
                         table: 'sys_script_client'
                         id: '3d7fab121b960fd05fdb2f05604bcb01'
@@ -1339,6 +1343,10 @@ declare global {
                         id: 'd1d1eb1324dd4a2fab833623c2463c88'
                         deleted: true
                     }
+                    'src_server_ui-actions_idv-status-ajax_server_js': {
+                        table: 'sys_module'
+                        id: '12d734d2cd60427c8e38ea93634f636d'
+                    }
                     'src_server_ui-actions_idv-status-onload_client_js': {
                         table: 'sys_module'
                         id: '4bf09da816b44d34beeeb4fd5386b978'
@@ -1439,6 +1447,7 @@ declare global {
                     {
                         table: 'sys_ui_element'
                         id: '027dfb0547620b5016bda144846d432f'
+                        deleted: true
                         key: {
                             sys_ui_section: {
                                 id: 'e57dbb0547620b5016bda144846d43ec'
@@ -1886,7 +1895,7 @@ declare global {
                     {
                         table: 'sys_dictionary'
                         id: '27076ce7fbdc4dc9aef09a665720f592'
-                        deleted: true
+                        deleted: false
                         key: {
                             name: 'x_entru_entrustidv_verification_request'
                             element: 'completed_at'
@@ -3508,6 +3517,7 @@ declare global {
                     {
                         table: 'sys_ui_element'
                         id: 'bd7dfb0547620b5016bda144846d4328'
+                        deleted: true
                         key: {
                             sys_ui_section: {
                                 id: 'e57dbb0547620b5016bda144846d43ec'
@@ -3638,6 +3648,30 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_section'
+                        id: 'd121a50b6a704cf68ff01dab43bac001'
+                        key: {
+                            name: 'incident'
+                            caption: 'Identity Verification'
+                            view: {
+                                id: 'e06513652ec148eab4cd37adce816b42'
+                                key: {
+                                    name: 'NULL'
+                                }
+                            }
+                            sys_domain: 'global'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'd121a50b6a704cf68ff01dab43bac002'
+                        key: {
+                            sys_ui_section: 'd121a50b6a704cf68ff01dab43bac001'
+                            element: 'x_entru_entrustidv_verification_status'
+                            position: '0'
+                        }
+                    },
+                    {
                         table: 'sys_documentation'
                         id: 'd203f3dc1b224f145fdb2f05604bcbb4'
                         key: {
@@ -3692,7 +3726,7 @@ declare global {
                     {
                         table: 'sys_documentation'
                         id: 'd58decfb2b3341cb9181245e4b2b7588'
-                        deleted: true
+                        deleted: false
                         key: {
                             name: 'x_entru_entrustidv_verification_request'
                             element: 'completed_at'

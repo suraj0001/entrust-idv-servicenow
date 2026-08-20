@@ -50,15 +50,6 @@ Record({
     },
 })
 Record({
-    $id: Now.ID['bd7dfb0547620b5016bda144846d4328'],
-    table: 'sys_ui_element',
-    data: {
-        element: 'outcome',
-        position: 4,
-        sys_ui_section: 'e57dbb0547620b5016bda144846d43ec',
-    },
-})
-Record({
     $id: Now.ID['0e7dfb0547620b5016bda144846d4329'],
     table: 'sys_ui_element',
     data: {
@@ -111,15 +102,6 @@ Record({
     data: {
         element: 'source_record_id',
         position: 10,
-        sys_ui_section: 'e57dbb0547620b5016bda144846d43ec',
-    },
-})
-Record({
-    $id: Now.ID['027dfb0547620b5016bda144846d432f'],
-    table: 'sys_ui_element',
-    data: {
-        element: 'raw_webhook_payload',
-        position: 11,
         sys_ui_section: 'e57dbb0547620b5016bda144846d43ec',
     },
 })
