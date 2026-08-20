@@ -1,13 +1,9 @@
 import {
   EntrustConnectionTestResult,
   testEntrustConnection,
-} from '../entrust/entrust-auth-client.ts'
+} from "../entrust/entrust-auth-client.ts";
 
-import {
-  EntrustRegion,
-  BASE_URLS,
-  API_VERSION,
-} from '../constants.ts'
+import { EntrustRegion, BASE_URLS, API_VERSION } from "../constants.ts";
 
 import {
   ApiConnectionRepository,
@@ -15,71 +11,57 @@ import {
   HttpConnectionRecord,
   OAuthCredentialRecord,
   OAuthEntityRecord,
-} from '../repositories/connection-credential-repository.ts'
+} from "../repositories/connection-credential-repository.ts";
 
 import {
   validateSaveInput,
   isSupportedRegion,
   SaveConfigInput,
-} from '../setup/api-connection-validator.ts'
+} from "../setup/api-connection-validator.ts";
 
-import { gs } from '@servicenow/glide'
+import { gs } from "@servicenow/glide";
 
 export interface GetConfigResult {
-  success: boolean
-  region?: string
-  baseUrl?: string
-  tokenUrl?: string
-  connectionTested?: boolean
-  message?: string
+  success: boolean;
+  region?: string;
+  baseUrl?: string;
+  tokenUrl?: string;
+  connectionTested?: boolean;
+  message?: string;
 }
 
 export interface AliasInfoResult {
-  success: boolean
-  aliasSysId?: string
-  hasConnection?: boolean
-  message?: string
+  success: boolean;
+  aliasSysId?: string;
+  hasConnection?: boolean;
+  message?: string;
 }
 
 export interface SaveConfigResult {
-  success: boolean
-  message: string
+  success: boolean;
+  message: string;
 }
 
 interface ConnectionSetupState {
-  alias: AliasRecord
+  alias: AliasRecord;
 
-  connection:
-      HttpConnectionRecord | null
+  connection: HttpConnectionRecord | null;
 
-  credential:
-      OAuthCredentialRecord | null
+  credential: OAuthCredentialRecord | null;
 
-  oauthEntity:
-      OAuthEntityRecord | null
+  oauthEntity: OAuthEntityRecord | null;
 }
 
-const repo =
-  new ApiConnectionRepository()
+const repo = new ApiConnectionRepository();
 
 // -------------------------------------------------------------------------
 // URL helpers
 // -------------------------------------------------------------------------
 
-function tokenUrl(
-  region: EntrustRegion
-): string {
+function tokenUrl(region: EntrustRegion): string {
+  const base = BASE_URLS[region].replace(/\/+$/, "");
 
-  const base =
-      BASE_URLS[region]
-          .replace(/\/+$/, '')
-
-  return (
-      base +
-      '/' +
-      API_VERSION +
-      '/oauth/token'
-  )
+  return base + "/" + API_VERSION + "/oauth/token";
 }
 
 // -------------------------------------------------------------------------
@@ -87,49 +69,31 @@ function tokenUrl(
 // -------------------------------------------------------------------------
 
 /**
-* Loads the complete structural Connection & Credential chain.
-*
-* This function NEVER creates or updates records.
-*/
-function loadConnectionSetupState():
-  ConnectionSetupState | null {
-
-  const alias =
-      repo.findAlias()
+ * Loads the complete structural Connection & Credential chain.
+ *
+ * This function NEVER creates or updates records.
+ */
+function loadConnectionSetupState(): ConnectionSetupState | null {
+  const alias = repo.findAlias();
 
   if (!alias) {
+    gs.warn(
+      "[ApiConnection] " + "loadConnectionSetupState: " + "alias not found",
+    );
 
-      gs.warn(
-          '[ApiConnection] ' +
-          'loadConnectionSetupState: ' +
-          'alias not found'
-      )
-
-      return null
+    return null;
   }
 
-  const connection =
-      repo.findHttpConnection(
-          alias.sysId
-      )
+  const connection = repo.findHttpConnection(alias.sysId);
 
   /*
    * The credential actually attached to the HTTP connection
    * is authoritative for runtime resolution.
    */
-  let credential:
-      OAuthCredentialRecord | null =
-      null
+  let credential: OAuthCredentialRecord | null = null;
 
-  if (
-      connection &&
-      connection.credentialSysId
-  ) {
-
-      credential =
-          repo.findOAuthCredentialById(
-              connection.credentialSysId
-          )
+  if (connection && connection.credentialSysId) {
+    credential = repo.findOAuthCredentialById(connection.credentialSysId);
   }
 
   /*
@@ -141,48 +105,38 @@ function loadConnectionSetupState():
    * to actually be attached to the HTTP connection.
    */
   if (!credential) {
-
-      credential =
-          repo.findOAuthCredentialByAlias(
-              alias.sysId
-          )
+    credential = repo.findOAuthCredentialByAlias(alias.sysId);
   }
 
-  const oauthEntity =
-      credential
-          ? repo.findOAuthEntity(
-              credential.sysId
-          )
-          : null
+  const oauthEntity = credential
+    ? repo.findOAuthEntity(credential.sysId)
+    : null;
 
   return {
-      alias,
-      connection,
-      credential,
-      oauthEntity,
-  }
+    alias,
+    connection,
+    credential,
+    oauthEntity,
+  };
 }
 
 // -------------------------------------------------------------------------
 // Structural validation
 // -------------------------------------------------------------------------
 
-function isConnectionStructureReady():
-  boolean {
-
-  const state =
-      loadConnectionSetupState()
+function isConnectionStructureReady(): boolean {
+  const state = loadConnectionSetupState();
 
   if (!state) {
-      return false
+    return false;
   }
 
   return !!(
-      state.connection &&
-      state.connection.credentialSysId &&
-      state.credential &&
-      state.oauthEntity
-  )
+    state.connection &&
+    state.connection.credentialSysId &&
+    state.credential &&
+    state.oauthEntity
+  );
 }
 
 // -------------------------------------------------------------------------
@@ -190,77 +144,65 @@ function isConnectionStructureReady():
 // -------------------------------------------------------------------------
 
 /**
-* Updates CUSTOMER/RUNTIME OAuth values only.
-*
-* No Connection/Credential/OAuth records are created here.
-*
-* Application installation/configuration-template provisioning is
-* responsible for creating the complete structural chain.
-*/
-function saveConnectionDetails(
-  input: SaveConfigInput
-): boolean {
-
-  const state =
-      loadConnectionSetupState()
+ * Updates CUSTOMER/RUNTIME OAuth values only.
+ *
+ * No Connection/Credential/OAuth records are created here.
+ *
+ * Application installation/configuration-template provisioning is
+ * responsible for creating the complete structural chain.
+ */
+function saveConnectionDetails(input: SaveConfigInput): boolean {
+  const state = loadConnectionSetupState();
 
   if (!state) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "Connection & Credential Alias is missing",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'Connection & Credential Alias is missing'
-      )
-
-      return false
+    return false;
   }
 
   if (!state.connection) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "Entrust IDV HTTP connection is missing",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'Entrust IDV HTTP connection is missing'
-      )
-
-      return false
+    return false;
   }
 
-  if (
-      !state.connection
-          .credentialSysId
-  ) {
+  if (!state.connection.credentialSysId) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "OAuth credential is not attached " +
+        "to the HTTP connection",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'OAuth credential is not attached ' +
-          'to the HTTP connection'
-      )
-
-      return false
+    return false;
   }
 
   if (!state.credential) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "Entrust IDV OAuth credential is missing",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'Entrust IDV OAuth credential is missing'
-      )
-
-      return false
+    return false;
   }
 
   if (!state.oauthEntity) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "OAuth Entity/Profile configuration is missing",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'OAuth Entity/Profile configuration is missing'
-      )
-
-      return false
+    return false;
   }
 
   /*
@@ -270,174 +212,122 @@ function saveConnectionDetails(
    * We cannot repair http_connection at runtime because
    * that table is protected from scoped writes.
    */
-  if (
-      state.connection
-          .credentialSysId !==
-      state.credential.sysId
-  ) {
+  if (state.connection.credentialSysId !== state.credential.sysId) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "HTTP connection is attached to an unexpected credential",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'HTTP connection is attached to an unexpected credential'
-      )
-
-      return false
+    return false;
   }
 
-  const normalisedRegion =
-      input.region
-          .toLowerCase()
+  const normalisedRegion = input.region.toLowerCase();
 
-  if (
-      !isSupportedRegion(
-          normalisedRegion
-      )
-  ) {
+  if (!isSupportedRegion(normalisedRegion)) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "unsupported region=" +
+        input.region,
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'unsupported region=' +
-          input.region
-      )
-
-      return false
+    return false;
   }
 
-  const region = normalisedRegion as EntrustRegion
+  const region = normalisedRegion as EntrustRegion;
 
-  const oauthTokenUrl =
-      tokenUrl(region)
+  const oauthTokenUrl = tokenUrl(region);
 
   gs.info(
-      '[ApiConnection] ' +
-      'saveConnectionDetails: ' +
-      'updating existing OAuth entity sysId=' +
-      state.oauthEntity.sysId
-  )
+    "[ApiConnection] " +
+      "saveConnectionDetails: " +
+      "updating existing OAuth entity sysId=" +
+      state.oauthEntity.sysId,
+  );
 
   /*
    * Only runtime/customer-owned values are changed.
    *
    * We intentionally DO NOT write http_connection.
    */
-  const updated =
-      repo.updateOAuthCredentials(
-          state.oauthEntity.sysId,
-          input.clientId,
-          input.clientSecret,
-          oauthTokenUrl
-      )
+  const updated = repo.updateOAuthCredentials(
+    state.oauthEntity.sysId,
+    input.clientId,
+    input.clientSecret,
+    oauthTokenUrl,
+  );
 
   if (!updated) {
+    gs.error(
+      "[ApiConnection] " +
+        "saveConnectionDetails: " +
+        "OAuth credentials were not updated",
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConnectionDetails: ' +
-          'OAuth credentials were not updated'
-      )
-
-      return false
+    return false;
   }
 
   gs.info(
-      '[ApiConnection] ' +
-      'saveConnectionDetails: ' +
-      'OAuth credentials updated successfully'
-  )
+    "[ApiConnection] " +
+      "saveConnectionDetails: " +
+      "OAuth credentials updated successfully",
+  );
 
-  return true
+  return true;
 }
 
 // -------------------------------------------------------------------------
 // Read configuration
 // -------------------------------------------------------------------------
 
-export function getConfig():
-  GetConfigResult {
-
+export function getConfig(): GetConfigResult {
   try {
+    const config = repo.findConfiguration();
 
-      const config =
-          repo.findConfiguration()
+    /*
+     * Structural records existing alone does NOT mean
+     * the customer has configured the integration.
+     *
+     * Region is written only after our custom setup page
+     * successfully saves the runtime OAuth values.
+     */
+    const configured =
+      !!config && !!config.region && isConnectionStructureReady();
 
-      /*
-       * Structural records existing alone does NOT mean
-       * the customer has configured the integration.
-       *
-       * Region is written only after our custom setup page
-       * successfully saves the runtime OAuth values.
-       */
-      const configured =
-          !!config &&
-          !!config.region &&
-          isConnectionStructureReady()
-
-      if (!config) {
-
-          return {
-              success:
-                  true,
-
-              connectionTested:
-                  false,
-          }
-      }
-
-      const region =
-          config.region
-              .toLowerCase()
-
-      const supported =
-          isSupportedRegion(
-              region
-          )
-
-      const base =
-          supported
-              ? BASE_URLS[
-                  region as EntrustRegion
-              ]
-              : ''
-
+    if (!config) {
       return {
-          success:
-              true,
+        success: true,
 
-          region:
-              config.region,
+        connectionTested: false,
+      };
+    }
 
-          baseUrl:
-              base,
+    const region = config.region.toLowerCase();
 
-          tokenUrl:
-              supported
-                  ? tokenUrl(
-                      region as EntrustRegion
-                  )
-                  : '',
+    const supported = isSupportedRegion(region);
 
-          connectionTested:
-              configured,
-      }
+    const base = supported ? BASE_URLS[region as EntrustRegion] : "";
 
+    return {
+      success: true,
+
+      region: config.region,
+
+      baseUrl: base,
+
+      tokenUrl: supported ? tokenUrl(region as EntrustRegion) : "",
+
+      connectionTested: configured,
+    };
   } catch (err) {
+    gs.error("[ApiConnection] " + "getConfig: " + String(err));
 
-      gs.error(
-          '[ApiConnection] ' +
-          'getConfig: ' +
-          String(err)
-      )
+    return {
+      success: false,
 
-      return {
-          success:
-              false,
-
-          message:
-              'Failed to load configuration: ' +
-              String(err),
-      }
+      message: "Failed to load configuration: " + String(err),
+    };
   }
 }
 
@@ -445,57 +335,35 @@ export function getConfig():
 // Alias / structural setup information
 // -------------------------------------------------------------------------
 
-export function getAliasInfo():
-  AliasInfoResult {
-
+export function getAliasInfo(): AliasInfoResult {
   try {
+    const alias = repo.findAlias();
 
-      const alias =
-          repo.findAlias()
-
-      if (!alias) {
-
-          return {
-              success:
-                  false,
-
-              message:
-                  'Connection alias not found.',
-          }
-      }
-
-      const connection =
-          repo.findHttpConnection(
-              alias.sysId
-          )
-
+    if (!alias) {
       return {
-          success:
-              true,
+        success: false,
 
-          aliasSysId:
-              alias.sysId,
+        message: "Connection alias not found.",
+      };
+    }
 
-          hasConnection:
-              !!connection,
-      }
+    const connection = repo.findHttpConnection(alias.sysId);
 
+    return {
+      success: true,
+
+      aliasSysId: alias.sysId,
+
+      hasConnection: !!connection,
+    };
   } catch (err) {
+    gs.error("[ApiConnection] " + "getAliasInfo: " + String(err));
 
-      gs.error(
-          '[ApiConnection] ' +
-          'getAliasInfo: ' +
-          String(err)
-      )
+    return {
+      success: false,
 
-      return {
-          success:
-              false,
-
-          message:
-              'Failed to look up connection alias: ' +
-              String(err),
-      }
+      message: "Failed to look up connection alias: " + String(err),
+    };
   }
 }
 
@@ -503,91 +371,65 @@ export function getAliasInfo():
 // Save
 // -------------------------------------------------------------------------
 
-export function saveConfig(
-  input: SaveConfigInput
-): SaveConfigResult {
-
-  const validationError =
-      validateSaveInput(input)
+export function saveConfig(input: SaveConfigInput): SaveConfigResult {
+  const validationError = validateSaveInput(input);
 
   if (validationError) {
+    return {
+      success: false,
 
-      return {
-          success:
-              false,
-
-          message:
-              validationError,
-      }
+      message: validationError,
+    };
   }
 
   gs.info(
-      '[ApiConnection] ' +
-      'saveConfig: region=' +
+    "[ApiConnection] " +
+      "saveConfig: region=" +
       input.region +
-      ' hasClientId=' +
+      " hasClientId=" +
       !!input.clientId +
-      ' hasClientSecret=' +
-      !!input.clientSecret
-  )
+      " hasClientSecret=" +
+      !!input.clientSecret,
+  );
 
   try {
+    const saved = saveConnectionDetails(input);
 
-      const saved =
-          saveConnectionDetails(
-              input
-          )
-
-      if (!saved) {
-
-          return {
-              success:
-                  false,
-
-              message:
-                  'Failed to save connection configuration.',
-          }
-      }
-
-      /*
-       * Region is our runtime source of truth for the
-       * Entrust API endpoint.
-       *
-       * http_connection.connection_url remains untouched.
-       */
-      repo.saveRegion(
-          input.region
-      )
-
-      gs.info(
-          '[ApiConnection] ' +
-          'saveConfig: configuration saved successfully'
-      )
-
+    if (!saved) {
       return {
-          success:
-              true,
+        success: false,
 
-          message:
-              'Configuration saved.',
-      }
+        message: "Failed to save connection configuration.",
+      };
+    }
 
+    /*
+     * Region is our runtime source of truth for the
+     * Entrust API endpoint.
+     *
+     * http_connection.connection_url remains untouched.
+     */
+    repo.saveRegion(input.region);
+
+    gs.info(
+      "[ApiConnection] " + "saveConfig: configuration saved successfully",
+    );
+
+    return {
+      success: true,
+
+      message: "Configuration saved.",
+    };
   } catch (err) {
+    gs.error(
+      "[ApiConnection] " + "saveConfig: unexpected error: " + String(err),
+    );
 
-      gs.error(
-          '[ApiConnection] ' +
-          'saveConfig: unexpected error: ' +
-          String(err)
-      )
+    return {
+      success: false,
 
-      return {
-          success:
-              false,
-
-          message:
-              'Failed to save configuration: ' +
-              String(err),
-      }
+      message: "Failed to save configuration: " + String(err),
+    };
   }
 }
 
@@ -598,46 +440,29 @@ export function saveConfig(
 export function testConnection(
   region: string,
   clientId: string,
-  clientSecret: string
+  clientSecret: string,
 ): EntrustConnectionTestResult {
+  if (!region || !clientId || !clientSecret) {
+    return {
+      success: false,
 
-  if (
-      !region ||
-      !clientId ||
-      !clientSecret
-  ) {
-
-      return {
-          success:
-              false,
-
-          message:
-              'Region, Client ID and Client Secret are all required.',
-      }
+      message: "Region, Client ID and Client Secret are all required.",
+    };
   }
 
-  const normalised =
-      region.toLowerCase()
+  const normalised = region.toLowerCase();
 
-  if (
-      !isSupportedRegion(
-          normalised
-      )
-  ) {
+  if (!isSupportedRegion(normalised)) {
+    return {
+      success: false,
 
-      return {
-          success:
-              false,
-
-          message:
-              'Unsupported region: ' +
-              region,
-      }
+      message: "Unsupported region: " + region,
+    };
   }
 
   return testEntrustConnection(
-      normalised as EntrustRegion,
-      clientId,
-      clientSecret
-  )
+    normalised as EntrustRegion,
+    clientId,
+    clientSecret,
+  );
 }
