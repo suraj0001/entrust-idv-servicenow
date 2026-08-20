@@ -31,9 +31,9 @@ export function getVerificationSettings(): VerificationSettingsReadResult | null
     }
 
     const workflowId = ((configGr.getValue('workflow_id') as string) || '').trim()
-    const linkExpiryValue = (configGr.getValue('link_expiry') as string) || ''
+    const linkExpiryValue = (configGr.getValue('link_expiry_minutes') as string) || ''
     const deliveryChannel = ((configGr.getValue('link_delivery_channel') as string) || '').trim()
-    const webhookSecret = ((configGr.getValue('webhook_secret') as string) || '').trim()
+    const webhookSecret = ((configGr.getValue('webhook_signing_secret') as string) || '').trim()
     const redirectUrl = ((configGr.getValue('redirect_url') as string) || '').trim()
     const linkExpiry = parseInt(linkExpiryValue, 10)
 
@@ -57,7 +57,7 @@ export function getVerificationConfiguration(): VerificationConfiguration | null
         ((configGr.getValue('workflow_id') as string) || '').trim()
 
     const linkExpiryValue =
-        (configGr.getValue('link_expiry') as string) || ''
+        (configGr.getValue('link_expiry_minutes') as string) || ''
 
     const redirectUrl =
         (configGr.getValue('redirect_url') as string) || ''
@@ -81,9 +81,11 @@ export function saveVerificationSettingsConfig(
     const configGr = getUpsertConfigurationRecord()
 
     configGr.setValue('workflow_id', settings.workflowId)
-    configGr.setValue('link_expiry', settings.linkExpiry)
+    configGr.setValue('link_expiry_minutes', settings.linkExpiry)
     configGr.setValue('link_delivery_channel', settings.linkDeliveryChannel)
-    configGr.setValue('webhook_secret', settings.webhookSecret)
+    if (settings.webhookSecret) {
+        configGr.setValue('webhook_signing_secret', settings.webhookSecret)
+    }
     configGr.setValue('redirect_url', settings.redirectUrl)
 
     if (configGr.isNewRecord()) {
