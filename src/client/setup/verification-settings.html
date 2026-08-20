@@ -1,485 +1,365 @@
 <?xml version="1.0" encoding="utf-8"?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:g2="null">
-<style>
-        * {
-            box-sizing: border-box;
+  <style>
+    html,
+    body {
+        overflow-y: auto !important;
+        height: auto !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .entrust-container {
+        font-family: Arial, Helvetica, sans-serif;
+        max-width: 580px;
+        margin: 4px auto;
+        padding: 0 24px 24px;
+        color: #2e3a45;
+    }
+
+    .entrust-section {
+        background: #ffffff;
+        border: 1px solid #dfe3e8;
+        border-radius: 6px;
+        padding: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 7px;
+        color: #34495e;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        height: 38px;
+        padding: 8px 11px;
+        border: 1px solid #b8c2cc;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #263746;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #4c86a8;
+        box-shadow: 0 0 0 2px rgba(76, 134, 168, 0.12);
+    }
+
+    .form-group input::placeholder {
+        color: #9ba7b2;
+    }
+
+    .hint {
+        display: block;
+        font-size: 12px;
+        color: #7b8792;
+        margin-top: 7px;
+        line-height: 1.45;
+    }
+
+    .req {
+        color: #c83c3c;
+        margin-left: 2px;
+    }
+
+    .optional {
+        margin-left: 5px;
+        font-size: 11px;
+        font-weight: 400;
+        color: #88949e;
+    }
+
+    .input-with-suffix {
+        display: flex;
+        width: 100%;
+    }
+
+    .input-with-suffix input {
+        border-radius: 4px 0 0 4px;
+    }
+
+    .input-suffix {
+        display: flex;
+        align-items: center;
+        height: 38px;
+        padding: 0 13px;
+        border: 1px solid #b8c2cc;
+        border-left: 0;
+        border-radius: 0 4px 4px 0;
+        background: #f3f5f7;
+        color: #586773;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .secret-status {
+        display: none;
+        margin-top: 9px;
+        padding: 9px 11px;
+        border-radius: 4px;
+        background: #f1f8f4;
+        border: 1px solid #c8e2d1;
+        color: #3c6b4d;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .btn {
+        height: 40px;
+        padding: 0 22px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-save {
+        background: #28a745;
+        border: 1px solid #28a745;
+        color: #ffffff;
+    }
+
+    .btn-save:hover {
+        background: #218838;
+        border-color: #218838;
+    }
+
+    .btn-save:disabled {
+        background: #aaa;
+        border-color: #aaa;
+        cursor: not-allowed;
+    }
+
+    .status {
+        display: none;
+        margin-top: 16px;
+        padding: 11px 14px;
+        border-radius: 4px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .status.success {
+        background: #edf7f1;
+        color: #326545;
+        border: 1px solid #bdddc9;
+    }
+
+    .status.error {
+        background: #fdf0f0;
+        color: #9b3232;
+        border: 1px solid #e5bcbc;
+    }
+
+    @media (max-width: 640px) {
+        .entrust-container {
+            padding: 0 16px 24px;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: #f7f8fa;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #2e3a45;
+        .entrust-section {
+            padding: 20px;
         }
-
-        .idv-page {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 28px 32px 36px;
-        }       
-
-        /* -------------------------
-           Sections
-        -------------------------- */
-
-        .idv-section {
-            background: #ffffff;
-            border: 1px solid #dfe3e8;
-            border-radius: 6px;
-            padding: 24px;
-            margin-bottom: 18px;
-        }
-
-        .idv-section-title {
-            margin: 0 0 5px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #253746;
-        }
-
-        .idv-section-description {
-            margin: 0 0 22px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #73808c;
-        }
-
-        /* -------------------------
-           Form
-        -------------------------- */
-
-        .idv-form-group {
-            margin-bottom: 22px;
-        }
-
-        .idv-form-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .idv-form-row {
-            display: flex;
-            gap: 24px;
-        }
-
-        .idv-form-column {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .idv-label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #34495e;
-        }
-
-        .idv-required {
-            color: #c83c3c;
-            margin-left: 2px;
-        }
-
-        .idv-input,
-        .idv-select {
-            width: 100%;
-            height: 38px;
-            padding: 8px 11px;
-            border: 1px solid #b8c2cc;
-            border-radius: 4px;
-            background: #ffffff;
-            color: #263746;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .idv-input:focus,
-        .idv-select:focus {
-            border-color: #4c86a8;
-            box-shadow: 0 0 0 2px rgba(76, 134, 168, 0.12);
-        }
-
-        .idv-input::placeholder {
-            color: #9ba7b2;
-        }
-
-        .idv-help-text {
-            display: block;
-            margin-top: 7px;
-            font-size: 12px;
-            line-height: 1.45;
-            color: #7b8792;
-        }
-
-        /* -------------------------
-           Expiry input
-        -------------------------- */
-
-        .idv-input-with-suffix {
-            display: flex;
-            align-items: stretch;
-        }
-
-        .idv-input-with-suffix .idv-input {
-            border-radius: 4px 0 0 4px;
-        }
-
-        .idv-input-suffix {
-            display: flex;
-            align-items: center;
-            padding: 0 13px;
-            border: 1px solid #b8c2cc;
-            border-left: 0;
-            border-radius: 0 4px 4px 0;
-            background: #f3f5f7;
-            font-size: 13px;
-            color: #586773;
-            white-space: nowrap;
-        }
-
-        /* -------------------------
-           Secret status
-        -------------------------- */
-
-        .idv-secret-status {
-            display: none;
-            margin-top: 9px;
-            padding: 9px 11px;
-            border-radius: 4px;
-            background: #f1f8f4;
-            border: 1px solid #c8e2d1;
-            color: #3c6b4d;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        /* -------------------------
-           Advanced
-        -------------------------- */
-
-        .idv-advanced-section {
-            background: #fbfcfd;
-        }
-
-        .idv-optional {
-            margin-left: 5px;
-            font-size: 11px;
-            font-weight: 400;
-            color: #88949e;
-        }
-
-        /* -------------------------
-           Messages
-        -------------------------- */
-
-        .idv-message {
-            display: none;
-            margin-bottom: 18px;
-            padding: 11px 14px;
-            border-radius: 4px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .idv-message-success {
-            background: #edf7f1;
-            border: 1px solid #bdddc9;
-            color: #326545;
-        }
-
-        .idv-message-error {
-            background: #fdf0f0;
-            border: 1px solid #e5bcbc;
-            color: #9b3232;
-        }
-
-        /* -------------------------
-           Actions
-        -------------------------- */
-
-        .idv-actions {
-            display: flex;
-            justify-content: flex-start;
-            padding-top: 4px;
-        }
-
-        .idv-primary-button {
-            height: 40px;
-            padding: 0 22px;
-            border: 1px solid #28a745;
-            border-radius: 4px;
-            background: #28a745;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .idv-primary-button:hover {
-            background: #218838;
-            border-color: #218838;
-        }
-
-        .idv-primary-button:disabled {
-            background: #aaa;
-            border-color: #aaa;
-            cursor: not-allowed;
-        }
-
-        /* -------------------------
-           Responsive
-        -------------------------- */
-
-        @media (max-width: 700px) {
-            .idv-page {
-                padding: 20px 16px 28px;
-            }
-
-            .idv-form-row {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .idv-section {
-                padding: 20px;
-            }
-        }
-    </style>
-
-    <div class="idv-page">
+    }
+</style>
 
 
-        <!-- Status Messages -->
-        <div
-            id="idv_success_message"
-            class="idv-message idv-message-success">
-        </div>
+<div class="entrust-container">
 
-        <div
-            id="idv_error_message"
-            class="idv-message idv-message-error">
+    <div class="entrust-section">
+
+        <!-- Workflow ID -->
+
+        <div class="form-group">
+
+            <label for="workflow_id">
+                Workflow ID
+                <span class="req">*</span>
+            </label>
+
+            <input
+                id="workflow_id"
+                name="workflow_id"
+                type="text"
+                autocomplete="off"
+                placeholder="Enter Entrust workflow ID"
+            />
+
+            <span class="hint">
+                The Entrust workflow that will be used for identity verification requests.
+            </span>
+
         </div>
 
 
-        <!-- Verification Settings -->
-        <div class="idv-section">
+        <!-- Link Expiry -->
 
-            <!-- Workflow ID -->
-            <div class="idv-form-group">
+        <div class="form-group">
 
-                <label
-                    class="idv-label"
-                    for="workflow_id">
+            <label for="link_expiry">
+                Link Expiry
+                <span class="req">*</span>
+            </label>
 
-                    Workflow ID
-                    <span class="idv-required">*</span>
-
-                </label>
+            <div class="input-with-suffix">
 
                 <input
-                    id="workflow_id"
-                    name="workflow_id"
-                    class="idv-input"
-                    type="text"
-                    autocomplete="off"
-                    placeholder="Enter Entrust workflow ID"
+                    id="link_expiry"
+                    name="link_expiry"
+                    type="number"
+                    min="1"
+                    value="60"
                 />
 
-                <span class="idv-help-text">
-                    The Entrust workflow that will be used for identity verification requests.
+                <span class="input-suffix">
+                    minutes
                 </span>
 
             </div>
 
+            <span class="hint">
+                How long the verification link remains valid.
+            </span>
 
-            <!-- Link Expiry + Delivery Channel -->
-            <div class="idv-form-row">
-
-                <div class="idv-form-column">
-
-                    <div class="idv-form-group">
-
-                        <label
-                            class="idv-label"
-                            for="link_expiry">
-
-                            Link expiry
-                            <span class="idv-required">*</span>
-
-                        </label>
-
-                        <div class="idv-input-with-suffix">
-
-                            <input
-                                id="link_expiry"
-                                name="link_expiry"
-                                class="idv-input"
-                                type="number"
-                                min="1"
-                                value="60"
-                            />
-
-                            <span class="idv-input-suffix">
-                                minutes
-                            </span>
-
-                        </div>
-
-                        <span class="idv-help-text">
-                            How long the verification link remains valid.
-                        </span>
-
-                    </div>
-
-                </div>
+        </div>
 
 
-                <div class="idv-form-column">
+        <!-- Delivery Channel -->
 
-                    <div class="idv-form-group">
+        <div class="form-group">
 
-                        <label
-                            class="idv-label"
-                            for="delivery_channel">
+            <label for="delivery_channel">
+                Delivery Channel
+                <span class="req">*</span>
+            </label>
 
-                            Delivery channel
-                            <span class="idv-required">*</span>
+            <select
+                id="delivery_channel"
+                name="delivery_channel"
+            >
+                <option value="email">
+                    Email
+                </option>
+            </select>
 
-                        </label>
+            <span class="hint">
+                Channel used to send the verification request to the user.
+            </span>
 
-                        <select
-                            id="delivery_channel"
-                            name="delivery_channel"
-                            class="idv-select">
+        </div>
 
-                            <option value="email">
-                                Email
-                            </option>
 
-                        </select>
+        <!-- Webhook Secret -->
 
-                        <span class="idv-help-text">
-                            Channel used to send the verification request to the user.
-                        </span>
+        <div class="form-group">
 
-                    </div>
+            <label for="webhook_secret">
+                Webhook Secret
+                <span class="req">*</span>
+            </label>
 
-                </div>
+            <input
+                id="webhook_secret"
+                name="webhook_secret"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Enter webhook secret"
+            />
 
+            <span class="hint">
+                Used to verify that webhook requests originate from Entrust.
+            </span>
+
+            <div
+                id="webhook_secret_status"
+                class="secret-status"
+            >
+                A webhook secret is already configured.
+                Leave this field blank to keep the existing secret,
+                or enter a new value to replace it.
             </div>
 
         </div>
 
 
-        <!-- Webhook Security -->
-        <div class="idv-section">
+        <!-- Redirect URL -->
 
-            <h2 class="idv-section-title">
-                Webhook Security
-            </h2>
+        <div class="form-group">
 
-            <p class="idv-section-description">
-                Configure the secret used to validate webhook callbacks received from Entrust.
-            </p>
-
-
-            <div class="idv-form-group">
-
-                <label
-                    class="idv-label"
-                    for="webhook_secret">
-
-                    Webhook Secret
-                    <span class="idv-required">*</span>
-
-                </label>
-
-                <input
-                    id="webhook_secret"
-                    name="webhook_secret"
-                    class="idv-input"
-                    type="password"
-                    autocomplete="new-password"
-                    placeholder="Enter webhook secret"
-                />
-
-                <span class="idv-help-text">
-                    The secret is used to verify that webhook requests originate from Entrust.
+            <label for="redirect_url">
+                Redirect URL
+                <span class="optional">
+                    Optional
                 </span>
+            </label>
 
-                <div
-                    id="webhook_secret_status"
-                    class="idv-secret-status">
+            <input
+                id="redirect_url"
+                name="redirect_url"
+                type="url"
+                autocomplete="off"
+                placeholder="https://example.com/verification-complete"
+            />
 
-                    A webhook secret is already configured.
-                    Leave this field blank to keep the existing secret,
-                    or enter a new value to replace it.
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Advanced Settings -->
-        <div class="idv-section idv-advanced-section">
-
-            <h2 class="idv-section-title">
-                Advanced Settings
-            </h2>
-
-            <p class="idv-section-description">
-                Optional settings that are not required for the standard verification flow.
-            </p>
-
-
-            <div class="idv-form-group">
-
-                <label
-                    class="idv-label"
-                    for="redirect_url">
-
-                    Redirect URL
-                    <span class="idv-optional">
-                        Optional
-                    </span>
-
-                </label>
-
-                <input
-                    id="redirect_url"
-                    name="redirect_url"
-                    class="idv-input"
-                    type="url"
-                    autocomplete="off"
-                    placeholder="https://example.com/verification-complete"
-                />
-
-                <span class="idv-help-text">
-                    Leave blank unless users should be redirected to a specific page after completing verification.
-                </span>
-
-            </div>
+            <span class="hint">
+                Leave blank unless users should be redirected to a specific page after completing verification.
+            </span>
 
         </div>
 
 
         <!-- Actions -->
-        <div class="idv-actions">
+
+        <div class="btn-row">
 
             <button
                 id="btn_save"
                 type="button"
-                class="idv-primary-button">
-
+                class="btn btn-save"
+            >
                 Save
-
             </button>
 
         </div>
 
+
+        <!-- Status Messages -->
+
+        <div
+            id="idv_success_message"
+            class="status success"
+        ></div>
+
+        <div
+            id="idv_error_message"
+            class="status error"
+        ></div>
+
     </div>
-<script src="./verification-settings.client.js" type="module"></script>
+
+</div>
+  <script src="./verification-settings.client.js" type="module"></script>
 </j:jelly>

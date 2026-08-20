@@ -1,5 +1,5 @@
 import { GlideRecord } from "@servicenow/glide"
-import { CONFIG_TABLE } from "../constants"
+import { CONFIG_TABLE } from "../constants.ts"
 
 export type VerificationSettingsConfig = {
     workflowId: string

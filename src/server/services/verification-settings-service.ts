@@ -1,7 +1,7 @@
 import {
     validateVerificationSettings,
     type VerificationSettingsInput,
-} from '../setup/verification-settings-validator.js'
+} from '../setup/verification-settings-validator.ts'
 
 import {
     saveVerificationSettingsConfig,
