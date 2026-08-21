@@ -1410,6 +1410,24 @@ declare global {
                 }
                 composite: [
                     {
+                        table: 'sys_ui_element'
+                        id: '00054d5e1b3ec3505fdb2f05604bcbb4'
+                        deleted: true
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'state'
+                            position: '1'
+                        }
+                    },
+                    {
                         table: 'sys_db_object'
                         id: '0076b4dd96c148e4a2a2ec4256a076f3'
                         deleted: true
@@ -2124,6 +2142,57 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: '320d5d921b7207505fdb2f05604bcb1c'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'category'
+                            position: '2'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '320d5d921b7207505fdb2f05604bcb23'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'contact_type'
+                            position: '10'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '320d5d921b7207505fdb2f05604bcb2a'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'assigned_to'
+                            position: '18'
+                        }
+                    },
+                    {
                         table: 'sys_documentation'
                         id: '338a7dc91bfe87105fdb2f05604bcb48'
                         key: {
@@ -2157,6 +2226,40 @@ declare global {
                             }
                             element: 'status'
                             position: '3'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '360d5d921b7207505fdb2f05604bcb21'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'short_description'
+                            position: '8'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '360d5d921b7207505fdb2f05604bcb28'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'priority'
+                            position: '16'
                         }
                     },
                     {
@@ -2229,6 +2332,40 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: '3a0d5d921b7207505fdb2f05604bcb1f'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'cmdb_ci'
+                            position: '6'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '3a0d5d921b7207505fdb2f05604bcb26'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'impact'
+                            position: '14'
+                        }
+                    },
+                    {
                         table: 'sys_security_acl_role'
                         id: '3b9043c747de831016bda144846d43dc'
                         deleted: true
@@ -2249,6 +2386,40 @@ declare global {
                             name: 'var__m_sys_pd_snapshot_input_7568b7f547b6cf1016bda144846d437e'
                             element: 'parent_record'
                             language: 'en'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '3e0d5d921b7207505fdb2f05604bcb1d'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'business_service'
+                            position: '4'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '3e0d5d921b7207505fdb2f05604bcb24'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'state'
+                            position: '12'
                         }
                     },
                     {
@@ -2798,6 +2969,23 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: '7e0d5d921b7207505fdb2f05604bcb0d'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'number'
+                            position: '0'
+                        }
+                    },
+                    {
                         table: 'sys_dictionary'
                         id: '7e959c6c835e43ae8b1d4871dc3cc083'
                         deleted: true
@@ -2813,6 +3001,24 @@ declare global {
                         key: {
                             name: 'incident'
                             element: 'NULL'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: '80054d5e1b3ec3505fdb2f05604bcbb3'
+                        deleted: true
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'x_entru_entrustidv_verification_status'
+                            position: '0'
                         }
                     },
                     {
@@ -3415,6 +3621,57 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: 'b20d5d921b7207505fdb2f05604bcb1b'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'caller_id'
+                            position: '1'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'b20d5d921b7207505fdb2f05604bcb22'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: '.split'
+                            position: '9'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'b20d5d921b7207505fdb2f05604bcb29'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'assignment_group'
+                            position: '17'
+                        }
+                    },
+                    {
                         table: 'sys_security_acl_role'
                         id: 'b278470460084cb7b352e2925b939cc2'
                         key: {
@@ -3462,6 +3719,40 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ui_element'
+                        id: 'b60d5d921b7207505fdb2f05604bcb20'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'description'
+                            position: '7'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'b60d5d921b7207505fdb2f05604bcb27'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'urgency'
+                            position: '15'
+                        }
+                    },
+                    {
                         table: 'sys_security_acl_role'
                         id: 'b8863a721b1a0fd05fdb2f05604bcbfa'
                         deleted: true
@@ -3473,6 +3764,40 @@ declare global {
                                     name: 'x_entru_entrustidv.entrust_idv_verification_request_user'
                                 }
                             }
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'ba0d5d921b7207505fdb2f05604bcb1e'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'service_offering'
+                            position: '5'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'ba0d5d921b7207505fdb2f05604bcb25'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'hold_reason'
+                            position: '13'
                         }
                     },
                     {
@@ -3529,6 +3854,55 @@ declare global {
                             name: 'var__m_sys_pd_snapshot_input_7d96617c1bae03545fdb2f05604bcb9c'
                             element: 'parent_record'
                             language: 'en'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'be0d5d921b7207505fdb2f05604bcb1c'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'subcategory'
+                            position: '3'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_element'
+                        id: 'be0d5d921b7207505fdb2f05604bcb23'
+                        key: {
+                            sys_ui_section: {
+                                id: 'bf1d96e3c0a801640190725e63f8ac80'
+                                key: {
+                                    name: 'incident'
+                                    caption: 'NULL'
+                                    view: 'Default view'
+                                    sys_domain: 'global'
+                                }
+                            }
+                            element: 'x_entru_entrustidv_verification_status'
+                            position: '11'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_section'
+                        id: 'bf1d96e3c0a801640190725e63f8ac80'
+                        key: {
+                            name: 'incident'
+                            caption: 'NULL'
+                            view: {
+                                id: 'Default view'
+                                key: {
+                                    name: 'NULL'
+                                }
+                            }
+                            sys_domain: 'global'
                         }
                     },
                     {
