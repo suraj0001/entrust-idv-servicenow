@@ -1389,7 +1389,7 @@ declare global {
                     'src_server_webhook_idv-webhook-handler_ts': {
                         table: 'sys_module'
                         id: '52d85201c68c40538d08ddb6378e345d'
-                        deleted: true
+                        deleted: false
                     }
                     'src_server_webhook_webhook-handler_ts': {
                         table: 'sys_module'
@@ -3653,7 +3653,7 @@ declare global {
                     {
                         table: 'sys_ui_section'
                         id: 'd121a50b6a704cf68ff01dab43bac001'
-                        deleted: false
+                        deleted: true
                         key: {
                             name: 'incident'
                             caption: 'Identity Verification'
@@ -3695,6 +3695,7 @@ declare global {
                     {
                         table: 'sys_ui_element'
                         id: 'd121a50b6a704cf68ff01dab43bac004'
+                        deleted: true
                         key: {
                             sys_ui_section: 'd121a50b6a704cf68ff01dab43bac001'
                             element: 'x_entru_entrustidv_idv_status'
